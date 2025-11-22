@@ -557,8 +557,18 @@
       window.scrollTo(0, 0);
     }, 180);
   };
-</script>
-
+<script>
+    // PWA 서비스워커 등록
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker
+          .register("/service-worker.js")
+          .catch((err) => {
+            console.error("Service Worker registration failed:", err);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
 
