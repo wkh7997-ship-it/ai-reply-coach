@@ -62,6 +62,7 @@
     }
 
     /* 공통 헤더 */
+
     .header {
       display: flex;
       align-items: center;
@@ -110,7 +111,7 @@
       min-height: 16px;
     }
 
-    /* 입력 화면 */
+    /* 1페이지: 입력 화면 */
 
     .field {
       margin-bottom: 14px;
@@ -205,7 +206,7 @@
         0 0 0 1px rgba(129, 140, 248, 0.6);
     }
 
-    /* 결과 화면 */
+    /* 2페이지: 결과 화면 */
 
     .top-bar {
       display: flex;
@@ -217,12 +218,14 @@
     }
 
     .back-link {
+      border: none;
+      background: none;
+      padding: 0;
       display: inline-flex;
       align-items: center;
       gap: 4px;
       cursor: pointer;
       color: #c7d2fe;
-      text-decoration: none;
       font-size: 13px;
     }
 
@@ -258,13 +261,13 @@
           rgba(15, 23, 42, 0.96) 100%);
       border-radius: 20px;
       border: 1px solid rgba(148, 163, 184, 0.4);
-      padding: 14px 14px 10px;
+      padding: 18px 16px 12px;
     }
 
     .result-title {
       font-size: 14px;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -282,7 +285,7 @@
       border-radius: 12px;
       background: rgba(15, 23, 42, 0.96);
       border: 1px solid rgba(51, 65, 85, 0.85);
-      margin-bottom: 7px;
+      margin-bottom: 8px;
     }
 
     .answer-text {
@@ -307,25 +310,29 @@
     }
 
     .chip {
-      padding: 2px 7px;
+      padding: 2px 8px;
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, 0.7);
       background: rgba(15, 23, 42, 0.9);
+      white-space: nowrap;
     }
 
     .chip.safe {
       border-color: var(--safe);
       color: var(--safe);
+      background: rgba(34, 197, 94, 0.12);
     }
 
     .chip.warn {
       border-color: var(--warn);
       color: var(--warn);
+      background: rgba(234, 179, 8, 0.12);
     }
 
     .chip.danger {
       border-color: var(--danger);
       color: var(--danger);
+      background: rgba(239, 68, 68, 0.12);
     }
 
     .copy-btn {
@@ -345,6 +352,7 @@
     }
 
     /* 화면 전환용 */
+
     #screen-input,
     #screen-result {
       display: none;
@@ -353,6 +361,69 @@
     #screen-input.active,
     #screen-result.active {
       display: block;
+    }
+
+    /* 로딩용 스켈레톤 */
+
+    .skeleton-item {
+      padding: 9px 9px 7px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(51, 65, 85, 0.85);
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .skeleton-line {
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(
+        110deg,
+        rgba(148, 163, 184, 0.25) 8%,
+        rgba(148, 163, 184, 0.45) 18%,
+        rgba(148, 163, 184, 0.18) 33%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+      margin-bottom: 6px;
+    }
+
+    .skeleton-line.short {
+      width: 40%;
+    }
+
+    .skeleton-line.mid {
+      width: 65%;
+    }
+
+    .skeleton-line.long {
+      width: 90%;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -150% 0;
+      }
+      100% {
+        background-position: 150% 0;
+      }
+    }
+
+    /* 답장 완성 시 페이드인 */
+
+    .answer-item.fade-in {
+      animation: fadeIn 0.22s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @media (max-height: 680px) {
@@ -483,7 +554,32 @@
       return "danger";
     }
 
-    // 처음에는 입력 화면 보이기
+    function levelLabel(score) {
+      const n = parseInt(score || "0", 10);
+      if (n <= 30) return "낮음";
+      if (n <= 60) return "중간";
+      return "높음";
+    }
+
+    function showSkeleton() {
+      answersEl.innerHTML = "";
+      for (let i = 0; i < 3; i++) {
+        const sk = document.createElement("div");
+        sk.className = "skeleton-item";
+        sk.innerHTML = `
+          <div class="skeleton-line long"></div>
+          <div class="skeleton-line mid"></div>
+          <div class="skeleton-line short"></div>
+        `;
+        answersEl.appendChild(sk);
+      }
+    }
+
+    function clearSkeleton() {
+      answersEl.innerHTML = "";
+    }
+
+    // 처음에는 입력 화면
     showScreen("input");
 
     generateBtn.addEventListener("click", async () => {
@@ -495,11 +591,15 @@
         return;
       }
 
-      // 다음 페이지(결과 화면)으로 전환
+      statusInputEl.textContent = "";
+
+      // 결과 화면으로 전환 + 원문 표시
       originalTextEl.textContent = text;
-      answersEl.innerHTML = "";
       statusResultEl.textContent = "AI가 답장을 생각 중입니다...";
       showScreen("result");
+
+      // 로딩 스켈레톤
+      showSkeleton();
 
       try {
         const res = await fetch("/reply", {
@@ -511,6 +611,7 @@
         const data = await res.json();
 
         if (!res.ok) {
+          clearSkeleton();
           statusResultEl.textContent = data.error || "답장 생성 중 오류가 발생했습니다.";
           return;
         }
@@ -523,19 +624,36 @@
           .filter(Boolean)
           .slice(0, 3);
 
-        answersEl.innerHTML = "";
+        clearSkeleton();
+
+        if (lines.length === 0) {
+          statusResultEl.textContent = "생성된 답장이 없습니다.";
+          return;
+        }
 
         lines.forEach((line, idx) => {
           const { text: answerText, risk, sense, comment } = parseLine(line);
           const wrapper = document.createElement("div");
-          wrapper.className = "answer-item";
+          wrapper.className = "answer-item fade-in";
 
           wrapper.innerHTML = `
             <div class="answer-text">${idx + 1}. ${answerText}</div>
             <div class="answer-meta">
               <div class="chips">
-                ${risk ? `<span class="chip ${riskClass(risk)}">위험도 ${risk}</span>` : ""}
-                ${sense ? `<span class="chip">센스 ${sense}</span>` : ""}
+                ${
+                  risk
+                    ? `<span class="chip ${riskClass(risk)}">
+                         위험도 ${risk}점 · ${levelLabel(risk)}
+                       </span>`
+                    : ""
+                }
+                ${
+                  sense
+                    ? `<span class="chip">
+                         센스 ${sense}점 · ${levelLabel(sense)}
+                       </span>`
+                    : ""
+                }
                 ${comment ? `<span class="chip">${comment}</span>` : ""}
               </div>
               <button class="copy-btn" type="button">복사</button>
@@ -552,18 +670,14 @@
 
           answersEl.appendChild(wrapper);
         });
-
-        if (lines.length === 0) {
-          statusResultEl.textContent = "생성된 답장이 없습니다.";
-        }
       } catch (err) {
         console.error(err);
+        clearSkeleton();
         statusResultEl.textContent = "서버와 통신 중 오류가 발생했습니다.";
       }
     });
 
     backBtn.addEventListener("click", () => {
-      // 뒤로 가기: 입력 화면으로 돌아가기 (기존 입력 내용 유지)
       statusResultEl.textContent = "";
       showScreen("input");
       msgEl.focus();
@@ -571,6 +685,8 @@
   </script>
 </body>
 </html>
+
+
 
 
 
