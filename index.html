@@ -5,105 +5,190 @@
   <title>AI 대화 코치</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
-      background: #f3f4f8;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #283048, #4b6cb7); /* 🔹 컬러 배경 */
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .header-img {
+    .app-container {
       width: 100%;
-      max-width: 260px;
-      display: block;
-      margin: 0 auto 20px auto;
+      max-width: 420px;               /* 모바일 기준 폭 */
+      padding: 12px;
     }
 
-    h1 {
-      text-align: center;
-      font-size: 28px;
-      margin-bottom: 6px;
-      font-weight: bold;
+    .card {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 22px;
+      padding: 16px 16px 14px 16px;   /* 패딩 줄여서 한 화면에 */
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
     }
 
-    .subtitle {
-      text-align: center;
+    /* 상단 헤더 영역 */
+    .header-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .icon-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: #e5edff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .icon-circle img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .header-text-main {
+      font-size: 18px;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 2px;
+    }
+
+    .header-text-sub {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .section-title {
       font-size: 14px;
-      color: #666;
-      margin-bottom: 20px;
+      font-weight: 700;
+      margin: 8px 0 6px 0;
+      color: #111827;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 14px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      outline: none;
     }
 
     textarea {
       width: 100%;
-      height: 150px;
-      padding: 14px;
-      font-size: 16px;
-      border-radius: 12px;
-      border: 1px solid #ccc;
+      height: 80px;        /* 🔹 높이 줄임 */
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
       resize: none;
-      box-sizing: border-box;
-      background: #fff;
+      outline: none;
     }
 
-    button {
-      margin-top: 18px;
+    .hint {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    .btn {
       width: 100%;
-      padding: 14px;
-      font-size: 18px;
-      font-weight: bold;
-      background: #5c6bff;
-      color: white;
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 999px;
       border: none;
-      border-radius: 12px;
       cursor: pointer;
+      background: #4b6cb7;
+      color: #ffffff;
+      box-shadow: 0 3px 10px rgba(75, 108, 183, 0.4);
+    }
+
+    .btn:active {
+      background: #3f59a0;
     }
 
     .reply-box {
-      margin-top: 24px;
-      padding: 18px;
-      background: #fff;
+      margin-top: 10px;
+      padding: 10px 12px;
       border-radius: 14px;
-      border: 1px solid #ddd;
+      background: #f3f4ff;
+      border-left: 4px solid #4b6cb7;
+      font-size: 14px;
+      color: #111827;    /* 🔹 검은 계열 텍스트 */
       white-space: pre-wrap;
-      font-size: 16px;
-      color: #000;  /* 검정색 유지 */
+      max-height: 120px; /* 너무 길면 내부 스크롤 */
+      overflow-y: auto;
+      display: none;
     }
 
-    .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 8px;
+    .reply-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #4b5563;
+      margin-bottom: 4px;
     }
+
   </style>
 </head>
 <body>
 
-  <!-- 🔥 그림 들어간 부분 -->
-  <img src="https://cdn-icons-png.flaticon.com/512/4712/4712104.png" class="header-img">
+<div class="app-container">
+  <div class="card">
+    <!-- 상단 헤더 -->
+    <div class="header-row">
+      <div class="icon-circle">
+        <!-- 간단한 말풍선 아이콘 -->
+        <img src="https://cdn-icons-png.flaticon.com/512/2462/2462719.png" alt="chat">
+      </div>
+      <div>
+        <div class="header-text-main">AI 대화 코치</div>
+        <div class="header-text-sub">카톡 답장, 말실수 걱정될 때 써보세요.</div>
+      </div>
+    </div>
 
-  <h1>AI 대화 코치</h1>
-  <p class="subtitle">카톡 답장 고민될 때 바로 사용하세요.</p>
+    <!-- 상황 선택 -->
+    <div>
+      <div class="section-title">상황</div>
+      <select id="situation">
+        <option value="기본">기본</option>
+        <option value="연애">연애</option>
+        <option value="친구">친구</option>
+        <option value="직장">직장</option>
+        <option value="가족">가족</option>
+      </select>
+    </div>
 
- 
-  <div class="section">
-    <div class="section-title">상황 선택</div>
-    <select id="situation" style="padding: 10px; width: 100%; font-size: 16px; border-radius: 10px;">
-      <option value="기본">기본</option>
-      <option value="연애">연애</option>
-      <option value="친구">친구</option>
-      <option value="직장">직장</option>
-      <option value="가족">가족</option>
-    </select>
+    <!-- 메시지 입력 -->
+    <div>
+      <div class="section-title" style="margin-top: 10px;">상대방 메시지</div>
+      <textarea id="inputText" placeholder="카톡 내용을 그대로 붙여넣거나 적어보세요."></textarea>
+      <div class="hint">예) “부모님상이라 지인한테 보낼 안내문 좀 정리해줘”</div>
+    </div>
+
+    <!-- 버튼 -->
+    <button class="btn" onclick="sendText()">답장 생성하기</button>
+
+    <!-- 결과 -->
+    <div id="result" class="reply-box">
+      <div class="reply-label">AI 추천 답장</div>
+      <div id="replyText"></div>
+    </div>
   </div>
-
-  <div style="margin-top: 18px;">
-    <div class="section-title">상대방 메시지</div>
-    <textarea id="inputText" placeholder="카톡 내용을 그대로 붙여넣으세요"></textarea>
-  </div>
-
-  <button onclick="sendText()">답장 생성</button>
-
-  <div id="result" class="reply-box" style="display:none;"></div>
+</div>
 
 <script>
 async function sendText() {
@@ -111,29 +196,34 @@ async function sendText() {
   const situation = document.getElementById("situation").value;
 
   if (!text) {
-    alert("상대방 메시지를 입력하세요.");
+    alert("상대방 메시지를 입력해주세요.");
     return;
   }
 
-  const res = await fetch("/reply", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-      text: text,
-      situation: situation
-    })
-  });
+  try {
+    const res = await fetch("/reply", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ text, situation })
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  const box = document.getElementById("result");
-  box.style.display = "block";
-  box.textContent = data.reply;
+    const box = document.getElementById("result");
+    const replyDiv = document.getElementById("replyText");
+
+    box.style.display = "block";
+    replyDiv.textContent = data.reply || "답장을 불러오지 못했습니다.";
+  } catch (e) {
+    alert("서버 요청 중 오류가 발생했습니다.");
+  }
 }
 </script>
 
 </body>
 </html>
+
+
 
 
 
