@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>AI 대화 코치</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     * {
@@ -13,31 +13,159 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
-      background: radial-gradient(circle at top, #f4f5ff 0, #eef2ff 35%, #f9fafb 100%);
-      color: #111827;
+      color: #f9fafb;
+      font-size: 16px;
+      /* 배경: 흐릿한 야경 + 그라디언트 오버레이 */
+      background:
+        linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 64, 175, 0.9)),
+        url("https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1600&q=80")
+          center/cover fixed no-repeat;
     }
+
     .page {
       min-height: 100vh;
       display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 960px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+      gap: 18px;
+    }
+
+    /* 왼쪽: 인물 + 설명 */
+    .hero-card {
+      background: linear-gradient(145deg, rgba(30, 64, 175, 0.9), rgba(236, 72, 153, 0.9));
+      border-radius: 18px;
+      padding: 18px 18px 20px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 999px;
+      border: 1px solid rgba(248, 250, 252, 0.3);
+      top: -40px;
+      right: -40px;
+      opacity: 0.4;
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 30% 20%, #f9fafb 0, #e5e7eb 35%, #9ca3af 100%);
+      border: 2px solid rgba(248, 250, 252, 0.9);
+      display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      font-weight: 700;
+      color: #111827;
+      font-size: 18px;
     }
+    .hero-text-main {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .hero-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    .hero-sub {
+      font-size: 13px;
+      color: #e5e7eb;
+    }
+
+    .bubble-preview {
+      background: rgba(248, 250, 252, 0.08);
+      border-radius: 14px;
+      padding: 10px 11px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    .bubble-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .bubble {
+      max-width: 88%;
+      padding: 9px 11px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .bubble.me {
+      margin-left: auto;
+      background: #4ade80;
+      color: #14532d;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble.ai {
+      background: #0f172a;
+      color: #e5e7eb;
+      border-bottom-left-radius: 4px;
+    }
+
+    .hero-bottom {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(248, 250, 252, 0.3);
+      background: rgba(15, 23, 42, 0.3);
+    }
+
+    /* 오른쪽: 실제 입력/결과 카드 */
     .card {
-      width: 100%;
-      max-width: 720px;
-      background: #ffffffcc;
-      backdrop-filter: blur(10px);
+      background: #f9fafb;
+      color: #111827;
       border-radius: 18px;
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
-      padding: 22px 24px 26px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.55);
+      padding: 18px 16px 20px;
+      display: flex;
+      flex-direction: column;
     }
     .header-row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 12px;
+      align-items: center;
+      margin-bottom: 4px;
     }
     .title-wrap {
       display: flex;
@@ -46,18 +174,17 @@
     }
     h1 {
       margin: 0;
-      font-size: 22px;
+      font-size: 19px;
       letter-spacing: -0.03em;
       display: flex;
       align-items: center;
       gap: 6px;
     }
-    h1 span.logo-dot {
-      width: 9px;
-      height: 9px;
+    .logo-dot {
+      width: 10px;
+      height: 10px;
       border-radius: 999px;
-      background: linear-gradient(135deg, #6366f1, #ec4899);
-      display: inline-block;
+      background: #4f46e5;
     }
     .subtitle {
       font-size: 12px;
@@ -65,49 +192,54 @@
     }
     .badge {
       font-size: 11px;
+      padding: 4px 8px;
       border-radius: 999px;
-      padding: 3px 9px;
-      border: 1px solid rgba(99, 102, 241, 0.2);
+      border: 1px solid #e5e7eb;
+      background: #eef2ff;
       color: #4f46e5;
-      background: rgba(238, 242, 255, 0.8);
       white-space: nowrap;
     }
+
     .section {
       margin-top: 14px;
     }
     .section-label {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
-      color: #4b5563;
+      color: #374151;
       margin-bottom: 6px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
     .section-label small {
+      font-size: 12px;
       font-weight: 400;
       color: #9ca3af;
     }
-    select, textarea {
+
+    select,
+    textarea {
       width: 100%;
       font-family: inherit;
       border-radius: 10px;
-      border: 1px solid #e5e7eb;
-      padding: 9px 11px;
-      font-size: 14px;
+      border: 1px solid #d1d5db;
+      padding: 10px 11px;
+      font-size: 15px;
       outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-      background-color: #f9fafb;
+      background: #ffffff;
     }
-    select:focus, textarea:focus {
-      border-color: #6366f1;
-      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.3);
-      background-color: #ffffff;
+    select:focus,
+    textarea:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.25);
+      background: #ffffff;
     }
     textarea {
-      min-height: 90px;
+      min-height: 110px;
       resize: vertical;
     }
+
     .tone-row {
       display: flex;
       gap: 10px;
@@ -115,12 +247,13 @@
       align-items: center;
     }
     .tone-row select {
-      max-width: 210px;
+      max-width: 220px;
     }
     .helper-text {
-      font-size: 11px;
+      font-size: 12px;
       color: #9ca3af;
     }
+
     .btn-bar {
       margin-top: 10px;
       display: flex;
@@ -128,33 +261,27 @@
     }
     button.primary {
       border: none;
-      border-radius: 999px;
-      padding: 8px 18px;
-      font-size: 14px;
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
-      background: linear-gradient(135deg, #6366f1, #4f46e5);
-      color: white;
+      background: #4f46e5;
+      color: #ffffff;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35);
+      gap: 8px;
+      box-shadow: 0 8px 22px rgba(79, 70, 229, 0.4);
       transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
     }
     button.primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 14px 32px rgba(79, 70, 229, 0.45);
+      box-shadow: 0 10px 26px rgba(79, 70, 229, 0.45);
     }
     button.primary:active {
       transform: translateY(0);
-      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);
       opacity: 0.95;
-    }
-    button.primary span.dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #fbbf24;
     }
 
     h3 {
@@ -165,7 +292,7 @@
       align-items: center;
       gap: 6px;
     }
-    h3 span.label-pill {
+    .label-pill {
       font-size: 11px;
       padding: 2px 7px;
       border-radius: 999px;
@@ -174,24 +301,18 @@
     }
 
     #result {
-      margin-top: 6px;
+      margin-top: 4px;
     }
     .reply-row {
       margin-bottom: 10px;
-      padding: 8px 10px;
-      border-radius: 11px;
+      padding: 9px 10px;
+      border-radius: 10px;
       border: 1px solid #e5e7eb;
-      background: #f9fafb;
-      transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
-    }
-    .reply-row:hover {
-      border-color: #c7d2fe;
       background: #ffffff;
-      transform: translateY(-1px);
     }
     .reply-main {
-      font-size: 14px;
-      font-weight: 600;
+      font-size: 15px;
+      font-weight: 500;
       margin-bottom: 4px;
       display: flex;
       align-items: center;
@@ -200,7 +321,7 @@
     }
     .reply-main-text {
       flex: 1;
-      line-height: 1.4;
+      line-height: 1.5;
     }
     .reply-actions {
       display: flex;
@@ -208,11 +329,11 @@
       flex-shrink: 0;
     }
     .meta {
-      font-size: 11px;
+      font-size: 12px;
       color: #6b7280;
     }
     .risk-low {
-      color: #059669;
+      color: #16a34a;
       font-weight: 600;
     }
     .risk-mid {
@@ -224,24 +345,22 @@
       font-weight: 700;
     }
     .copy-btn {
-      padding: 3px 8px;
+      padding: 4px 8px;
       font-size: 11px;
       border-radius: 999px;
-      border: 1px solid #e5e7eb;
-      background: #ffffff;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
       cursor: pointer;
-      transition: background 0.1s ease, border-color 0.1s ease, transform 0.1s ease;
     }
     .copy-btn:hover {
-      background: #f3f4ff;
+      background: #eef2ff;
       border-color: #c7d2fe;
-      transform: translateY(-0.5px);
     }
 
     #history {
       max-height: 170px;
       overflow-y: auto;
-      padding-right: 6px;
+      padding-right: 4px;
     }
     .history-empty {
       font-size: 12px;
@@ -262,10 +381,10 @@
     }
     .history-item button {
       font-size: 11px;
-      padding: 2px 8px;
+      padding: 3px 8px;
       margin-top: 4px;
       border-radius: 999px;
-      border: 1px solid #e5e7eb;
+      border: 1px solid #d1d5db;
       background: #f9fafb;
       cursor: pointer;
     }
@@ -274,93 +393,117 @@
       border-color: #c7d2fe;
     }
 
+    @media (max-width: 820px) {
+      .shell {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .hero-card {
+        order: 1;
+      }
+      .card {
+        order: 2;
+      }
+    }
+
     @media (max-width: 640px) {
       .card {
-        padding: 18px 16px 20px;
+        padding: 16px 14px 18px;
       }
       h1 {
-        font-size: 19px;
-      }
-      .tone-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .tone-row select {
-        max-width: 100%;
+        font-size: 18px;
       }
       .btn-bar {
         justify-content: stretch;
       }
       button.primary {
-        justify-content: center;
         width: 100%;
+        justify-content: center;
       }
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <div class="card">
-      <div class="header-row">
-        <div class="title-wrap">
-          <h1>
-            <span class="logo-dot"></span>
-            AI 대화 코치
-          </h1>
-          <div class="subtitle">카톡/문자 답장, 상황에 맞게 한 번에 골라 쓰기</div>
+    <div class="shell">
+      <!-- 왼쪽: 인물/풍경 느낌 카드 -->
+      <div class="hero-card">
+        <div>
+          <div class="hero-top">
+            <div class="avatar">AI</div>
+            <div class="hero-text-main">
+              <div class="hero-title">오늘도 말실수 없이</div>
+              <div class="hero-sub">연애 · 친구 · 직장, 애매한 답장 대신 AI가 먼저 생각해줍니다.</div>
+            </div>
+          </div>
+          <div class="bubble-preview">
+            <strong>실시간 미리보기</strong>
+            <div class="bubble-row">
+              <div class="bubble ai">“왜 이렇게 답장이 느려?”</div>
+              <div class="bubble me">“오늘 일정이 좀 꼬여서 이제야 봤어. 기다리게 해서 미안해 🙏🏻”</div>
+            </div>
+          </div>
         </div>
-        <div class="badge">실험용 베타</div>
-      </div>
-
-      <!-- 톤 선택 / 메시지 입력 -->
-      <div class="section">
-        <div class="section-label">
-          상황 선택
-          <small>연애 / 친구 / 직장 등</small>
-        </div>
-        <div class="tone-row">
-          <select id="toneSelect">
-            <option value="기본">기본</option>
-            <option value="연애">연애 · 썸</option>
-            <option value="직장">직장 상사 · 회사</option>
-            <option value="친구">친구</option>
-            <option value="가족">가족</option>
-          </select>
-          <div class="helper-text">
-            상대와의 관계에 제일 가까운 상황을 골라주세요.
+        <div class="hero-bottom">
+          <div>✅ 대화 톤 분석 · 위험도 점수 · 센스 점수까지 한 번에</div>
+          <div class="hero-tags">
+            <span class="tag">연애/썸 답장</span>
+            <span class="tag">상사/직장 톡</span>
+            <span class="tag">친구 단톡방</span>
+            <span class="tag">가족 카톡</span>
           </div>
         </div>
       </div>
 
-      <div class="section">
-        <div class="section-label">
-          상대방 메시지
-          <small>카톡 내용을 그대로 붙여 넣어도 돼요.</small>
+      <!-- 오른쪽: 실제 기능 카드 -->
+      <div class="card">
+        <div class="header-row">
+          <div class="title-wrap">
+            <h1><span class="logo-dot"></span>AI 대화 코치</h1>
+            <div class="subtitle">카톡/문자 답장, 상황에 맞는 문장을 골라서 복사해 보세요.</div>
+          </div>
+          <div class="badge">베타 서비스</div>
         </div>
-        <textarea id="inputText" placeholder="예) 왜 요즘 연락 안 해?"></textarea>
-        <div class="btn-bar">
-          <button class="primary" onclick="sendText()">
-            <span class="dot"></span>
-            답장 생성하기
-          </button>
+
+        <div class="section">
+          <div class="section-label">
+            상황 선택
+            <small>연애 / 친구 / 직장 / 가족</small>
+          </div>
+          <div class="tone-row">
+            <select id="toneSelect">
+              <option value="기본">기본</option>
+              <option value="연애">연애 · 썸</option>
+              <option value="직장">직장 상사 · 회사</option>
+              <option value="친구">친구</option>
+              <option value="가족">가족</option>
+            </select>
+            <div class="helper-text">상대와의 관계에 제일 가까운 걸 골라주세요.</div>
+          </div>
         </div>
-      </div>
 
-      <!-- 결과 영역 -->
-      <div class="section">
-        <h3>
-          AI 추천 답장
-          <span class="label-pill">위험도 + 센스 점수</span>
-        </h3>
-        <div id="result"></div>
-      </div>
+        <div class="section">
+          <div class="section-label">
+            상대방 메시지
+            <small>카톡 내용을 그대로 붙여 넣어도 됩니다.</small>
+          </div>
+          <textarea id="inputText" placeholder="예) 왜 요즘 연락 안 해?"></textarea>
+          <div class="btn-bar">
+            <button class="primary" onclick="sendText()">답장 생성하기</button>
+          </div>
+        </div>
 
-      <!-- 히스토리 -->
-      <div class="section">
-        <h3>
-          최근 대화 기록
-        </h3>
-        <div id="history" class="history-empty">기록이 없습니다.</div>
+        <div class="section">
+          <h3>
+            AI 추천 답장
+            <span class="label-pill">위험도 · 센스 점수</span>
+          </h3>
+          <div id="result"></div>
+        </div>
+
+        <div class="section">
+          <h3>최근 대화 기록</h3>
+          <div id="history" class="history-empty">기록이 없습니다.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -380,19 +523,9 @@
         if (raw) {
           arr = JSON.parse(raw);
         }
-
-        const item = {
-          time: Date.now(),
-          tone,
-          input: inputText,
-          replies: lines
-        };
-
+        const item = { time: Date.now(), tone, input: inputText, replies: lines };
         arr.unshift(item);
-        if (arr.length > 20) {
-          arr = arr.slice(0, 20);
-        }
-
+        if (arr.length > 20) arr = arr.slice(0, 20);
         localStorage.setItem(key, JSON.stringify(arr));
       } catch (e) {
         console.error("히스토리 저장 오류:", e);
@@ -411,14 +544,12 @@
           historyDiv.className = "history-empty";
           return;
         }
-
         const arr = JSON.parse(raw);
         if (!arr.length) {
           historyDiv.textContent = "기록이 없습니다.";
           historyDiv.className = "history-empty";
           return;
         }
-
         historyDiv.className = "";
         arr.forEach((item, idx) => {
           const wrap = document.createElement("div");
@@ -434,9 +565,7 @@
           const preview = document.createElement("div");
           preview.className = "history-preview";
           const inputPreview =
-            item.input.length > 32
-              ? item.input.slice(0, 32) + "..."
-              : item.input;
+            item.input.length > 32 ? item.input.slice(0, 32) + "..." : item.input;
           preview.textContent = `메시지: ${inputPreview}`;
 
           const btn = document.createElement("button");
@@ -469,7 +598,6 @@
           wrap.appendChild(meta);
           wrap.appendChild(preview);
           wrap.appendChild(btn);
-
           historyDiv.appendChild(wrap);
         });
       } catch (e) {
@@ -507,7 +635,6 @@
             .filter(l => l.length > 0);
 
           resultDiv.innerHTML = "";
-
           if (lines.length === 0) {
             resultDiv.textContent = "생성된 답장이 없습니다.";
             return;
@@ -515,9 +642,9 @@
 
           lines.forEach((line, idx) => {
             const parts = line.split("||").map(p => p.trim());
-            let textPart   = parts[0] || line;
-            const riskStr    = parts[1] || "0";
-            const senseStr   = parts[2] || "0";
+            let textPart = parts[0] || line;
+            const riskStr = parts[1] || "0";
+            const senseStr = parts[2] || "0";
             const commentStr = parts[3] || "";
 
             const risk = parseInt(riskStr) || 0;
@@ -550,7 +677,6 @@
             };
             actions.appendChild(copyBtn);
 
-            // 위험도 높으면 안전 수정 버튼 (원래 로직 유지)
             if (risk >= 70) {
               const fixBtn = document.createElement("button");
               fixBtn.className = "copy-btn";
@@ -610,10 +736,8 @@
 
           saveHistory(text, tone, lines);
           loadHistory();
-
         } else {
-          resultDiv.textContent =
-            "API 에러: " + JSON.stringify(data, null, 2);
+          resultDiv.textContent = "API 에러: " + JSON.stringify(data, null, 2);
         }
       } catch (err) {
         resultDiv.textContent = "요청 중 오류 발생: " + err;
