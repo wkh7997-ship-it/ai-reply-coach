@@ -48,6 +48,7 @@
     .app {
       width: 100%;
       max-width: 480px;
+      position: relative;
     }
 
     .card {
@@ -351,16 +352,25 @@
       background: rgba(79, 70, 229, 0.25);
     }
 
-    /* 화면 전환용 */
+    /* 화면 전환 애니메이션 */
 
     #screen-input,
     #screen-result {
-      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(12px);
+      transition: opacity 0.23s ease-out, transform 0.23s ease-out;
     }
 
     #screen-input.active,
     #screen-result.active {
-      display: block;
+      position: relative;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
     }
 
     /* 로딩용 스켈레톤 */
@@ -388,25 +398,13 @@
       margin-bottom: 6px;
     }
 
-    .skeleton-line.short {
-      width: 40%;
-    }
-
-    .skeleton-line.mid {
-      width: 65%;
-    }
-
-    .skeleton-line.long {
-      width: 90%;
-    }
+    .skeleton-line.short { width: 40%; }
+    .skeleton-line.mid   { width: 65%; }
+    .skeleton-line.long  { width: 90%; }
 
     @keyframes shimmer {
-      0% {
-        background-position: -150% 0;
-      }
-      100% {
-        background-position: 150% 0;
-      }
+      0% { background-position: -150% 0; }
+      100% { background-position: 150% 0; }
     }
 
     /* 답장 완성 시 페이드인 */
@@ -535,30 +533,48 @@
         screenInput.classList.remove("active");
         screenResult.classList.add("active");
       }
+      // 스크롤 맨 위로
+      window.scrollTo({ top: 0, behavior: "instant" });
     }
 
     function parseLine(line) {
       const parts = line.split("||").map(p => p.trim());
       return {
         text: parts[0] || "",
-        risk: parts[1] || "",
-        sense: parts[2] || "",
+        riskRaw: parts[1] || "",
+        senseRaw: parts[2] || "",
         comment: parts[3] || ""
       };
     }
 
-    function riskClass(risk) {
-      const n = parseInt(risk || "0", 10);
-      if (n <= 30) return "safe";
-      if (n <= 60) return "warn";
-      return "danger";
+    function extractScore(str) {
+      const m = (str || "").match(/(\d+)/);
+      return m ? m[1] : "";
     }
 
-    function levelLabel(score) {
-      const n = parseInt(score || "0", 10);
-      if (n <= 30) return "낮음";
-      if (n <= 60) return "중간";
-      return "높음";
+    function levelLabel(raw, score) {
+      const base = (raw || "").toString();
+      // 숫자가 있으면 숫자로 우선 판단
+      if (score) {
+        const n = parseInt(score, 10);
+        if (!isNaN(n)) {
+          if (n <= 30) return "낮음";
+          if (n <= 60) return "중간";
+          return "높음";
+        }
+      }
+      if (base.includes("낮음")) return "낮음";
+      if (base.includes("중간")) return "중간";
+      if (base.includes("높음")) return "높음";
+      return "";
+    }
+
+    function riskClass(raw, score) {
+      const lvl = levelLabel(raw, score);
+      if (lvl === "낮음") return "safe";
+      if (lvl === "중간") return "warn";
+      if (lvl === "높음") return "danger";
+      return "warn";
     }
 
     function showSkeleton() {
@@ -632,25 +648,47 @@
         }
 
         lines.forEach((line, idx) => {
-          const { text: answerText, risk, sense, comment } = parseLine(line);
+          const { text: rawText, riskRaw, senseRaw, comment } = parseLine(line);
+
+          // "1. " 같은 앞 번호 제거
+          const answerText = rawText.replace(/^\d+\.\s*/, "");
+
+          const riskScore = extractScore(riskRaw);
+          const senseScore = extractScore(senseRaw);
+
+          const riskLvl = levelLabel(riskRaw, riskScore);
+          const senseLvl = levelLabel(senseRaw, senseScore);
+
           const wrapper = document.createElement("div");
           wrapper.className = "answer-item fade-in";
+
+          const riskText = riskScore
+            ? `위험도 ${riskScore}점 · ${riskLvl || ""}`.trim()
+            : riskLvl
+              ? `위험도 ${riskLvl}`
+              : (riskRaw ? `위험도 ${riskRaw}` : "");
+
+          const senseText = senseScore
+            ? `센스 ${senseScore}점 · ${senseLvl || ""}`.trim()
+            : senseLvl
+              ? `센스 ${senseLvl}`
+              : (senseRaw ? `센스 ${senseRaw}` : "");
 
           wrapper.innerHTML = `
             <div class="answer-text">${idx + 1}. ${answerText}</div>
             <div class="answer-meta">
               <div class="chips">
                 ${
-                  risk
-                    ? `<span class="chip ${riskClass(risk)}">
-                         위험도 ${risk}점 · ${levelLabel(risk)}
+                  riskRaw
+                    ? `<span class="chip ${riskClass(riskRaw, riskScore)}">
+                         ${riskText}
                        </span>`
                     : ""
                 }
                 ${
-                  sense
+                  senseRaw
                     ? `<span class="chip">
-                         센스 ${sense}점 · ${levelLabel(sense)}
+                         ${senseText}
                        </span>`
                     : ""
                 }
@@ -685,6 +723,8 @@
   </script>
 </body>
 </html>
+
+
 
 
 
