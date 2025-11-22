@@ -1,136 +1,226 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <title>AI 대화 코치</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg-grad-1: #132348;
-      --bg-grad-2: #304c86;
-      --accent: #4f46e5;
+      --bg-start: #1c2960;
+      --bg-end: #324a8a;
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-sub: #6b7280;
+      --safe: #22c55e;
+      --warn: #eab308;
+      --danger: #ef4444;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlibkMacSystemFont, "Noto Sans KR",
-        system-ui, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
     }
 
     body {
       min-height: 100vh;
-      background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2));
+      background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding: 20px;
+      justify-content: center;
+      padding: 16px;
     }
 
-    .screen {
+    .page {
       width: 100%;
-      max-width: 420px;
-      display: none;
-    }
-
-    .screen.active {
-      display: block;
+      max-width: 480px;
     }
 
     .card {
-      background: #fff;
-      border-radius: 22px;
-      padding: 22px;
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 24px 20px 20px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.4);
+    }
+
+    .card-header {
+      margin-bottom: 20px;
     }
 
     .title {
       font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 12px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 6px;
+      margin-top: 12px;
     }
 
     select,
     textarea {
       width: 100%;
-      margin-top: 4px;
-      margin-bottom: 14px;
-      padding: 12px;
       border-radius: 14px;
-      border: 1px solid #d1d5db;
-      font-size: 14px;
-      resize: none;
+      border: 1px solid #e5e7eb;
+      padding: 12px 14px;
+      font-size: 15px;
     }
 
     textarea {
-      height: 110px;
+      resize: vertical;
+      min-height: 120px;
     }
 
-    .btn {
+    .hint {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+
+    .btn-primary {
       width: 100%;
-      padding: 14px;
       border: none;
       border-radius: 999px;
-      background: var(--accent);
-      color: #fff;
+      padding: 14px 18px;
+      background: var(--primary);
+      color: #ffffff;
       font-size: 16px;
       font-weight: 700;
+      margin-top: 20px;
       cursor: pointer;
-      margin-top: 10px;
     }
 
-    /* 결과 화면 스타일 */
-    .reply-box {
-      background: #eef2ff;
-      padding: 12px;
-      border-radius: 14px;
-      margin-bottom: 14px;
-      font-size: 14px;
+    .btn-primary:active {
+      background: var(--primary-dark);
+    }
+
+    /* 결과 영역 */
+    .result-wrapper {
+      margin-top: 18px;
+    }
+
+    .result-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .reply-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .reply-card {
       position: relative;
+      display: flex;
+      gap: 10px;
     }
 
-    .reply-positive {
-      border-left: 6px solid #22c55e; /* 초록색 */
+    .reply-bar {
+      width: 6px;
+      border-radius: 999px;
+      background: #16a34a;
+      margin-top: 8px;
+      margin-bottom: 8px;
     }
 
-    .reply-negative {
-      border-left: 6px solid #ef4444; /* 빨간색 */
+    .reply-content {
+      flex: 1;
+      background: #eef2ff;
+      border-radius: 16px;
+      padding: 12px 14px 10px;
+    }
+
+    .reply-text {
+      font-size: 14px;
+      color: #111827;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .reply-meta {
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #4b5563;
+    }
+
+    .badge {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #111827;
+      background: #e5e7eb;
+    }
+
+    .badge-safe {
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--safe);
+    }
+
+    .badge-warn {
+      background: rgba(234, 179, 8, 0.12);
+      color: var(--warn);
+    }
+
+    .badge-danger {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--danger);
     }
 
     .copy-btn {
-      position: absolute;
-      right: 12px;
-      bottom: 8px;
-      padding: 4px 10px;
+      margin-left: auto;
+      border: none;
+      border-radius: 999px;
+      background: var(--primary);
+      color: #ffffff;
       font-size: 12px;
-      background: #4f46e5;
-      color: #fff;
-      border-radius: 8px;
+      padding: 6px 10px;
       cursor: pointer;
     }
 
-    .back-btn {
-      margin-top: 12px;
+    .back-link {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #e5e7eb;
       text-align: center;
-      color: #fff;
-      font-size: 14px;
       cursor: pointer;
-      opacity: 0.8;
+    }
+
+    .back-link span {
+      text-decoration: underline;
     }
   </style>
 </head>
-
 <body>
+  <div class="page">
+    <div class="card" id="inputCard">
+      <div class="card-header">
+        <div class="title">AI 대화 코치</div>
+        <div class="subtitle">카톡 답장, 같이 생각해주는 파트너</div>
+      </div>
 
-  <!-- ▣ 입력 화면 -->
-  <div id="inputScreen" class="screen active">
-    <div class="card">
-      <div class="title">AI 대화 코치</div>
-
-      <label>상황 선택</label>
+      <label for="context">상황 선택</label>
       <select id="context">
         <option value="basic">기본</option>
         <option value="love">연애</option>
@@ -139,100 +229,187 @@
         <option value="family">가족</option>
       </select>
 
-      <label>상대방 메시지</label>
-      <textarea id="inputText" placeholder="예) 오늘 만나서 뭐하고 싶어?"></textarea>
+      <label for="message">상대방 메시지</label>
+      <textarea
+        id="message"
+        placeholder="예) 오늘 뭐할까?"
+      ></textarea>
+      <div class="hint">카톡 내용을 그대로 붙여 넣어도 됩니다.</div>
 
-      <button class="btn" onclick="generate()">답장 생성</button>
-    </div>
-  </div>
-
-  <!-- ▣ 결과 화면 -->
-  <div id="resultScreen" class="screen">
-    <div class="card">
-      <div class="title">추천 답장</div>
-      <div id="replyList"></div>
+      <button class="btn-primary" id="generateBtn">답장 생성</button>
     </div>
 
-    <div class="back-btn" onclick="backToInput()">← 다시 입력하기</div>
+    <div class="result-wrapper" id="resultSection" style="display:none;">
+      <div class="result-title">추천 답장</div>
+      <div class="reply-list" id="replyList"></div>
+      <div class="back-link" id="backBtn">
+        ← <span>다시 입력하기</span>
+      </div>
+    </div>
   </div>
 
   <script>
-    // 화면 전환 함수
-    function showScreen(id) {
-      document.querySelectorAll(".screen").forEach((s) => {
-        s.classList.remove("active");
-      });
-      document.getElementById(id).classList.add("active");
-    }
+    const generateBtn = document.getElementById("generateBtn");
+    const contextEl = document.getElementById("context");
+    const messageEl = document.getElementById("message");
+    const replyListEl = document.getElementById("replyList");
+    const resultSection = document.getElementById("resultSection");
+    const backBtn = document.getElementById("backBtn");
 
-    // 답장 생성 요청
-    async function generate() {
-      const text = document.getElementById("inputText").value.trim();
-      const context = document.getElementById("context").value;
-
+    // 서버로 요청 보내기
+    generateBtn.addEventListener("click", async () => {
+      const text = messageEl.value.trim();
       if (!text) {
-        alert("상대방 메시지를 입력해주세요.");
+        alert("상대방 메시지를 입력해 주세요.");
         return;
       }
+
+      generateBtn.disabled = true;
+      generateBtn.textContent = "생성 중...";
 
       try {
         const res = await fetch("/reply", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, context }),
+          body: JSON.stringify({
+            text,
+            context: contextEl.value,
+          }),
         });
 
         const data = await res.json();
-
-        const list = document.getElementById("replyList");
-        list.innerHTML = ""; // 초기화
-
-        if (!data.reply) {
-          list.innerHTML = "오류: 서버 응답 없음";
-        } else {
-          const replies = data.reply.split("\n").filter((r) => r.trim() !== "");
-
-          replies.forEach((r) => {
-            // 긍정/부정 감정 점수 간단 판별
-            const positiveWords = ["좋", "괜찮", "도움", "고마", "편하", "문제없"];
-            const negativeWords = ["미안", "불편", "늦어", "어려움", "화내", "곤란"];
-
-            let cls = "reply-positive";
-            if (negativeWords.some((w) => r.includes(w))) {
-              cls = "reply-negative";
-            } else if (positiveWords.some((w) => r.includes(w))) {
-              cls = "reply-positive";
-            }
-
-            list.innerHTML += `
-              <div class="reply-box ${cls}">
-                ${r}
-                <div class="copy-btn" onclick="copyText(\`${r}\`)">복사</div>
-              </div>
-            `;
-          });
-        }
-
-        showScreen("resultScreen");
+        renderReplies(data.reply || "");
+        resultSection.style.display = "block";
+        resultSection.scrollIntoView({ behavior: "smooth" });
       } catch (e) {
-        alert("서버 연결 실패. app.py 실행 상태를 확인하세요.");
+        console.error(e);
+        alert("답장 생성 중 오류가 발생했습니다.");
+      } finally {
+        generateBtn.disabled = false;
+        generateBtn.textContent = "답장 생성";
       }
+    });
+
+    // 추천 답장 렌더링
+    function renderReplies(raw) {
+      replyListEl.innerHTML = "";
+
+      // 두 줄 이상 공백 기준으로 여러 개로 나눔
+      const blocks = raw
+        .split(/\n\s*\n/)
+        .map((b) => b.trim())
+        .filter((b) => b.length > 0);
+
+      if (blocks.length === 0) {
+        const empty = document.createElement("div");
+        empty.style.color = "#e5e7eb";
+        empty.textContent = "추천 답장을 가져오지 못했습니다.";
+        replyListEl.appendChild(empty);
+        return;
+      }
+
+      blocks.forEach((block) => {
+        const card = createReplyCard(block);
+        replyListEl.appendChild(card);
+      });
     }
 
-    // 복사 기능
-    function copyText(text) {
-      navigator.clipboard.writeText(text);
-      alert("복사되었습니다!");
+    // 한 개 카드 만들기
+    function createReplyCard(block) {
+      // 형식: 문장 || 10 || 80 || 설명...
+      const parts = block.split("||").map((p) => p.trim());
+
+      const text = parts[0] || block;
+      const risk = parts[1] ? parseInt(parts[1], 10) : null;
+      const warmth = parts[2] ? parseInt(parts[2], 10) : null;
+      const desc = parts[3] || "";
+
+      let riskLabel = "정보 없음";
+      let riskClass = "";
+      if (!isNaN(risk)) {
+        if (risk <= 30) {
+          riskLabel = "위험도 낮음";
+          riskClass = "badge-safe";
+        } else if (risk <= 60) {
+          riskLabel = "주의 필요";
+          riskClass = "badge-warn";
+        } else {
+          riskLabel = "위험 가능성 높음";
+          riskClass = "badge-danger";
+        }
+      }
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "reply-card";
+
+      const bar = document.createElement("div");
+      bar.className = "reply-bar";
+      if (riskClass === "badge-safe") bar.style.background = "var(--safe)";
+      else if (riskClass === "badge-warn") bar.style.background = "var(--warn)";
+      else if (riskClass === "badge-danger")
+        bar.style.background = "var(--danger)";
+
+      const content = document.createElement("div");
+      content.className = "reply-content";
+
+      const textEl = document.createElement("div");
+      textEl.className = "reply-text";
+      textEl.textContent = text;
+
+      const meta = document.createElement("div");
+      meta.className = "reply-meta";
+
+      if (riskClass) {
+        const badge = document.createElement("span");
+        badge.className = `badge ${riskClass}`;
+        badge.textContent = riskLabel;
+        meta.appendChild(badge);
+      }
+
+      if (!isNaN(warmth)) {
+        const warmBadge = document.createElement("span");
+        warmBadge.className = "badge";
+        warmBadge.textContent = `친절도 ${warmth}`;
+        meta.appendChild(warmBadge);
+      }
+
+      if (desc) {
+        const descSpan = document.createElement("span");
+        descSpan.textContent = desc;
+        meta.appendChild(descSpan);
+      }
+
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "copy-btn";
+      copyBtn.textContent = "복사";
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard
+          .writeText(text)
+          .then(() => alert("클립보드에 복사되었습니다."))
+          .catch(() => alert("복사에 실패했습니다."));
+      });
+
+      meta.appendChild(copyBtn);
+
+      content.appendChild(textEl);
+      content.appendChild(meta);
+
+      wrapper.appendChild(bar);
+      wrapper.appendChild(content);
+
+      return wrapper;
     }
 
-    // 입력 화면으로 돌아가기
-    function backToInput() {
-      showScreen("inputScreen");
-    }
+    // 다시 입력하기
+    backBtn.addEventListener("click", () => {
+      resultSection.style.display = "none";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
   </script>
-
 </body>
 </html>
+
+
 
 
 
