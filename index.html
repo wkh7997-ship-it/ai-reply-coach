@@ -4,9 +4,12 @@
   <meta charset="UTF-8" />
   <title>AI 대화 코치</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
- <link rel="manifest" href="/manifest.json">
-  <link rel="icon" sizes="192x192" href="/icon-192.png">
-  <link rel="apple-touch-icon" href="/icon-192.png">
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" sizes="192x192" href="/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icon-192.png" />
+
   <style>
     :root {
       --primary: #6366f1;
@@ -21,51 +24,7 @@
       --warn: #eab308;
       --danger: #ef4444;
     }
-.primary-btn {
-  position: relative;
-  width: 100%;
-  padding: 16px 24px;
-  border-radius: 999px; /* 완전 동그란 캡슐형 */
-  border: none;
-  outline: none;
-  cursor: pointer;
 
-  background: linear-gradient(135deg, #6366f1, #a855f7);
-  color: #ffffff;
-  font-size: 1.05rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-
-  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.45);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    background 0.2s ease,
-    filter 0.2s ease;
-}
-.primary-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 40px rgba(129, 140, 248, 0.6);
-  filter: brightness(1.05);
-}
-
-.primary-btn:active {
-  transform: translateY(1px) scale(0.99);
-  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.5);
-}
-
-.primary-btn:focus-visible {
-  outline: 2px solid rgba(129, 140, 248, 0.9);
-  outline-offset: 3px;
-}
-
-.primary-btn:disabled {
-  cursor: default;
-  background: linear-gradient(135deg, #4b5563, #6b7280);
-  box-shadow: none;
-  filter: grayscale(0.1);
-  opacity: 0.85;
-}
     * {
       box-sizing: border-box;
       margin: 0;
@@ -88,6 +47,7 @@
       max-width: 480px;
     }
 
+    /* 카드 */
     .card {
       background: var(--card-bg);
       backdrop-filter: blur(24px);
@@ -106,6 +66,7 @@
       pointer-events: none;
     }
 
+    /* 헤더 */
     .header {
       display: flex;
       align-items: center;
@@ -163,37 +124,68 @@
       margin-top: 4px;
     }
 
-    .btn-primary {
+    /* 프라이머리 버튼 */
+    .primary-btn {
+      position: relative;
       width: 100%;
+      padding: 16px 24px;
+      border-radius: 999px;
       border: none;
-      border-radius: 14px;
-      padding: 14px 16px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: #ffffff;
-      font-size: 16px;
-      font-weight: 700;
-      margin-top: 22px;
       cursor: pointer;
-      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.2s ease;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      margin-top: 22px;
+
+      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.45);
+      transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.2s ease,
+        filter 0.2s ease;
     }
 
-    .btn-primary:hover:not(:disabled) {
-      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
-      transform: translateY(-1px);
+    .primary-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px rgba(129, 140, 248, 0.6);
+      filter: brightness(1.05);
     }
 
-    .btn-primary:disabled {
-      opacity: 0.6;
+    .primary-btn:disabled {
+      opacity: 0.75;
       cursor: default;
-      box-shadow: none;
       transform: none;
+      box-shadow: none;
     }
 
-    .btn-primary:active:not(:disabled) {
-      transform: translateY(1px);
-      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.8);
+    /* 로딩 스피너 */
+    .btn-spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: #ffffff;
+      margin-right: 8px;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
     }
 
+    .primary-btn.is-loading .btn-spinner {
+      display: inline-block;
+    }
+
+    .primary-btn.is-loading .btn-label {
+      opacity: 0.9;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 결과 카드 */
     .result-card {
       margin-top: 24px;
       background: var(--card-bg);
@@ -259,23 +251,9 @@
       border: 1px solid rgba(148, 163, 184, 0.7);
     }
 
-    .tag-safe {
-      color: var(--safe);
-      border-color: var(--safe);
-      background: rgba(34, 197, 94, 0.12);
-    }
-
-    .tag-warn {
-      color: var(--warn);
-      border-color: var(--warn);
-      background: rgba(234, 179, 8, 0.12);
-    }
-
-    .tag-danger {
-      color: var(--danger);
-      border-color: var(--danger);
-      background: rgba(239, 68, 68, 0.12);
-    }
+    .tag-safe { color: var(--safe); border-color: var(--safe); background: rgba(34,197,94,0.12); }
+    .tag-warn { color: var(--warn); border-color: var(--warn); background: rgba(234,179,8,0.12); }
+    .tag-danger { color: var(--danger); border-color: var(--danger); background: rgba(239,68,68,0.12); }
 
     .copy-btn {
       margin-left: auto;
@@ -302,7 +280,7 @@
       color: #cbd5ff;
     }
 
-    /* 토스트 알림 */
+    /* 토스트 */
     .toast {
       position: fixed;
       left: 50%;
@@ -329,86 +307,76 @@
 </head>
 
 <body>
-  <div class="page">
+<div class="page">
 
-    <!-- 입력 카드 -->
-    <div class="card" id="inputCard">
-      <div class="header">
+  <!-- 입력 카드 -->
+  <div class="card" id="inputCard">
+    <div class="header">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+        <path d="M12 4C7.6 4 4 6.9 4 10.5C4 12.4 5 14.1 6.7 15.3L6 20L9.9 17.8C10.6 17.9 11.3 18 12 18C16.4 18 20 15.1 20 11.5C20 7.9 16.4 4 12 4Z"
+              stroke="#ffffff" stroke-width="2" stroke-linejoin="round" />
+        <circle cx="9" cy="11" r="1.1" fill="#ffffff" />
+        <circle cx="12" cy="11" r="1.1" fill="#ffffff" />
+        <circle cx="15" cy="11" r="1.1" fill="#ffffff" />
+      </svg>
 
-        <!-- 메시지 말풍선 아이콘 -->
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
-             xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M12 4C7.6 4 4 6.9 4 10.5C4 12.4 5 14.1 6.7 15.3L6 20L9.9 17.8C10.6 17.9 11.3 18 12 18C16.4 18 20 15.1 20 11.5C20 7.9 16.4 4 12 4Z"
-            stroke="#ffffff"
-            stroke-width="2"
-            stroke-linejoin="round"
-            fill="none"
-          />
-          <circle cx="9"  cy="11" r="1.1" fill="#ffffff" />
-          <circle cx="12" cy="11" r="1.1" fill="#ffffff" />
-          <circle cx="15" cy="11" r="1.1" fill="#ffffff" />
-        </svg>
-
-        <div>
-          <div class="title">AI 대화 코치</div>
-          <div class="subtitle">카톡 답장, 같이 생각해주는 파트너</div>
-        </div>
+      <div>
+        <div class="title">AI 대화 코치</div>
+        <div class="subtitle">카톡 답장, 같이 생각해주는 파트너</div>
       </div>
-
-      <label>상황 선택</label>
-      <select id="context">
-        <option value="basic">기본</option>
-        <option value="love">연애</option>
-        <option value="friend">친구</option>
-        <option value="work">직장</option>
-        <option value="family">가족</option>
-      </select>
-
-      <label>상대방 메시지</label>
-      <textarea id="message" placeholder="예) 오늘 뭐할까?"></textarea>
-      <div class="hint">카톡 내용을 그대로 붙여 넣어주세요.</div>
-
-      <button class="btn-primary" id="generateBtn">답장 생성</button>
     </div>
 
-    <!-- 결과 카드 -->
-    <div class="result-card" id="resultCard" style="display:none;">
-      <div class="header">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
-             xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M12 4C7.6 4 4 6.9 4 10.5C4 12.4 5 14.1 6.7 15.3L6 20L9.9 17.8C10.6 17.9 11.3 18 12 18C16.4 18 20 15.1 20 11.5C20 7.9 16.4 4 12 4Z"
-            stroke="#ffffff"
-            stroke-width="2"
-            stroke-linejoin="round"
-            fill="none"
-          />
-          <circle cx="9"  cy="11" r="1.1" fill="#ffffff" />
-          <circle cx="12" cy="11" r="1.1" fill="#ffffff" />
-          <circle cx="15" cy="11" r="1.1" fill="#ffffff" />
-        </svg>
+    <label>상황 선택</label>
+    <select id="context">
+      <option value="기본">기본</option>
+      <option value="연애">연애</option>
+      <option value="친구">친구</option>
+      <option value="직장">직장</option>
+      <option value="가족">가족</option>
+    </select>
 
-        <div>
-          <div class="title">AI 추천 답장</div>
-          <div class="subtitle">위험도·센스 점수를 함께 참고해 보세요.</div>
-        </div>
-      </div>
+    <label>상대방 메시지</label>
+    <textarea id="message" placeholder="예) 오늘 뭐할까?"></textarea>
+    <div class="hint">카톡 내용을 그대로 붙여 넣어주세요.</div>
 
-      <div class="reply-list" id="replyList"></div>
-      <div class="empty-text" id="emptyText" style="display:none;">
-        추천 답장을 가져오지 못했습니다.
-      </div>
-
-      <div class="back-link" id="backBtn">← 다시 입력하기</div>
-    </div>
+    <!-- 버튼 -->
+    <button id="generateBtn" class="primary-btn">
+      <span class="btn-spinner"></span>
+      <span class="btn-label">답장 생성</span>
+    </button>
 
   </div>
 
-  <!-- 토스트 알림 -->
-  <div class="toast" id="toast">복사되었습니다</div>
+  <!-- 결과 카드 -->
+  <div class="result-card" id="resultCard" style="display:none;">
+    <div class="header">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+        <path d="M12 4C7.6 4 4 6.9 4 10.5C4 12.4 5 14.1 6.7 15.3L6 20L9.9 17.8C10.6 17.9 11.3 18 12 18C16.4 18 20 15.1 20 11.5C20 7.9 16.4 4 12 4Z"
+              stroke="#ffffff" stroke-width="2" stroke-linejoin="round" />
+        <circle cx="9" cy="11" r="1.1" fill="#ffffff" />
+        <circle cx="12" cy="11" r="1.1" fill="#ffffff" />
+        <circle cx="15" cy="11" r="1.1" fill="#ffffff" />
+      </svg>
+
+      <div>
+        <div class="title">AI 추천 답장</div>
+        <div class="subtitle">위험도 · 센스 점수를 참고해보세요</div>
+      </div>
+    </div>
+
+    <div class="reply-list" id="replyList"></div>
+    <div class="empty-text" id="emptyText" style="display:none;">추천 답장을 가져오지 못했습니다.</div>
+
+    <div class="back-link" id="backBtn">← 다시 입력하기</div>
+  </div>
+
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast">복사되었습니다</div>
 
 <script>
+  /* 요소 */
   const btn = document.getElementById("generateBtn");
   const msg = document.getElementById("message");
   const ctx = document.getElementById("context");
@@ -419,104 +387,95 @@
   const backBtn = document.getElementById("backBtn");
   const toast = document.getElementById("toast");
 
-  function showToast(text) {
-    if (!toast) return;
-    toast.textContent = text;
-    toast.classList.add("show");
-    setTimeout(() => {
-      toast.classList.remove("show");
-    }, 1800);
+  const btnLabel = btn.querySelector(".btn-label");
+  const btnSpinner = btn.querySelector(".btn-spinner");
+
+  /* 로딩 상태 */
+  function setLoading(isLoading) {
+    if (isLoading) {
+      btn.classList.add("is-loading");
+      btn.disabled = true;
+      btnLabel.textContent = "생성 중…";
+    } else {
+      btn.classList.remove("is-loading");
+      btn.disabled = false;
+      btnLabel.textContent = "답장 생성";
+    }
   }
 
+  /* 클릭 */
   btn.addEventListener("click", async () => {
     if (!msg.value.trim()) {
       alert("메시지를 입력해 주세요.");
       return;
     }
 
-    btn.disabled = true;
-    const originalText = btn.textContent;
-    btn.textContent = "생성 중…";
+    setLoading(true);
 
     try {
       const res = await fetch("/reply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: msg.value, context: ctx.value })
+        body: JSON.stringify({
+          text: msg.value.trim(),
+          tone: ctx.value
+        })
       });
 
       const data = await res.json();
       render(extract(data));
 
+      /* 화면 전환 */
       inputCard.classList.add("hidden");
       setTimeout(() => {
         inputCard.style.display = "none";
         resultCard.style.display = "block";
-        requestAnimationFrame(() => {
-          resultCard.classList.add("show");
-        });
+        requestAnimationFrame(() => resultCard.classList.add("show"));
       }, 200);
-    } catch (e) {
-      console.error(e);
+
+    } catch (err) {
+      console.error(err);
       render("");
-      inputCard.classList.add("hidden");
-      setTimeout(() => {
-        inputCard.style.display = "none";
-        resultCard.style.display = "block";
-        requestAnimationFrame(() => {
-          resultCard.classList.add("show");
-        });
-      }, 200);
     } finally {
-      btn.disabled = false;
-      btn.textContent = originalText;
+      setLoading(false);
     }
   });
 
+  /* 응답 파싱 */
   function extract(d) {
     if (!d) return "";
-    if (typeof d === "string") return d;
     if (d.reply) return d.reply;
     if (d.message) return d.message;
-    if (Array.isArray(d.replies)) return d.replies.join("\n\n");
     return "";
   }
 
+  /* 렌더 */
   function render(raw) {
     replyList.innerHTML = "";
     emptyText.style.display = "none";
 
-    if (!raw || !raw.trim()) {
+    if (!raw.trim()) {
       emptyText.style.display = "block";
       return;
     }
 
-    const blocks = raw.split(/\n\s*\n/).map(x => x.trim()).filter(Boolean);
-    if (!blocks.length) {
-      emptyText.style.display = "block";
-      return;
-    }
-
-    blocks.forEach(b => replyList.appendChild(makeCard(b)));
+    const lines = raw.split("\n").map(v => v.trim()).filter(Boolean);
+    lines.forEach(line => replyList.appendChild(makeCard(line)));
   }
 
+  /* 카드 구성 */
   function makeCard(text) {
-    const p = text.split("||").map(x => x.trim());
-    const msgText = p[0] || "";
-    const risk = parseInt(p[1] || "");
-    const warm = parseInt(p[2] || "");
+    const p = text.split("||").map(s => s.trim());
+    const msg = p[0] || "";
+    const risk = parseInt(p[1]);
+    const sense = parseInt(p[2]);
     const desc = p[3] || "";
 
-    let bar = "var(--safe)", cls = "", label = "위험도 정보 없음";
+    let bar = "var(--safe)", cls = "tag-safe", label = "위험도 낮음";
 
     if (!isNaN(risk)) {
-      if (risk <= 30) {
-        bar = "var(--safe)"; cls = "tag-safe"; label = "위험도 낮음";
-      } else if (risk <= 60) {
-        bar = "var(--warn)"; cls = "tag-warn"; label = "주의 필요";
-      } else {
-        bar = "var(--danger)"; cls = "tag-danger"; label = "위험 가능성 높음";
-      }
+      if (risk > 60) { bar = "var(--danger)"; cls="tag-danger"; label="위험 가능성 높음"; }
+      else if (risk > 30) { bar = "var(--warn)"; cls="tag-warn"; label="주의 필요"; }
     }
 
     const wrap = document.createElement("div");
@@ -531,22 +490,20 @@
 
     const msgEl = document.createElement("div");
     msgEl.className = "reply-text";
-    msgEl.textContent = msgText;
+    msgEl.textContent = msg;
 
     const meta = document.createElement("div");
     meta.className = "meta";
 
-    if (!isNaN(risk)) {
-      const t = document.createElement("span");
-      t.className = `tag ${cls}`;
-      t.textContent = label;
-      meta.appendChild(t);
-    }
+    const t = document.createElement("span");
+    t.className = `tag ${cls}`;
+    t.textContent = label;
+    meta.appendChild(t);
 
-    if (!isNaN(warm)) {
+    if (!isNaN(sense)) {
       const t2 = document.createElement("span");
       t2.className = "tag";
-      t2.textContent = `친절도 ${warm}`;
+      t2.textContent = `친절도 ${sense}`;
       meta.appendChild(t2);
     }
 
@@ -560,25 +517,9 @@
     copy.className = "copy-btn";
     copy.textContent = "복사";
     copy.onclick = () => {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard
-          .writeText(msgText)
-          .then(() => showToast("복사되었습니다"))
-          .catch(() => showToast("복사에 실패했습니다"));
-      } else {
-        // 구형 브라우저 대응
-        const temp = document.createElement("textarea");
-        temp.value = msgText;
-        document.body.appendChild(temp);
-        temp.select();
-        try {
-          document.execCommand("copy");
-          showToast("복사되었습니다");
-        } catch {
-          showToast("복사에 실패했습니다");
-        }
-        document.body.removeChild(temp);
-      }
+      navigator.clipboard.writeText(msg)
+        .then(() => showToast("복사되었습니다"))
+        .catch(() => showToast("복사에 실패했습니다"));
     };
 
     meta.appendChild(copy);
@@ -592,6 +533,14 @@
     return wrap;
   }
 
+  /* 토스트 */
+  function showToast(text) {
+    toast.textContent = text;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 1800);
+  }
+
+  /* 뒤로 */
   backBtn.onclick = () => {
     resultCard.classList.remove("show");
     setTimeout(() => {
@@ -601,45 +550,15 @@
       window.scrollTo(0, 0);
     }, 180);
   };
+</script>
+
+<!-- 서비스워커 -->
 <script>
-    // PWA 서비스워커 등록
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("/service-worker.js")
-          .catch((err) => {
-            console.error("Service Worker registration failed:", err);
-          });
-      });
-    }
-  </script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js")
+      .catch(err => console.error("SW 등록 실패:", err));
+  }
+</script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
