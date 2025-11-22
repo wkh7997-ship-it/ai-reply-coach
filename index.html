@@ -316,11 +316,9 @@
       border: 1px solid rgba(148, 163, 184, 0.7);
       background: rgba(15, 23, 42, 0.9);
       font-size: 12px;
-      /* 긴 설명칩도 카드 안에서 줄바꿈되도록 */
       white-space: normal;
     }
 
-    /* 점수칩만 한 줄 유지 */
     .chip.score {
       white-space: nowrap;
     }
@@ -354,7 +352,7 @@
       white-space: nowrap;
       min-width: 52px;
       text-align: center;
-      align-self: flex-end;   /* 항상 오른쪽 아래 정렬 */
+      align-self: flex-end;
     }
 
     .copy-btn:active {
@@ -365,21 +363,23 @@
     /* 화면 전환 애니메이션 */
 
     #screen-input,
-#screen-result {
-  position: absolute;
-  left: 0;
-  right: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.23s ease-out;
-}
+    #screen-result {
+      position: absolute;
+      left: 0;
+      right: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(12px);
+      transition: opacity 0.23s ease-out, transform 0.23s ease-out;
+    }
 
-#screen-input.active,
-#screen-result.active {
-  position: relative;
-  opacity: 1;
-  pointer-events: auto;
-}
+    #screen-input.active,
+    #screen-result.active {
+      position: relative;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
 
     /* 로딩용 스켈레톤 */
 
@@ -414,8 +414,6 @@
       0% { background-position: -150% 0; }
       100% { background-position: 150% 0; }
     }
-
-    /* 답장 완성 시 페이드인 */
 
     .answer-item.fade-in {
       animation: fadeIn 0.22s ease-out;
@@ -516,6 +514,24 @@
       </section>
 
       <div class="status-text" id="status-result"></div>
+
+      <!-- 🔽 새로 추가된 '다시 입력하기' 버튼 (하단) -->
+      <div style="text-align:center; margin-top:18px;">
+        <button
+          id="resultAgainBtn"
+          type="button"
+          style="
+            border:none;
+            background:none;
+            color:#a5b4fc;
+            font-size:14px;
+            text-decoration:underline;
+            cursor:pointer;
+          "
+        >
+          다시 입력하기
+        </button>
+      </div>
     </section>
   </main>
 
@@ -554,13 +570,19 @@
       };
     }
 
-    // "위험도 낮음", "센스 높음" 같은 문자열을 점수/레벨로 변환
-    function parseLevel(raw, kind) {
+    // ✨ 수정된 부분: fallbackLevel 추가
+    function parseLevel(raw, kind, fallbackLevel) {
       const s = (raw || "").toString();
       let level = "";
+
       if (s.includes("낮음")) level = "낮음";
       else if (s.includes("중간")) level = "중간";
       else if (s.includes("높음")) level = "높음";
+
+      // 센스가 비어 있으면 위험도 레벨 복사
+      if (!level && fallbackLevel) {
+        level = fallbackLevel;
+      }
 
       let score = "";
       if (level === "낮음") score = "25";
@@ -601,7 +623,6 @@
       answersEl.innerHTML = "";
     }
 
-    // 처음에는 입력 화면
     showScreen("input");
 
     generateBtn.addEventListener("click", async () => {
@@ -654,11 +675,11 @@
         lines.forEach((line, idx) => {
           const { text: rawText, risk, sense, comment } = parseLine(line);
 
-          // 앞에 붙은 "1. " 같은 번호 제거
           const answerText = rawText.replace(/^\d+\.\s*/, "");
 
+          // ✨ 수정된 부분: 센스에 위험도 레벨을 fallback으로 사용
           const riskInfo = parseLevel(risk, "risk");
-          const senseInfo = parseLevel(sense, "sense");
+          const senseInfo = parseLevel(sense, "sense", riskInfo.level);
 
           const wrapper = document.createElement("div");
           wrapper.className = "answer-item fade-in";
@@ -705,22 +726,13 @@
       showScreen("input");
       msgEl.focus();
     });
+
+    // 🔽 새로 추가된 하단 '다시 입력하기' 버튼 이벤트
+    document.getElementById("resultAgainBtn").addEventListener("click", () => {
+      statusResultEl.textContent = "";
+      showScreen("input");
+      msgEl.focus();
+    });
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
