@@ -1,23 +1,34 @@
 from flask import Flask, request, jsonify, send_from_directory
 import requests
+import os
 
 app = Flask(__name__)
 
-# 👉 여기에 네 API 키 넣기
-import os
+# 👉 Render 환경 변수에 OPENAI_API_KEY 넣어둔 것 사용
 API_KEY = os.environ.get("OPENAI_API_KEY")
 
-
-
-
-
 # ----------------------
-# 1) 홈 화면: index.html 내려주기
+# 1) 정적 파일 / 메인 화면
 # ----------------------
+
+# 홈 화면: index.html
 @app.route("/")
 def index():
-    # 현재 폴더에서 index.html 파일을 찾아서 보내줌
     return send_from_directory(".", "index.html")
+
+# PWA manifest
+@app.route("/manifest.json")
+def manifest():
+    return send_from_directory(".", "manifest.json")
+
+# PWA 아이콘들 (나중에 파일만 루트에 올리면 됨)
+@app.route("/icon-192.png")
+def icon_192():
+    return send_from_directory(".", "icon-192.png")
+
+@app.route("/icon-512.png")
+def icon_512():
+    return send_from_directory(".", "icon-512.png")
 
 
 # ----------------------
@@ -33,7 +44,6 @@ def reply():
         user_text = data["text"]
         tone = data.get("tone", "기본")
 
-        # 상황(톤)에 따른 설명 문장
         tone_desc_map = {
             "기본": "일반적인 상황에서 무난하고 예의 있게",
             "연애": "연애/썸 상대에게 다정하고 호감 있게, 너무 부담스럽지 않게",
@@ -41,10 +51,8 @@ def reply():
             "친구": "친한 친구에게 가볍고 편하게, 장난은 적당히",
             "가족": "가족에게 따뜻하지만 솔직하게, 걱정되지 않게",
         }
-
         tone_desc = tone_desc_map.get(tone, tone_desc_map["기본"])
 
-        # 🔥 3가지 스타일 + 위험도/센스/코멘트까지 요청하는 프롬프트
         prompt = (
             f"상황: {tone}\n"
             f"설명: {tone_desc}\n\n"
@@ -64,7 +72,6 @@ def reply():
             f"상대방 메시지: '{user_text}'"
         )
 
-        # OpenAI Chat Completions API 호출
         response = requests.post(
             "https://api.openai.com/v1/chat/completions",
             headers={
@@ -103,11 +110,10 @@ def reply():
 
 
 # ----------------------
-# 3) 위험한 답장 안전하게 수정하는 API
+# 3) 위험한 답장 수정 API
 # ----------------------
 @app.route("/fix", methods=["POST"])
 def fix_reply():
-    """위험도가 높은 답장을 더 부드럽게 다시 써주는 API"""
     try:
         data = request.get_json()
         original = data.get("text", "")
@@ -167,36 +173,8 @@ def fix_reply():
 
 
 if __name__ == "__main__":
+    # Render에서는 이 블록이 직접 실행되진 않지만, 로컬 테스트용으로 둬도 됨
     app.run(host="0.0.0.0", port=5000, debug=True)
-from flask import Flask, send_from_directory
-
-app = Flask(__name__)
-
-@app.route('/manifest.json')
-def manifest():
-    return send_from_directory('.', 'manifest.json')
-@app.route('/icon-192.png')
-def icon_192():
-    return send_from_directory('.', 'icon-192.png')
-
-@app.route('/icon-512.png')
-def icon_512():
-    return send_from_directory('.', 'icon-512.png')
-@app.route('/')
-def index():
-    return send_from_directory('.', 'index.html')
-
-@app.route('/manifest.json')
-def manifest():
-    return send_from_directory('.', 'manifest.json')
-
-@app.route('/icon-192.png')
-def icon192():
-    return send_from_directory('.', 'icon-192.png')
-
-@app.route('/icon-512.png')
-def icon512():
-    return send_from_directory('.', 'icon-512.png')
 
 
 
