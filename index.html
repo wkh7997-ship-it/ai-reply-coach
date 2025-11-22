@@ -14,10 +14,9 @@
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
       color: #f9fafb;
-      font-size: 16px;
-      /* 배경: 흐릿한 야경 + 그라디언트 오버레이 */
+      font-size: 17px; /* 기본 글자 크게 */
       background:
-        linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 64, 175, 0.9)),
+        linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 64, 175, 0.9)),
         url("https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1600&q=80")
           center/cover fixed no-repeat;
     }
@@ -30,190 +29,155 @@
       padding: 16px;
     }
 
-    .shell {
+    /* 폰 프레임 */
+    .phone-frame {
       width: 100%;
-      max-width: 960px;
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
-      gap: 18px;
-    }
-
-    /* 왼쪽: 인물 + 설명 */
-    .hero-card {
-      background: linear-gradient(145deg, rgba(30, 64, 175, 0.9), rgba(236, 72, 153, 0.9));
-      border-radius: 18px;
-      padding: 18px 18px 20px;
-      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.5);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      max-width: 430px;
+      aspect-ratio: 9 / 19;
+      background: #020617;
+      border-radius: 32px;
+      box-shadow: 0 28px 60px rgba(15, 23, 42, 0.9);
+      padding: 10px;
       position: relative;
-      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
     }
-    .hero-card::after {
-      content: "";
+    /* 상단 스피커/카메라 영역 */
+    .phone-notch {
       position: absolute;
-      width: 180px;
-      height: 180px;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 20px;
+      background: #020617;
       border-radius: 999px;
-      border: 1px solid rgba(248, 250, 252, 0.3);
-      top: -40px;
-      right: -40px;
-      opacity: 0.4;
-    }
-
-    .hero-top {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9);
+      z-index: 5;
+    }
+    .notch-speaker {
+      width: 52px;
+      height: 5px;
+      border-radius: 999px;
+      background: #111827;
+    }
+    .notch-camera {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #f9fafb 0, #111827 60%, #020617 100%);
+    }
+
+    .phone-inner {
+      background: #f3f4f6;
+      border-radius: 24px;
+      padding: 40px 12px 12px; /* 위쪽 notch 공간 확보 */
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* 상단 상태바 */
+    .status-bar {
+      position: absolute;
+      top: 18px;
+      left: 22px;
+      right: 22px;
+      display: flex;
+      justify-content: space-between;
+      color: #e5e7eb;
+      font-size: 11px;
+      z-index: 4;
+    }
+    .status-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    /* 앱 헤더 */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 6px 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .avatar {
-      width: 56px;
-      height: 56px;
+      width: 32px;
+      height: 32px;
       border-radius: 999px;
       background:
         radial-gradient(circle at 30% 20%, #f9fafb 0, #e5e7eb 35%, #9ca3af 100%);
-      border: 2px solid rgba(248, 250, 252, 0.9);
+      border: 1px solid #e5e7eb;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       color: #111827;
-      font-size: 18px;
+      font-size: 15px;
     }
-    .hero-text-main {
+    .header-text {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 2px;
     }
-    .hero-title {
-      font-size: 20px;
+    .header-title {
+      font-size: 16px;
       font-weight: 700;
-      letter-spacing: -0.03em;
-    }
-    .hero-sub {
-      font-size: 13px;
-      color: #e5e7eb;
-    }
-
-    .bubble-preview {
-      background: rgba(248, 250, 252, 0.08);
-      border-radius: 14px;
-      padding: 10px 11px;
-      margin-bottom: 8px;
-      font-size: 13px;
-    }
-    .bubble-row {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .bubble {
-      max-width: 88%;
-      padding: 9px 11px;
-      border-radius: 14px;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-    .bubble.me {
-      margin-left: auto;
-      background: #4ade80;
-      color: #14532d;
-      border-bottom-right-radius: 4px;
-    }
-    .bubble.ai {
-      background: #0f172a;
-      color: #e5e7eb;
-      border-bottom-left-radius: 4px;
-    }
-
-    .hero-bottom {
-      margin-top: 12px;
-      font-size: 12px;
-      color: #e5e7eb;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .hero-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
-    .tag {
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(248, 250, 252, 0.3);
-      background: rgba(15, 23, 42, 0.3);
-    }
-
-    /* 오른쪽: 실제 입력/결과 카드 */
-    .card {
-      background: #f9fafb;
       color: #111827;
-      border-radius: 18px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.55);
-      padding: 18px 16px 20px;
-      display: flex;
-      flex-direction: column;
-    }
-    .header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-    .title-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    h1 {
-      margin: 0;
-      font-size: 19px;
       letter-spacing: -0.03em;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
-    .logo-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: #4f46e5;
-    }
-    .subtitle {
-      font-size: 12px;
+    .header-sub {
+      font-size: 11px;
       color: #6b7280;
     }
-    .badge {
+    .header-right {
       font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid #e5e7eb;
-      background: #eef2ff;
-      color: #4f46e5;
-      white-space: nowrap;
+      color: #6b7280;
+    }
+
+    /* 내용 영역 */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 6px 4px;
+      overflow: hidden;
+      gap: 8px;
     }
 
     .section {
-      margin-top: 14px;
+      margin-top: 4px;
     }
     .section-label {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #374151;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
     .section-label small {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 400;
       color: #9ca3af;
     }
@@ -224,69 +188,47 @@
       font-family: inherit;
       border-radius: 10px;
       border: 1px solid #d1d5db;
-      padding: 10px 11px;
-      font-size: 15px;
+      padding: 9px 10px;
+      font-size: 15px; /* 입력 글자 크게 */
       outline: none;
       background: #ffffff;
     }
     select:focus,
     textarea:focus {
       border-color: #4f46e5;
-      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.25);
+      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.2);
       background: #ffffff;
     }
     textarea {
-      min-height: 110px;
+      min-height: 90px;
       resize: vertical;
     }
 
     .tone-row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
       align-items: center;
     }
     .tone-row select {
-      max-width: 220px;
+      max-width: 210px;
     }
     .helper-text {
-      font-size: 12px;
+      font-size: 11px;
       color: #9ca3af;
     }
 
-    .btn-bar {
-      margin-top: 10px;
-      display: flex;
-      justify-content: flex-end;
-    }
-    button.primary {
-      border: none;
-      border-radius: 12px;
-      padding: 10px 18px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      background: #4f46e5;
-      color: #ffffff;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 8px 22px rgba(79, 70, 229, 0.4);
-      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
-    }
-    button.primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 26px rgba(79, 70, 229, 0.45);
-    }
-    button.primary:active {
-      transform: translateY(0);
-      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);
-      opacity: 0.95;
+    /* 결과/히스토리 영역 스크롤 */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 2px;
+      margin-top: 4px;
     }
 
     h3 {
-      margin: 18px 0 8px;
-      font-size: 15px;
+      margin: 10px 0 4px;
+      font-size: 14px;
       color: #111827;
       display: flex;
       align-items: center;
@@ -304,14 +246,14 @@
       margin-top: 4px;
     }
     .reply-row {
-      margin-bottom: 10px;
-      padding: 9px 10px;
-      border-radius: 10px;
+      margin-bottom: 8px;
+      padding: 8px 9px;
+      border-radius: 12px;
       border: 1px solid #e5e7eb;
       background: #ffffff;
     }
     .reply-main {
-      font-size: 15px;
+      font-size: 15px; /* 답장 글자 크게 */
       font-weight: 500;
       margin-bottom: 4px;
       display: flex;
@@ -329,7 +271,7 @@
       flex-shrink: 0;
     }
     .meta {
-      font-size: 12px;
+      font-size: 11px;
       color: #6b7280;
     }
     .risk-low {
@@ -358,9 +300,9 @@
     }
 
     #history {
-      max-height: 170px;
+      max-height: 130px;
       overflow-y: auto;
-      padding-right: 4px;
+      padding-right: 2px;
     }
     .history-empty {
       font-size: 12px;
@@ -369,7 +311,7 @@
     }
     .history-item {
       border-bottom: 1px solid #e5e7eb;
-      padding: 6px 0;
+      padding: 4px 0;
       font-size: 12px;
     }
     .history-meta {
@@ -381,8 +323,8 @@
     }
     .history-item button {
       font-size: 11px;
-      padding: 3px 8px;
-      margin-top: 4px;
+      padding: 3px 7px;
+      margin-top: 3px;
       border-radius: 999px;
       border: 1px solid #d1d5db;
       background: #f9fafb;
@@ -393,116 +335,134 @@
       border-color: #c7d2fe;
     }
 
-    @media (max-width: 820px) {
-      .shell {
-        grid-template-columns: minmax(0, 1fr);
-      }
-      .hero-card {
-        order: 1;
-      }
-      .card {
-        order: 2;
-      }
+    /* 하단 입력 버튼 영역 */
+    .bottom-bar {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .bottom-hint {
+      font-size: 11px;
+      color: #9ca3af;
+      flex: 1;
+    }
+    button.primary {
+      border: none;
+      border-radius: 999px;
+      padding: 9px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #4f46e5;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 22px rgba(79, 70, 229, 0.4);
+      white-space: nowrap;
+    }
+    button.primary:hover {
+      opacity: 0.95;
+    }
+    button.primary:active {
+      opacity: 0.9;
     }
 
-    @media (max-width: 640px) {
-      .card {
-        padding: 16px 14px 18px;
+    @media (max-width: 480px) {
+      .phone-frame {
+        max-width: 380px;
       }
-      h1 {
-        font-size: 18px;
+      .phone-inner {
+        padding: 38px 10px 10px;
       }
-      .btn-bar {
-        justify-content: stretch;
-      }
-      button.primary {
-        width: 100%;
-        justify-content: center;
+      .content {
+        padding: 6px 4px 4px;
       }
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <div class="shell">
-      <!-- 왼쪽: 인물/풍경 느낌 카드 -->
-      <div class="hero-card">
-        <div>
-          <div class="hero-top">
-            <div class="avatar">AI</div>
-            <div class="hero-text-main">
-              <div class="hero-title">오늘도 말실수 없이</div>
-              <div class="hero-sub">연애 · 친구 · 직장, 애매한 답장 대신 AI가 먼저 생각해줍니다.</div>
-            </div>
-          </div>
-          <div class="bubble-preview">
-            <strong>실시간 미리보기</strong>
-            <div class="bubble-row">
-              <div class="bubble ai">“왜 이렇게 답장이 느려?”</div>
-              <div class="bubble me">“오늘 일정이 좀 꼬여서 이제야 봤어. 기다리게 해서 미안해 🙏🏻”</div>
-            </div>
-          </div>
-        </div>
-        <div class="hero-bottom">
-          <div>✅ 대화 톤 분석 · 위험도 점수 · 센스 점수까지 한 번에</div>
-          <div class="hero-tags">
-            <span class="tag">연애/썸 답장</span>
-            <span class="tag">상사/직장 톡</span>
-            <span class="tag">친구 단톡방</span>
-            <span class="tag">가족 카톡</span>
-          </div>
-        </div>
+    <!-- 상태바 -->
+    <div class="status-bar">
+      <div>오후 9:27</div>
+      <div class="status-right">
+        <span class="status-dot"></span>
+        <span>LTE</span>
+        <span>🔋82%</span>
+      </div>
+    </div>
+
+    <div class="phone-frame">
+      <div class="phone-notch">
+        <div class="notch-speaker"></div>
+        <div class="notch-camera"></div>
       </div>
 
-      <!-- 오른쪽: 실제 기능 카드 -->
-      <div class="card">
-        <div class="header-row">
-          <div class="title-wrap">
-            <h1><span class="logo-dot"></span>AI 대화 코치</h1>
-            <div class="subtitle">카톡/문자 답장, 상황에 맞는 문장을 골라서 복사해 보세요.</div>
+      <div class="phone-inner">
+        <!-- 상단 앱 헤더 -->
+        <div class="app-header">
+          <div class="header-left">
+            <div class="avatar">AI</div>
+            <div class="header-text">
+              <div class="header-title">AI 대화 코치</div>
+              <div class="header-sub">카톡 답장, 같이 생각해주는 파트너</div>
+            </div>
           </div>
-          <div class="badge">베타 서비스</div>
+          <div class="header-right">베타</div>
         </div>
 
-        <div class="section">
-          <div class="section-label">
-            상황 선택
-            <small>연애 / 친구 / 직장 / 가족</small>
+        <!-- 내용 영역 -->
+        <div class="content">
+          <div class="section">
+            <div class="section-label">
+              상황 선택
+              <small>연애 / 친구 / 직장 / 가족</small>
+            </div>
+            <div class="tone-row">
+              <select id="toneSelect">
+                <option value="기본">기본</option>
+                <option value="연애">연애 · 썸</option>
+                <option value="직장">직장 상사 · 회사</option>
+                <option value="친구">친구</option>
+                <option value="가족">가족</option>
+              </select>
+              <div class="helper-text">상대와 관계가 제일 가까운 걸 골라주세요.</div>
+            </div>
           </div>
-          <div class="tone-row">
-            <select id="toneSelect">
-              <option value="기본">기본</option>
-              <option value="연애">연애 · 썸</option>
-              <option value="직장">직장 상사 · 회사</option>
-              <option value="친구">친구</option>
-              <option value="가족">가족</option>
-            </select>
-            <div class="helper-text">상대와의 관계에 제일 가까운 걸 골라주세요.</div>
-          </div>
-        </div>
 
-        <div class="section">
-          <div class="section-label">
-            상대방 메시지
-            <small>카톡 내용을 그대로 붙여 넣어도 됩니다.</small>
+          <div class="section">
+            <div class="section-label">
+              상대방 메시지
+              <small>카톡 내용을 그대로 붙여 넣어도 됩니다.</small>
+            </div>
+            <textarea id="inputText" placeholder="예) 왜 요즘 연락 안 해?"></textarea>
           </div>
-          <textarea id="inputText" placeholder="예) 왜 요즘 연락 안 해?"></textarea>
-          <div class="btn-bar">
-            <button class="primary" onclick="sendText()">답장 생성하기</button>
+
+          <!-- 결과 + 히스토리 스크롤 영역 -->
+          <div class="scroll-area">
+            <div class="section">
+              <h3>
+                AI 추천 답장
+                <span class="label-pill">위험도 · 센스 점수</span>
+              </h3>
+              <div id="result"></div>
+            </div>
+
+            <div class="section">
+              <h3>최근 대화 기록</h3>
+              <div id="history" class="history-empty">기록이 없습니다.</div>
+            </div>
           </div>
-        </div>
 
-        <div class="section">
-          <h3>
-            AI 추천 답장
-            <span class="label-pill">위험도 · 센스 점수</span>
-          </h3>
-          <div id="result"></div>
-        </div>
-
-        <div class="section">
-          <h3>최근 대화 기록</h3>
-          <div id="history" class="history-empty">기록이 없습니다.</div>
+          <!-- 하단 바 -->
+          <div class="bottom-bar">
+            <div class="bottom-hint">답장을 고른 뒤, 오른쪽 버튼으로 복사해 사용하세요.</div>
+            <button class="primary" onclick="sendText()">답장 생성</button>
+          </div>
         </div>
       </div>
     </div>
@@ -580,7 +540,7 @@
               const row = document.createElement("div");
               row.className = "reply-row";
               const main = document.createElement("div");
-              main.className = "reply-main";
+                main.className = "reply-main";
 
               const parts = line.split("||").map(p => p.trim());
               const textPart = parts[0] || line;
@@ -748,3 +708,5 @@
   </script>
 </body>
 </html>
+
+
