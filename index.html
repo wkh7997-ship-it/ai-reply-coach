@@ -16,9 +16,6 @@
       --text-main: #f9fafb;
       --text-sub: #a5b4fc;
       --border: rgba(148, 163, 184, 0.35);
-      --safe: #22c55e;
-      --warn: #eab308;
-      --danger: #ef4444;
     }
 
     * {
@@ -61,8 +58,6 @@
       backdrop-filter: blur(18px);
     }
 
-    /* 헤더 영역 */
-
     .header {
       display: flex;
       align-items: center;
@@ -71,20 +66,25 @@
     }
 
     .header-icon {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 18px;
-      background: radial-gradient(circle at 30% 20%, #ffffff 0, #e5e7ff 26%, #6366f1 80%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 2px;
+      background: radial-gradient(circle at 30% 20%, #9f8cff 0, #4c1d95 45%, #111827 100%);
       box-shadow:
         0 8px 18px rgba(79, 70, 229, 0.9),
         0 0 0 1px rgba(30, 64, 175, 0.45);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .header-icon span {
-      font-size: 20px;
+    .header-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 14px;
     }
 
     .header-text-main {
@@ -98,8 +98,6 @@
       font-size: 13px;
       color: var(--text-sub);
     }
-
-    /* 폼 요소 */
 
     .field {
       margin-bottom: 14px;
@@ -164,8 +162,6 @@
       margin-bottom: 16px;
     }
 
-    /* 버튼 */
-
     .btn-primary {
       width: 100%;
       border: none;
@@ -203,119 +199,6 @@
       min-height: 16px;
     }
 
-    /* 결과 카드 – 미니멀 */
-
-    .result-card {
-      margin-top: 18px;
-      background: radial-gradient(circle at top left,
-          rgba(79, 70, 229, 0.26) 0,
-          rgba(79, 70, 229, 0.03) 38%,
-          rgba(15, 23, 42, 0.96) 100%);
-      border-radius: 20px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      padding: 14px 14px 10px;
-    }
-
-    .result-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
-    .result-title span {
-      font-size: 11px;
-      color: #94a3b8;
-      font-weight: 400;
-    }
-
-    .answer-item {
-      padding: 9px 9px 7px;
-      border-radius: 12px;
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(51, 65, 85, 0.85);
-      margin-bottom: 7px;
-    }
-
-    .answer-text {
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
-
-    .answer-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      color: #9ca3af;
-      gap: 6px;
-    }
-
-    .chips {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .chip {
-      padding: 2px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .chip.safe {
-      border-color: var(--safe);
-      color: var(--safe);
-    }
-
-    .chip.warn {
-      border-color: var(--warn);
-      color: var(--warn);
-    }
-
-    .chip.danger {
-      border-color: var(--danger);
-      color: var(--danger);
-    }
-
-    .copy-btn {
-      border-radius: 999px;
-      border: none;
-      padding: 4px 10px;
-      font-size: 11px;
-      background: rgba(79, 70, 229, 0.16);
-      color: #e5e7ff;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .copy-btn:active {
-      transform: translateY(1px);
-      background: rgba(79, 70, 229, 0.25);
-    }
-
-    .again-link {
-      margin-top: 3px;
-      font-size: 11px;
-      text-align: right;
-      color: #a5b4fc;
-    }
-
-    .again-link button {
-      border: none;
-      background: none;
-      color: #a5b4fc;
-      text-decoration: underline;
-      font-size: 11px;
-      padding: 0;
-      cursor: pointer;
-    }
-
     @media (max-height: 680px) {
       body {
         align-items: flex-start;
@@ -327,10 +210,9 @@
 <body>
   <main class="app">
     <section class="card">
-      <!-- 헤더 -->
       <header class="header">
         <div class="header-icon">
-          <span>💬</span>
+          <img src="/icon-192.png" alt="AI 대화 코치 아이콘" />
         </div>
         <div>
           <div class="header-text-main">AI 대화 코치</div>
@@ -338,7 +220,6 @@
         </div>
       </header>
 
-      <!-- 폼 -->
       <div class="field">
         <div class="field-label">상황 선택</div>
         <div class="select-wrap">
@@ -362,24 +243,10 @@
 
       <p class="hint">카톡 내용을 그대로 붙여 넣어주세요.</p>
 
-      <button class="btn-primary" id="generateBtn">
+      <button class="btn-primary" id="generateBtn" type="button">
         <span>답장 생성</span>
       </button>
       <div class="status-text" id="status"></div>
-
-      <!-- 결과 영역 -->
-      <section id="result" class="result-card" style="display:none;">
-        <div class="result-title">
-          <strong>AI 추천 답장</strong>
-          <span>위험도·센스 점수는 가볍게 참고만 해주세요</span>
-        </div>
-
-        <div id="answers"></div>
-
-        <div class="again-link">
-          <button type="button" id="againBtn">다시 입력하기</button>
-        </div>
-      </section>
     </section>
   </main>
 
@@ -388,29 +255,8 @@
     const toneEl = document.getElementById("tone");
     const msgEl = document.getElementById("message");
     const statusEl = document.getElementById("status");
-    const resultEl = document.getElementById("result");
-    const answersEl = document.getElementById("answers");
-    const againBtn = document.getElementById("againBtn");
 
-    function parseLine(line) {
-      // "문장 || 위험도 || 센스 || 한줄설명"
-      const parts = line.split("||").map(p => p.trim());
-      return {
-        text: parts[0] || "",
-        risk: parts[1] || "",
-        sense: parts[2] || "",
-        comment: parts[3] || ""
-      };
-    }
-
-    function riskClass(risk) {
-      const n = parseInt(risk || "0", 10);
-      if (n <= 30) return "safe";
-      if (n <= 60) return "warn";
-      return "danger";
-    }
-
-    btn.addEventListener("click", async () => {
+    btn.addEventListener("click", () => {
       const text = msgEl.value.trim();
       const tone = toneEl.value;
 
@@ -419,76 +265,21 @@
         return;
       }
 
-      statusEl.textContent = "AI가 답장을 생각 중입니다...";
-      resultEl.style.display = "none";
-      answersEl.innerHTML = "";
+      statusEl.textContent = "";
 
-      try {
-        const res = await fetch("/reply", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, tone })
-        });
+      const params = new URLSearchParams({
+        text,
+        tone
+      });
 
-        const data = await res.json();
-
-        if (!res.ok) {
-          statusEl.textContent = data.error || "답장 생성 중 오류가 발생했습니다.";
-          return;
-        }
-
-        statusEl.textContent = "";
-        const lines = (data.reply || "")
-          .split("\n")
-          .map(l => l.trim())
-          .filter(Boolean)
-          .slice(0, 3);
-
-        answersEl.innerHTML = "";
-
-        lines.forEach((line, idx) => {
-          const { text, risk, sense, comment } = parseLine(line);
-          const wrapper = document.createElement("div");
-          wrapper.className = "answer-item";
-
-          wrapper.innerHTML = `
-            <div class="answer-text">${idx + 1}. ${text}</div>
-            <div class="answer-meta">
-              <div class="chips">
-                ${risk ? `<span class="chip ${riskClass(risk)}">위험도 ${risk}</span>` : ""}
-                ${sense ? `<span class="chip">센스 ${sense}</span>` : ""}
-                ${comment ? `<span class="chip">${comment}</span>` : ""}
-              </div>
-              <button class="copy-btn" type="button">복사</button>
-            </div>
-          `;
-
-          const copyBtn = wrapper.querySelector(".copy-btn");
-          copyBtn.addEventListener("click", () => {
-            navigator.clipboard.writeText(text).then(() => {
-              copyBtn.textContent = "복사됨";
-              setTimeout(() => (copyBtn.textContent = "복사"), 1200);
-            });
-          });
-
-          answersEl.appendChild(wrapper);
-        });
-
-        resultEl.style.display = "block";
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = "서버와 통신 중 오류가 발생했습니다.";
-      }
-    });
-
-    againBtn.addEventListener("click", () => {
-      resultEl.style.display = "none";
-      answersEl.innerHTML = "";
-      msgEl.focus();
+      // 결과 전용 페이지로 이동
+      window.location.href = `/result.html?${params.toString()}`;
     });
   </script>
 </body>
 </html>
+
+
 
 
 
