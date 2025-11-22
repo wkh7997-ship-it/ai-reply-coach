@@ -365,23 +365,21 @@
     /* 화면 전환 애니메이션 */
 
     #screen-input,
-    #screen-result {
-      position: absolute;
-      left: 0;
-      right: 0;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateX(12px);
-      transition: opacity 0.23s ease-out, transform 0.23s ease-out;
-    }
+#screen-result {
+  position: absolute;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.23s ease-out;
+}
 
-    #screen-input.active,
-    #screen-result.active {
-      position: relative;
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateX(0);
-    }
+#screen-input.active,
+#screen-result.active {
+  position: relative;
+  opacity: 1;
+  pointer-events: auto;
+}
 
     /* 로딩용 스켈레톤 */
 
@@ -710,6 +708,7 @@
   </script>
 </body>
 </html>
+
 
 
 
