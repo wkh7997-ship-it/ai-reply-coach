@@ -1,8 +1,7 @@
 // service-worker.js
 
-const CACHE_NAME = "ai-reply-coach-v1";
+const CACHE_NAME = "ai-reply-coach-v2";
 
-// 오프라인에서도 기본 화면이 뜨도록 캐시할 파일들
 const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
@@ -11,18 +10,15 @@ const ASSETS_TO_CACHE = [
   "/icon-512.png"
 ];
 
-// 설치 단계: 처음 한 번 캐시
+// 설치: 처음 접속할 때 필요한 파일들 캐시에 저장
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
-  // 대기 없이 바로 활성화 시도
   self.skipWaiting();
 });
 
-// 활성화 단계: 오래된 캐시 정리
+// 활성화: 예전 캐시 버전 지우기
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -36,36 +32,32 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// 네트워크 요청 가로채기
+// 요청 가로채기
 self.addEventListener("fetch", (event) => {
-  const request = event.request;
+  const req = event.request;
 
-  // 네비게이션(페이지 이동) 요청이면, 캐시된 index.html로 대응
-  if (request.mode === "navigate") {
+  // 페이지 이동(네비게이션)일 때: 캐시된 index.html로 처리
+  if (req.mode === "navigate") {
     event.respondWith(
       caches.match("/index.html").then((cached) => {
-        return (
-          cached ||
-          fetch(request).catch(() => caches.match("/index.html"))
-        );
+        if (cached) return cached;
+        return fetch(req).catch(() => caches.match("/index.html"));
       })
     );
     return;
   }
 
-  // 그 외 요청은 캐시 우선 + 네트워크 백업
+  // 그 외: 캐시 우선, 없으면 네트워크
   event.respondWith(
-    caches.match(request).then((cached) => {
+    caches.match(req).then((cached) => {
       if (cached) {
         return cached;
       }
-      return fetch(request)
-        .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, clone);
-          });
-          return response;
+      return fetch(req)
+        .then((res) => {
+          const resClone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
+          return res;
         })
         .catch(() => cached);
     })
