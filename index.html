@@ -6,11 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg-start: #1c2960;
-      --bg-end: #324a8a;
-      --primary: #4f46e5;
-      --primary-dark: #4338ca;
-      --card-bg: #ffffff;
+      --bg-start: #111827;
+      --bg-end: #1f2937;
+      --accent: #6366f1;
+      --accent-soft: #eef2ff;
+      --card-light: #ffffff;
+      --card-dark: #020617;
       --text-main: #0f172a;
       --text-sub: #6b7280;
       --safe: #22c55e;
@@ -28,9 +29,12 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+      background:
+        radial-gradient(circle at top left, #4c6fff55 0, transparent 50%),
+        radial-gradient(circle at bottom right, #ec489955 0, transparent 55%),
+        linear-gradient(135deg, var(--bg-start), var(--bg-end));
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: center;
       padding: 16px;
     }
@@ -38,29 +42,60 @@
     .page {
       width: 100%;
       max-width: 480px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen {
+      flex: 1;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .screen.active {
+      display: flex;
     }
 
     .card {
-      background: var(--card-bg);
+      width: 100%;
+      background: var(--card-light);
       border-radius: 24px;
-      padding: 24px 20px 20px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.4);
+      padding: 22px 18px 20px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.55);
     }
 
-    .card-header {
-      margin-bottom: 20px;
+    .header-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .logo-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      background: radial-gradient(circle at top left, #4f46e5, #0ea5e9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #ffffff;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.6);
     }
 
     .title {
       font-size: 24px;
       font-weight: 800;
       color: var(--text-main);
-      margin-bottom: 4px;
+      letter-spacing: -0.03em;
     }
 
     .subtitle {
       font-size: 13px;
       color: var(--text-sub);
+      margin-top: 2px;
     }
 
     label {
@@ -69,21 +104,28 @@
       font-weight: 600;
       color: var(--text-main);
       margin-bottom: 6px;
-      margin-top: 12px;
+      margin-top: 14px;
     }
 
     select,
     textarea {
       width: 100%;
-      border-radius: 14px;
+      border-radius: 16px;
       border: 1px solid #e5e7eb;
       padding: 12px 14px;
       font-size: 15px;
+      outline: none;
+    }
+
+    select:focus,
+    textarea:focus {
+      border-color: #a5b4fc;
+      box-shadow: 0 0 0 1px #c7d2fe;
     }
 
     textarea {
       resize: vertical;
-      min-height: 120px;
+      min-height: 130px;
     }
 
     .hint {
@@ -97,31 +139,70 @@
       border: none;
       border-radius: 999px;
       padding: 14px 18px;
-      background: var(--primary);
+      background: var(--accent);
       color: #ffffff;
       font-size: 16px;
       font-weight: 700;
-      margin-top: 20px;
+      margin-top: 22px;
       cursor: pointer;
     }
 
     .btn-primary:active {
-      background: var(--primary-dark);
+      filter: brightness(0.95);
     }
 
-    /* 결과 영역 */
-    .result-wrapper {
+    .btn-secondary {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 12px 18px;
+      background: transparent;
+      color: #e5e7eb;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
       margin-top: 18px;
     }
 
+    /* 결과 화면 카드 */
+    .result-card {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 24px;
+      padding: 20px 16px 18px;
+      box-shadow: 0 22px 50px rgba(15, 23, 42, 0.8);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
     .result-title {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 800;
-      color: #ffffff;
-      margin-bottom: 10px;
+    }
+
+    .result-sub {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      color: #e5e7eb;
     }
 
     .reply-list {
+      margin-top: 10px;
       display: flex;
       flex-direction: column;
       gap: 14px;
@@ -134,23 +215,23 @@
     }
 
     .reply-bar {
-      width: 6px;
+      width: 5px;
       border-radius: 999px;
-      background: #16a34a;
+      background: var(--safe);
       margin-top: 8px;
       margin-bottom: 8px;
     }
 
     .reply-content {
       flex: 1;
-      background: #eef2ff;
+      background: #f5f3ff;
       border-radius: 16px;
       padding: 12px 14px 10px;
+      color: #111827;
     }
 
     .reply-text {
       font-size: 14px;
-      color: #111827;
       line-height: 1.5;
       white-space: pre-wrap;
     }
@@ -159,9 +240,10 @@
       margin-top: 6px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-size: 11px;
       color: #4b5563;
+      flex-wrap: wrap;
     }
 
     .badge {
@@ -174,17 +256,17 @@
     }
 
     .badge-safe {
-      background: rgba(34, 197, 94, 0.12);
+      background: rgba(34, 197, 94, 0.16);
       color: var(--safe);
     }
 
     .badge-warn {
-      background: rgba(234, 179, 8, 0.12);
+      background: rgba(234, 179, 8, 0.16);
       color: var(--warn);
     }
 
     .badge-danger {
-      background: rgba(239, 68, 68, 0.12);
+      background: rgba(239, 68, 68, 0.16);
       color: var(--danger);
     }
 
@@ -192,60 +274,71 @@
       margin-left: auto;
       border: none;
       border-radius: 999px;
-      background: var(--primary);
+      background: var(--accent);
       color: #ffffff;
       font-size: 12px;
       padding: 6px 10px;
       cursor: pointer;
     }
 
-    .back-link {
-      margin-top: 14px;
-      font-size: 13px;
-      color: #e5e7eb;
-      text-align: center;
-      cursor: pointer;
-    }
-
-    .back-link span {
-      text-decoration: underline;
+    .copy-btn:active {
+      opacity: 0.95;
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <div class="card" id="inputCard">
-      <div class="card-header">
-        <div class="title">AI 대화 코치</div>
-        <div class="subtitle">카톡 답장, 같이 생각해주는 파트너</div>
+
+    <!-- 입력 화면 -->
+    <div class="screen active" id="screenInput">
+      <div class="card">
+        <div class="header-row">
+          <div class="logo-circle">💬</div>
+          <div>
+            <div class="title">AI 대화 코치</div>
+            <div class="subtitle">카톡 답장, 같이 생각해주는 파트너</div>
+          </div>
+        </div>
+
+        <label for="context">상황 선택</label>
+        <select id="context">
+          <option value="basic">기본</option>
+          <option value="love">연애</option>
+          <option value="friend">친구</option>
+          <option value="work">직장</option>
+          <option value="family">가족</option>
+        </select>
+
+        <label for="message">상대방 메시지</label>
+        <textarea
+          id="message"
+          placeholder="예) 요즘 왜 이렇게 연락이 뜸해?"
+        ></textarea>
+        <div class="hint">답장을 만들고 싶은 카톡 내용을 그대로 붙여 넣어 주세요.</div>
+
+        <button class="btn-primary" id="generateBtn">답장 생성</button>
       </div>
-
-      <label for="context">상황 선택</label>
-      <select id="context">
-        <option value="basic">기본</option>
-        <option value="love">연애</option>
-        <option value="friend">친구</option>
-        <option value="work">직장</option>
-        <option value="family">가족</option>
-      </select>
-
-      <label for="message">상대방 메시지</label>
-      <textarea
-        id="message"
-        placeholder="예) 오늘 뭐할까?"
-      ></textarea>
-      <div class="hint">카톡 내용을 그대로 붙여 넣어도 됩니다.</div>
-
-      <button class="btn-primary" id="generateBtn">답장 생성</button>
     </div>
 
-    <div class="result-wrapper" id="resultSection" style="display:none;">
-      <div class="result-title">추천 답장</div>
-      <div class="reply-list" id="replyList"></div>
-      <div class="back-link" id="backBtn">
-        ← <span>다시 입력하기</span>
+    <!-- 결과 화면 -->
+    <div class="screen" id="screenResult">
+      <div class="result-card">
+        <div class="result-header">
+          <div>
+            <div class="result-title">AI 추천 답장</div>
+            <div class="result-sub">위험도·센스 점수를 함께 참고해 보세요.</div>
+          </div>
+          <div class="pill">베타 버전</div>
+        </div>
+
+        <div class="reply-list" id="replyList"></div>
+
+        <button class="btn-secondary" id="backBtn">
+          ← 다른 메시지로 다시 해보기
+        </button>
       </div>
     </div>
+
   </div>
 
   <script>
@@ -253,10 +346,23 @@
     const contextEl = document.getElementById("context");
     const messageEl = document.getElementById("message");
     const replyListEl = document.getElementById("replyList");
-    const resultSection = document.getElementById("resultSection");
+    const screenInput = document.getElementById("screenInput");
+    const screenResult = document.getElementById("screenResult");
     const backBtn = document.getElementById("backBtn");
 
-    // 서버로 요청 보내기
+    function showResultScreen() {
+      screenInput.classList.remove("active");
+      screenResult.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showInputScreen() {
+      screenResult.classList.remove("active");
+      screenInput.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // 답장 생성 요청
     generateBtn.addEventListener("click", async () => {
       const text = messageEl.value.trim();
       if (!text) {
@@ -279,8 +385,7 @@
 
         const data = await res.json();
         renderReplies(data.reply || "");
-        resultSection.style.display = "block";
-        resultSection.scrollIntoView({ behavior: "smooth" });
+        showResultScreen();
       } catch (e) {
         console.error(e);
         alert("답장 생성 중 오류가 발생했습니다.");
@@ -290,43 +395,85 @@
       }
     });
 
-    // 추천 답장 렌더링
+    // 결과 → 입력으로 돌아가기
+    backBtn.addEventListener("click", () => {
+      showInputScreen();
+    });
+
+    // 백엔드에서 온 문자열을 파싱해서 카드 여러 개로 만들기
     function renderReplies(raw) {
       replyListEl.innerHTML = "";
 
-      // 두 줄 이상 공백 기준으로 여러 개로 나눔
-      const blocks = raw
-        .split(/\n\s*\n/)
-        .map((b) => b.trim())
-        .filter((b) => b.length > 0);
+      const parsed = parseLegacyReplies(raw);
 
-      if (blocks.length === 0) {
+      if (parsed.length === 0) {
         const empty = document.createElement("div");
-        empty.style.color = "#e5e7eb";
+        empty.style.color = "#9ca3af";
+        empty.style.fontSize = "13px";
         empty.textContent = "추천 답장을 가져오지 못했습니다.";
         replyListEl.appendChild(empty);
         return;
       }
 
-      blocks.forEach((block) => {
-        const card = createReplyCard(block);
+      parsed.forEach((item) => {
+        const card = createReplyCard(item);
         replyListEl.appendChild(card);
       });
     }
 
-    // 한 개 카드 만들기
-    function createReplyCard(block) {
-      // 형식: 문장 || 10 || 80 || 설명...
-      const parts = block.split("||").map((p) => p.trim());
+    // 지금 네 백엔드가 주는 형식:
+    // AI 추천 답장
+    // 1. 문장복사
+    // 위험도: 10 / 센스: 80 / 설명: 어쩌고...
+    // 2. ...
+    // 이런 텍스트를 파싱한다.
+    function parseLegacyReplies(raw) {
+      const lines = raw
+        .split("\n")
+        .map((l) => l.trim())
+        .filter((l) => l.length > 0);
 
-      const text = parts[0] || block;
-      const risk = parts[1] ? parseInt(parts[1], 10) : null;
-      const warmth = parts[2] ? parseInt(parts[2], 10) : null;
-      const desc = parts[3] || "";
+      const result = [];
 
-      let riskLabel = "정보 없음";
+      for (let i = 0; i < lines.length; i++) {
+        // "1. 문장..." 형태 찾기
+        const m = lines[i].match(/^(\d+)\.\s*(.+)$/);
+        if (!m) continue;
+
+        // 문장 부분
+        let text = m[2] || "";
+        // 뒤에 붙은 "복사" 글자는 제거
+        text = text.replace(/복사\s*$/g, "").trim();
+
+        // 다음 줄에 "위험도: 10 / 센스: 80 / 설명: ..." 있을 것으로 가정
+        let risk = null;
+        let sense = null;
+        let desc = "";
+
+        if (i + 1 < lines.length) {
+          const info = lines[i + 1];
+          const rm = info.match(/위험도:\s*(\d+)/);
+          const sm = info.match(/센스:\s*(\d+)/);
+          const dm = info.match(/설명:\s*(.+)$/);
+
+          if (rm) risk = parseInt(rm[1], 10);
+          if (sm) sense = parseInt(sm[1], 10);
+          if (dm) desc = dm[1].trim();
+        }
+
+        result.push({ text, risk, sense, desc });
+      }
+
+      return result;
+    }
+
+    // 카드 만들기
+    function createReplyCard(item) {
+      const { text, risk, sense, desc } = item;
+
+      let riskLabel = "위험도 정보 없음";
       let riskClass = "";
-      if (!isNaN(risk)) {
+      if (typeof risk === "number" && !isNaN(risk)) {
         if (risk <= 30) {
           riskLabel = "위험도 낮음";
           riskClass = "badge-safe";
@@ -366,11 +513,11 @@
         meta.appendChild(badge);
       }
 
-      if (!isNaN(warmth)) {
-        const warmBadge = document.createElement("span");
-        warmBadge.className = "badge";
-        warmBadge.textContent = `친절도 ${warmth}`;
-        meta.appendChild(warmBadge);
+      if (typeof sense === "number" && !isNaN(sense)) {
+        const senseBadge = document.createElement("span");
+        senseBadge.className = "badge";
+        senseBadge.textContent = `센스 ${sense}`;
+        meta.appendChild(senseBadge);
       }
 
       if (desc) {
@@ -399,15 +546,11 @@
 
       return wrapper;
     }
-
-    // 다시 입력하기
-    backBtn.addEventListener("click", () => {
-      resultSection.style.display = "none";
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
   </script>
 </body>
 </html>
+
+
 
 
 
