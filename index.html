@@ -1,254 +1,329 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>AI 대화 코치</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
+    :root {
+      --bg-grad-1: #132348;
+      --bg-grad-2: #304c86;
+      --accent: #4f46e5;
+    }
+
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans KR", system-ui,
+        sans-serif;
     }
 
     body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(135deg, #283048, #4b6cb7);
       min-height: 100vh;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2));
+      color: #111827;
     }
 
-    .app-container {
+    .app-wrapper {
       width: 100%;
       max-width: 420px;
-      padding: 8px;
+      padding: 16px;
     }
 
-    .card {
-      background: rgba(255, 255, 255, 0.98);
-      border-radius: 20px;
-      padding: 12px 14px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+    .app-card {
+      width: 100%;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 20px 18px 18px;
+      box-shadow: 0 18px 35px rgba(0, 0, 0, 0.26);
     }
 
-    .header-row {
+    .app-header {
       display: flex;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 16px;
     }
 
-    .icon-circle {
-      width: 34px;
-      height: 34px;
+    .app-header-icon {
+      width: 44px;
+      height: 44px;
       border-radius: 999px;
-      background: #e5edff;
+      background: rgba(79, 70, 229, 0.08);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 8px;
+      margin-right: 12px;
       flex-shrink: 0;
     }
 
-    .icon-circle img {
-      width: 20px;
-      height: 20px;
+    .app-header-icon span {
+      font-size: 20px;
     }
 
-    .header-text-main {
-      font-size: 16px;
-      font-weight: 800;
+    .app-title-wrap {
+      flex: 1;
+    }
+
+    .app-title {
+      font-size: 22px;
+      font-weight: 700;
       color: #111827;
       margin-bottom: 2px;
     }
 
-    .header-text-sub {
-      font-size: 11px;
+    .app-subtitle {
+      font-size: 13px;
       color: #6b7280;
     }
 
-    .section-title {
-      font-size: 13px;
-      font-weight: 700;
-      margin: 6px 0 4px 0;
-      color: #111827;
+    .beta-badge {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-left: 6px;
     }
 
-    select {
+    .section-label {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      margin-top: 4px;
+    }
+
+    .section-help {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+
+    select,
+    textarea {
       width: 100%;
-      padding: 7px 8px;
-      font-size: 13px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      background: #f9fafb;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      padding: 10px 12px;
+      font-size: 14px;
       outline: none;
+    }
+
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.25);
     }
 
     textarea {
-      width: 100%;
-      height: 70px;
-      padding: 8px;
-      font-size: 13px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      background: #f9fafb;
       resize: none;
-      outline: none;
+      min-height: 110px;
+      line-height: 1.5;
     }
 
-    .hint {
-      font-size: 11px;
-      color: #9ca3af;
-      margin-top: 2px;
-    }
-
-    .btn {
-      width: 100%;
-      margin-top: 8px;
-      padding: 9px;
-      font-size: 14px;
-      font-weight: 700;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      background: #4b6cb7;
-      color: #ffffff;
-      box-shadow: 0 3px 8px rgba(75, 108, 183, 0.4);
-    }
-
-    .btn:active {
-      background: #3f59a0;
-    }
-
-    .reply-box {
-      margin-top: 8px;
-      padding: 10px 10px;
+    .example-box {
+      margin-top: 14px;
+      padding: 10px 12px;
       border-radius: 14px;
-      background: #f3f4ff;
-      border-left: 4px solid #4b6cb7;
-      font-size: 14px;
-      color: #111827;
-      white-space: pre-wrap;
-      max-height: 180px;
-      overflow-y: auto;
+      background: #f3f4f6;
+      font-size: 12px;
+      color: #4b5563;
     }
 
-    .reply-label {
-      font-size: 12px;
+    .example-title {
       font-weight: 600;
-      color: #4b5563;
       margin-bottom: 4px;
     }
 
-    .small-btn {
-      margin-top: 10px;
+    .btn-wrap {
+      margin-top: 18px;
+    }
+
+    .primary-btn {
       width: 100%;
-      padding: 8px;
-      font-size: 13px;
+      border: none;
       border-radius: 999px;
-      border: 1px solid #d1d5db;
-      background: #ffffff;
-      color: #374151;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      background: var(--accent);
+      color: #fff;
       cursor: pointer;
+      box-shadow: 0 10px 20px rgba(79, 70, 229, 0.35);
+    }
+
+    .primary-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 6px 14px rgba(79, 70, 229, 0.25);
+    }
+
+    .result-box {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: #eef2ff;
+      font-size: 13px;
+      color: #111827;
+      white-space: pre-wrap;
+    }
+
+    .result-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #3730a3;
+    }
+
+    .small-caption {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    @media (max-height: 650px) {
+      body {
+        align-items: flex-start;
+      }
+      .app-wrapper {
+        padding-top: 12px;
+      }
     }
   </style>
 </head>
+
 <body>
-
-<div class="app-container">
-  <!-- 🔵 화면 1: 입력 화면 -->
-  <div id="screen-input" class="card">
-    <div class="header-row">
-      <div class="icon-circle">
-        <img src="https://cdn-icons-png.flaticon.com/512/2462/2462719.png" alt="chat">
+  <div class="app-wrapper">
+    <div class="app-card">
+      <!-- 헤더 -->
+      <div class="app-header">
+        <div class="app-header-icon">
+          <span>💬</span>
+        </div>
+        <div class="app-title-wrap">
+          <div class="app-title">
+            AI 대화 코치
+            <span class="beta-badge">BETA</span>
+          </div>
+          <div class="app-subtitle">카톡 답장, 같이 생각해주는 파트너</div>
+        </div>
       </div>
-      <div>
-        <div class="header-text-main">AI 대화 코치</div>
-        <div class="header-text-sub">카톡 답장, 뭐라고 보낼지 막막할 때 써보세요.</div>
-      </div>
-    </div>
 
-    <div>
-      <div class="section-title">상황</div>
-      <select id="situation">
-        <option value="기본">기본</option>
-        <option value="연애">연애</option>
-        <option value="친구">친구</option>
-        <option value="직장">직장</option>
-        <option value="가족">가족</option>
+      <!-- 상황 선택 -->
+      <div class="section-label">상황</div>
+      <div class="section-help">상대와 관계에 가장 가까운 걸 골라주세요.</div>
+      <select id="context">
+        <option value="basic">기본</option>
+        <option value="love">연애</option>
+        <option value="friend">친구</option>
+        <option value="work">직장</option>
+        <option value="family">가족</option>
       </select>
-    </div>
 
-    <div>
-      <div class="section-title" style="margin-top: 8px;">상대방 메시지</div>
-      <textarea id="inputText" placeholder="카톡 내용을 그대로 붙여넣거나 적어보세요."></textarea>
-      <div class="hint">예) “오늘 모임 못 갈 것 같은데 뭐라고 얘기하지?”</div>
-    </div>
+      <!-- 상대방 메시지 -->
+      <div class="section-label" style="margin-top: 14px;">상대방 메시지</div>
+      <div class="section-help">
+        카톡 내용을 그대로 붙여 넣어도 됩니다.
+      </div>
+      <textarea id="inputText" placeholder="예) 부모님상인데 지인들한테 보낼 내용 좀 만들어줘"></textarea>
 
-    <button class="btn" onclick="sendText()">답장 생성하기</button>
+      <!-- 예시 박스 -->
+      <div class="example-box">
+        <div class="example-title">예시 상황 · 연애</div>
+        <div>“왜 이렇게 답장이 느려?”</div>
+        <div style="margin-top: 4px; font-size: 11px;">
+          → 답장 생성 후, 더 안전하고 센스 있게 바꾼 문장을 추천해줍니다.
+        </div>
+      </div>
+
+      <!-- 버튼 -->
+      <div class="btn-wrap">
+        <button class="primary-btn" onclick="sendText()">답장 생성</button>
+      </div>
+
+      <!-- 결과 영역 -->
+      <div id="result" class="result-box" style="display:none;">
+        <div class="result-title">추천 답장</div>
+        <div id="resultText"></div>
+      </div>
+
+      <div class="small-caption">
+        답장을 만들고 싶은 카톡 내용을 붙여 넣고, 상황만 골라주세요.
+      </div>
+    </div>
   </div>
 
-  <!-- 🟣 화면 2: 결과 화면 -->
-  <div id="screen-result" class="card" style="display:none;">
-    <div class="header-row">
-      <div class="icon-circle">
-        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712104.png" alt="ai">
-      </div>
-      <div>
-        <div class="header-text-main">AI 추천 답장</div>
-        <div class="header-text-sub">상황에 맞게 부드럽게 정리해봤어요.</div>
-      </div>
-    </div>
+  <script>
+    // 상황별 테마 색 변경
+    const contextSelect = document.getElementById("context");
 
-    <div class="reply-box">
-      <div class="reply-label">이렇게 보내보는 건 어때요?</div>
-      <div id="replyText"></div>
-    </div>
-
-    <button class="small-btn" onclick="goBack()">다른 메시지로 다시 작성하기</button>
-  </div>
-</div>
-
-<script>
-async function sendText() {
-  const text = document.getElementById("inputText").value.trim();
-  const situation = document.getElementById("situation").value;
-
-  if (!text) {
-    alert("상대방 메시지를 입력해주세요.");
-    return;
-  }
-
-  try {
-    const res = await fetch("/reply", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ text, situation })
+    contextSelect.addEventListener("change", () => {
+      const v = contextSelect.value;
+      switch (v) {
+        case "love": // 연애
+          document.documentElement.style.setProperty("--bg-grad-1", "#4b2566");
+          document.documentElement.style.setProperty("--bg-grad-2", "#ff6fb1");
+          document.documentElement.style.setProperty("--accent", "#ec4899");
+          break;
+        case "friend": // 친구
+          document.documentElement.style.setProperty("--bg-grad-1", "#065f46");
+          document.documentElement.style.setProperty("--bg-grad-2", "#059669");
+          document.documentElement.style.setProperty("--accent", "#10b981");
+          break;
+        case "work": // 직장
+          document.documentElement.style.setProperty("--bg-grad-1", "#020617");
+          document.documentElement.style.setProperty("--bg-grad-2", "#1e293b");
+          document.documentElement.style.setProperty("--accent", "#4f46e5");
+          break;
+        case "family": // 가족
+          document.documentElement.style.setProperty("--bg-grad-1", "#92400e");
+          document.documentElement.style.setProperty("--bg-grad-2", "#f59e0b");
+          document.documentElement.style.setProperty("--accent", "#f97316");
+          break;
+        default: // basic
+          document.documentElement.style.setProperty("--bg-grad-1", "#132348");
+          document.documentElement.style.setProperty("--bg-grad-2", "#304c86");
+          document.documentElement.style.setProperty("--accent", "#4f46e5");
+      }
     });
 
-    const data = await res.json();
+    // AI 서버에 요청 보내기
+    async function sendText() {
+      const text = document.getElementById("inputText").value.trim();
+      const ctx = document.getElementById("context").value;
 
-    // 화면 전환: 입력 화면 숨기고 결과 화면 보여주기
-    document.getElementById("screen-input").style.display = "none";
-    document.getElementById("screen-result").style.display = "block";
+      if (!text) {
+        alert("상대방 메시지를 입력해주세요.");
+        return;
+      }
 
-    // 답장 텍스트 채우기
-    const replyDiv = document.getElementById("replyText");
-    replyDiv.textContent = data.reply || "답장을 불러오지 못했습니다.";
-  } catch (e) {
-    alert("서버 요청 중 오류가 발생했습니다.");
-  }
-}
+      try {
+        const res = await fetch("/reply", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, context: ctx }),
+        });
 
-function goBack() {
-  // 다시 입력 화면으로
-  document.getElementById("screen-result").style.display = "none";
-  document.getElementById("screen-input").style.display = "block";
-}
-</script>
+        const data = await res.json();
+        const box = document.getElementById("result");
+        const textEl = document.getElementById("resultText");
 
+        if (data.reply) {
+          textEl.textContent = data.reply;
+          box.style.display = "block";
+        } else {
+          textEl.textContent = "오류가 발생했습니다. 서버 응답을 확인해주세요.";
+          box.style.display = "block";
+        }
+      } catch (e) {
+        alert("서버에 연결할 수 없습니다. app.py가 실행 중인지 확인해주세요.");
+      }
+    }
+  </script>
 </body>
 </html>
+
+
 
 
 
