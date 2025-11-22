@@ -238,10 +238,21 @@
     <div class="card" id="inputCard">
       <div class="header">
 
-        <!-- ✔ 메시지 말풍선 아이콘 (돋보기 아님) -->
+        <!-- ✔ 메시지 말풍선 아이콘 (삼성 메시지 스타일 비슷하게) -->
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
-             stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 5h16v9H8l-4 4v-4z" />
+             xmlns="http://www.w3.org/2000/svg">
+          <!-- 말풍선 외곽 -->
+          <path
+            d="M12 4C7.6 4 4 6.9 4 10.5C4 12.4 5 14.1 6.7 15.3L6 20L9.9 17.8C10.6 17.9 11.3 18 12 18C16.4 18 20 15.1 20 11.5C20 7.9 16.4 4 12 4Z"
+            stroke="#ffffff"
+            stroke-width="2"
+            stroke-linejoin="round"
+            fill="none"
+          />
+          <!-- 안쪽 점 3개 -->
+          <circle cx="9"  cy="11" r="1.1" fill="#ffffff" />
+          <circle cx="12" cy="11" r="1.1" fill="#ffffff" />
+          <circle cx="15" cy="11" r="1.1" fill="#ffffff" />
         </svg>
 
         <div>
@@ -269,11 +280,20 @@
     <!-- 결과 카드 -->
     <div class="result-card" id="resultCard" style="display:none;">
       <div class="header">
-        
-        <!-- ✔ 메시지 말풍선 아이콘 (돋보기 아님) -->
+
+        <!-- ✔ 동일한 메시지 말풍선 아이콘 -->
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
-             stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 5h16v9H8l-4 4v-4z" />
+             xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M12 4C7.6 4 4 6.9 4 10.5C4 12.4 5 14.1 6.7 15.3L6 20L9.9 17.8C10.6 17.9 11.3 18 12 18C16.4 18 20 15.1 20 11.5C20 7.9 16.4 4 12 4Z"
+            stroke="#ffffff"
+            stroke-width="2"
+            stroke-linejoin="round"
+            fill="none"
+          />
+          <circle cx="9"  cy="11" r="1.1" fill="#ffffff" />
+          <circle cx="12" cy="11" r="1.1" fill="#ffffff" />
+          <circle cx="15" cy="11" r="1.1" fill="#ffffff" />
         </svg>
 
         <div>
@@ -442,6 +462,8 @@
 
 </body>
 </html>
+
+
 
 
 
