@@ -4,34 +4,37 @@ import os
 
 app = Flask(__name__)
 
-# 👉 Render 환경 변수에 OPENAI_API_KEY 넣어둔 것 사용
+# Render 환경변수에 OPENAI_API_KEY 넣어둔 것 사용
 API_KEY = os.environ.get("OPENAI_API_KEY")
+
 
 # ----------------------
 # 1) 정적 파일 / 메인 화면
 # ----------------------
-
-# 홈 화면: index.html
 @app.route("/")
 def index():
+    # 현재 폴더에 있는 index.html 내려주기
     return send_from_directory(".", "index.html")
 
-# PWA manifest
+
 @app.route("/manifest.json")
 def manifest():
     return send_from_directory(".", "manifest.json")
 
-# PWA 아이콘들 (나중에 파일만 루트에 올리면 됨)
+
 @app.route("/icon-192.png")
 def icon_192():
     return send_from_directory(".", "icon-192.png")
 
+
 @app.route("/icon-512.png")
 def icon_512():
     return send_from_directory(".", "icon-512.png")
+
+
 @app.route("/service-worker.js")
 def service_worker():
-    # service-worker.js 파일을 루트에서 그대로 내려줌
+    # PWA용 서비스워커
     return send_from_directory(".", "service-worker.js")
 
 
@@ -48,32 +51,18 @@ def reply():
         user_text = data["text"]
         tone = data.get("tone", "기본")
 
-       tone_desc_map = {
-    "연애": (
-        "다정하고 따뜻한 톤으로, 상대가 부담 느끼지 않고 호감을 느낄 정도로 "
-        "부드럽고 자연스럽게 표현합니다. 말끝은 부드럽게(~할까?, ~같아), "
-        "가벼운 웃음표현(ㅎㅎ) 1회 이내 허용. 지나친 감정표현, 집착·질투 느낌 금지."
-    ),
-    "직장": (
-        "정중하고 간결하며 프로페셔널한 톤. 존댓말 100% 사용. "
-        "감정을 배제하고 필요한 정보만 명확하게 전달합니다. "
-        "감사 표현은 적절히 포함. 장황하거나 친근한 표현 금지."
-    ),
-    "친구": (
-        "캐주얼하고 편한 톤. 문장은 짧고 솔직하게. "
-        "적당한 장난(ㅋㅋ, ㅎㅎ) 허용. 너무 무례하거나 과한 반말 금지."
-    ),
-    "가족": (
-        "따뜻하고 걱정이 느껴지는 톤. 잔소리처럼 들리지 않게 부드럽고 배려 있게 말합니다. "
-        "몸 상태·감정 상태를 챙기는 표현 포함. 과한 충고 금지."
-    ),
-    "기본": (
-        "일반적인 상황에서 무난하고 예의 있는 자연스러운 톤."
-    )
-}
+        # 상황(톤)에 따른 설명 문장
+        tone_desc_map = {
+            "기본": "일반적인 상황에서 무난하고 예의 있게",
+            "연애": "연애/썸 상대에게 다정하고 호감 있게, 너무 부담스럽지 않게",
+            "직장": "직장 상사나 회사 동료에게 공손하고 프로답게",
+            "친구": "친한 친구에게 가볍고 편하게, 장난은 적당히",
+            "가족": "가족에게 따뜻하지만 솔직하게, 걱정되지 않게",
+        }
 
         tone_desc = tone_desc_map.get(tone, tone_desc_map["기본"])
 
+        # 3가지 스타일 + 위험도/센스/코멘트까지 요청하는 프롬프트
         prompt = (
             f"상황: {tone}\n"
             f"설명: {tone_desc}\n\n"
@@ -93,6 +82,7 @@ def reply():
             f"상대방 메시지: '{user_text}'"
         )
 
+        # OpenAI Chat Completions API 호출
         response = requests.post(
             "https://api.openai.com/v1/chat/completions",
             headers={
@@ -109,7 +99,7 @@ def reply():
         )
 
         try:
-            data = response.json()
+            openai_data = response.json()
         except Exception:
             return jsonify({
                 "error": "OpenAI 응답 JSON 파싱 실패",
@@ -120,10 +110,10 @@ def reply():
             return jsonify({
                 "error": "OpenAI API 호출 에러",
                 "status": response.status_code,
-                "details": data,
+                "details": openai_data,
             }), response.status_code
 
-        answer = data["choices"][0]["message"]["content"]
+        answer = openai_data["choices"][0]["message"]["content"]
         return jsonify({"reply": answer})
 
     except Exception as e:
@@ -131,10 +121,11 @@ def reply():
 
 
 # ----------------------
-# 3) 위험한 답장 수정 API
+# 3) 위험한 답장 안전하게 수정하는 API
 # ----------------------
 @app.route("/fix", methods=["POST"])
 def fix_reply():
+    """위험도가 높은 답장을 더 부드럽게 다시 써주는 API"""
     try:
         data = request.get_json()
         original = data.get("text", "")
@@ -177,16 +168,16 @@ def fix_reply():
             timeout=30,
         )
 
-        data = response.json()
+        openai_data = response.json()
 
         if response.status_code != 200:
             return jsonify({
                 "error": "OpenAI API 호출 에러",
                 "status": response.status_code,
-                "details": data,
+                "details": openai_data,
             }), response.status_code
 
-        fixed = data["choices"][0]["message"]["content"].strip()
+        fixed = openai_data["choices"][0]["message"]["content"].strip()
         return jsonify({"fixed": fixed})
 
     except Exception as e:
@@ -194,8 +185,10 @@ def fix_reply():
 
 
 if __name__ == "__main__":
-    # Render에서는 이 블록이 직접 실행되진 않지만, 로컬 테스트용으로 둬도 됨
+    # 로컬에서 테스트할 때만 사용, Render에서는 gunicorn이 이 모듈을 직접 import
     app.run(host="0.0.0.0", port=5000, debug=True)
+
+
 
 
 
