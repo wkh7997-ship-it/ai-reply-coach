@@ -4,38 +4,31 @@ import os
 
 app = Flask(__name__)
 
-# Render 환경변수에 OPENAI_API_KEY 넣어둔 것 사용
 API_KEY = os.environ.get("OPENAI_API_KEY")
 
 
 # ----------------------
-# 1) 정적 파일 / 메인 화면
+# 1) 정적 파일 라우트
 # ----------------------
 @app.route("/")
 def index():
-    # 현재 폴더에 있는 index.html 내려주기
     return send_from_directory(".", "index.html")
 
+@app.route("/result")
+def result_page():
+    return send_from_directory(".", "result.html")
 
 @app.route("/manifest.json")
 def manifest():
     return send_from_directory(".", "manifest.json")
 
-
 @app.route("/icon-192.png")
 def icon_192():
     return send_from_directory(".", "icon-192.png")
 
-
 @app.route("/icon-512.png")
 def icon_512():
     return send_from_directory(".", "icon-512.png")
-
-
-@app.route("/service-worker.js")
-def service_worker():
-    # PWA용 서비스워커
-    return send_from_directory(".", "service-worker.js")
 
 
 # ----------------------
@@ -51,38 +44,25 @@ def reply():
         user_text = data["text"]
         tone = data.get("tone", "기본")
 
-        # 상황(톤)에 따른 설명 문장
         tone_desc_map = {
             "기본": "일반적인 상황에서 무난하고 예의 있게",
-            "연애": "연애/썸 상대에게 다정하고 호감 있게, 너무 부담스럽지 않게",
-            "직장": "직장 상사나 회사 동료에게 공손하고 프로답게",
-            "친구": "친한 친구에게 가볍고 편하게, 장난은 적당히",
-            "가족": "가족에게 따뜻하지만 솔직하게, 걱정되지 않게",
+            "연애": "연애/썸 상대에게 다정하고 호감 있게",
+            "직장": "직장 상사나 동료에게 예의 있게 프로답게",
+            "친구": "친한 친구에게 자연스럽고 편하게",
+            "가족": "가족에게 따뜻하고 편하게"
         }
 
         tone_desc = tone_desc_map.get(tone, tone_desc_map["기본"])
 
-        # 3가지 스타일 + 위험도/센스/코멘트까지 요청하는 프롬프트
         prompt = (
             f"상황: {tone}\n"
             f"설명: {tone_desc}\n\n"
-            "아래 메시지에 대해 3가지 서로 다른 스타일의 한국어 답장을 생성해줘.\n"
-            "각 답장은 다음 기준을 따른다:\n"
-            "1) 매우 예의 있고 무난한 답장\n"
-            "2) 약간 솔직하고 직설적인 답장\n"
-            "3) 감정이 조금 섞여 다소 까칠하거나 민감하게 느껴질 수 있는 답장\n"
-            "(단, 욕설/비하/폭력적 표현은 절대 금지)\n\n"
-            "각 답장은 한 줄로 짧게 작성하고, 각 답장마다 다음 정보를 함께 제공해줘.\n"
-            "- 위험도: 0~100 (숫자, 높을수록 상대가 기분 나쁠 위험이 큼)\n"
-            "- 센스: 0~100 (숫자, 높을수록 자연스럽고 센스 있음)\n"
-            "- 한 줄 코멘트: 톤에 대한 짧은 설명\n\n"
-            "각 답장은 반드시 아래 형식의 한 줄로 만들어줘:\n"
-            "답장문장 || 위험도 || 센스 || 한줄설명\n\n"
-            "세 개의 답장을 각각 줄바꿈으로 구분해서 보내줘.\n\n"
+            "아래 메시지에 대해 서로 다른 3가지 한국어 답장을 생성해줘.\n"
+            "각 답장은 한 줄이며 형식은 다음과 같다.\n"
+            "답장문장 || 위험도 || 센스 || 한줄설명\n"
             f"상대방 메시지: '{user_text}'"
         )
 
-        # OpenAI Chat Completions API 호출
         response = requests.post(
             "https://api.openai.com/v1/chat/completions",
             headers={
@@ -98,22 +78,16 @@ def reply():
             timeout=30,
         )
 
-        try:
-            openai_data = response.json()
-        except Exception:
-            return jsonify({
-                "error": "OpenAI 응답 JSON 파싱 실패",
-                "raw": response.text,
-            }), 500
+        data = response.json()
 
         if response.status_code != 200:
             return jsonify({
                 "error": "OpenAI API 호출 에러",
                 "status": response.status_code,
-                "details": openai_data,
+                "details": data,
             }), response.status_code
 
-        answer = openai_data["choices"][0]["message"]["content"]
+        answer = data["choices"][0]["message"]["content"]
         return jsonify({"reply": answer})
 
     except Exception as e:
@@ -121,11 +95,10 @@ def reply():
 
 
 # ----------------------
-# 3) 위험한 답장 안전하게 수정하는 API
+# 3) 위험한 답장 수정 API
 # ----------------------
 @app.route("/fix", methods=["POST"])
 def fix_reply():
-    """위험도가 높은 답장을 더 부드럽게 다시 써주는 API"""
     try:
         data = request.get_json()
         original = data.get("text", "")
@@ -136,48 +109,45 @@ def fix_reply():
 
         tone_desc_map = {
             "기본": "일반적인 상황에서 무난하고 예의 있게",
-            "연애": "연애/썸 상대에게 다정하고 호감 있게, 너무 부담스럽지 않게",
-            "직장": "직장 상사나 회사 동료에게 공손하고 프로답게",
-            "친구": "친한 친구에게 가볍고 편하게, 장난은 적당히",
-            "가족": "가족에게 따뜻하지만 솔직하게, 걱정되지 않게",
+            "연애": "연애/썸 상대에게 다정하고 호감 있게",
+            "직장": "직장 상사나 동료에게 예의 있게 프로답게",
+            "친구": "친한 친구에게 자연스럽고 편하게",
+            "가족": "가족에게 따뜻하고 편하게"
         }
         tone_desc = tone_desc_map.get(tone, tone_desc_map["기본"])
 
         prompt = (
             f"상황: {tone}\n"
-            f"설명: {tone_desc}\n\n"
-            "아래 한국어 문장은 상대방을 약간 불편하게 만들 수 있는 위험이 있습니다.\n"
-            "원래 의미는 최대한 유지하되, 상대가 기분 나쁘지 않도록 부드럽고 예의 있게 다시 써주세요.\n"
-            "가능하면 위험도는 20 이하로 떨어지도록 표현을 바꿔주세요.\n"
-            "한 줄짜리 답장만 반환하세요.\n\n"
-            f"원래 문장: '{original}'"
+            f"설명: {tone_desc}\n"
+            "아래 한국어 문장이 상대에게 불편할 수 있어.\n"
+            "원래 의미는 유지하되 부드럽고 예의 있게 다시 작성해줘.\n"
+            f"문장: '{original}'"
         )
 
         response = requests.post(
             "https://api.openai.com/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {API_KEY}",
-                "Content-Type": "application/json",
+                "Content-Type": "application/json"
             },
             json={
                 "model": "gpt-4o-mini",
                 "messages": [
                     {"role": "user", "content": prompt}
-                ],
-            },
-            timeout=30,
+                ]
+            }
         )
 
-        openai_data = response.json()
+        data = response.json()
 
         if response.status_code != 200:
             return jsonify({
                 "error": "OpenAI API 호출 에러",
                 "status": response.status_code,
-                "details": openai_data,
+                "details": data,
             }), response.status_code
 
-        fixed = openai_data["choices"][0]["message"]["content"].strip()
+        fixed = data["choices"][0]["message"]["content"].strip()
         return jsonify({"fixed": fixed})
 
     except Exception as e:
@@ -185,8 +155,9 @@ def fix_reply():
 
 
 if __name__ == "__main__":
-    # 로컬에서 테스트할 때만 사용, Render에서는 gunicorn이 이 모듈을 직접 import
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000)
+
+
 
 
 
