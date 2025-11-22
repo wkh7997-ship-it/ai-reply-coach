@@ -14,7 +14,7 @@
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
       color: #f9fafb;
-      font-size: 17px; /* 기본 글자 크게 */
+      font-size: 17px;
       background:
         linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 64, 175, 0.9)),
         url("https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1600&q=80")
@@ -43,7 +43,7 @@
       align-items: stretch;
       justify-content: center;
     }
-    /* 상단 스피커/카메라 영역 */
+
     .phone-notch {
       position: absolute;
       top: 10px;
@@ -76,14 +76,13 @@
     .phone-inner {
       background: #f3f4f6;
       border-radius: 24px;
-      padding: 40px 12px 12px; /* 위쪽 notch 공간 확보 */
+      padding: 40px 12px 12px;
       width: 100%;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
-    /* 상단 상태바 */
     .status-bar {
       position: absolute;
       top: 18px;
@@ -107,7 +106,6 @@
       background: #22c55e;
     }
 
-    /* 앱 헤더 */
     .app-header {
       display: flex;
       align-items: center;
@@ -154,7 +152,6 @@
       color: #6b7280;
     }
 
-    /* 내용 영역 */
     .content {
       flex: 1;
       display: flex;
@@ -162,6 +159,16 @@
       padding: 8px 6px 4px;
       overflow: hidden;
       gap: 8px;
+    }
+
+    /* 화면(스크린) 공통 */
+    .screen {
+      height: 100%;
+      display: none;
+      flex-direction: column;
+    }
+    .screen.active {
+      display: flex;
     }
 
     .section {
@@ -189,7 +196,7 @@
       border-radius: 10px;
       border: 1px solid #d1d5db;
       padding: 9px 10px;
-      font-size: 15px; /* 입력 글자 크게 */
+      font-size: 15px;
       outline: none;
       background: #ffffff;
     }
@@ -218,7 +225,6 @@
       color: #9ca3af;
     }
 
-    /* 결과/히스토리 영역 스크롤 */
     .scroll-area {
       flex: 1;
       overflow-y: auto;
@@ -253,7 +259,7 @@
       background: #ffffff;
     }
     .reply-main {
-      font-size: 15px; /* 답장 글자 크게 */
+      font-size: 15px;
       font-weight: 500;
       margin-bottom: 4px;
       display: flex;
@@ -335,7 +341,6 @@
       border-color: #c7d2fe;
     }
 
-    /* 하단 입력 버튼 영역 */
     .bottom-bar {
       margin-top: 6px;
       padding-top: 6px;
@@ -349,26 +354,67 @@
       color: #9ca3af;
       flex: 1;
     }
-    button.primary {
+    button.primary,
+    button.secondary {
       border: none;
       border-radius: 999px;
       padding: 9px 16px;
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
-      background: #4f46e5;
-      color: #ffffff;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 8px 22px rgba(79, 70, 229, 0.4);
+      gap: 6px;
       white-space: nowrap;
+    }
+    button.primary {
+      background: #4f46e5;
+      color: #ffffff;
+      box-shadow: 0 8px 22px rgba(79, 70, 229, 0.4);
     }
     button.primary:hover {
       opacity: 0.95;
     }
-    button.primary:active {
-      opacity: 0.9;
+    button.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+    button.secondary:hover {
+      background: #d4d4d8;
+    }
+
+    .back-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .back-btn-arrow {
+      font-size: 18px;
+      line-height: 1;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      color: #4b5563;
+      cursor: pointer;
+    }
+    .back-btn span {
+      font-size: 12px;
+    }
+    .original-box {
+      font-size: 12px;
+      color: #4b5563;
+      background: #e5e7eb;
+      border-radius: 10px;
+      padding: 6px 8px;
+      margin-bottom: 6px;
+    }
+    .original-label {
+      font-weight: 600;
+      margin-bottom: 2px;
     }
 
     @media (max-width: 480px) {
@@ -386,7 +432,6 @@
 </head>
 <body>
   <div class="page">
-    <!-- 상태바 -->
     <div class="status-bar">
       <div>오후 9:27</div>
       <div class="status-right">
@@ -403,7 +448,6 @@
       </div>
 
       <div class="phone-inner">
-        <!-- 상단 앱 헤더 -->
         <div class="app-header">
           <div class="header-left">
             <div class="avatar">AI</div>
@@ -415,53 +459,92 @@
           <div class="header-right">베타</div>
         </div>
 
-        <!-- 내용 영역 -->
         <div class="content">
-          <div class="section">
-            <div class="section-label">
-              상황 선택
-              <small>연애 / 친구 / 직장 / 가족</small>
-            </div>
-            <div class="tone-row">
-              <select id="toneSelect">
-                <option value="기본">기본</option>
-                <option value="연애">연애 · 썸</option>
-                <option value="직장">직장 상사 · 회사</option>
-                <option value="친구">친구</option>
-                <option value="가족">가족</option>
-              </select>
-              <div class="helper-text">상대와 관계가 제일 가까운 걸 골라주세요.</div>
-            </div>
-          </div>
-
-          <div class="section">
-            <div class="section-label">
-              상대방 메시지
-              <small>카톡 내용을 그대로 붙여 넣어도 됩니다.</small>
-            </div>
-            <textarea id="inputText" placeholder="예) 왜 요즘 연락 안 해?"></textarea>
-          </div>
-
-          <!-- 결과 + 히스토리 스크롤 영역 -->
-          <div class="scroll-area">
+          <!-- 🟢 화면 1: 입력 화면 -->
+          <div id="screen-input" class="screen active">
             <div class="section">
-              <h3>
-                AI 추천 답장
-                <span class="label-pill">위험도 · 센스 점수</span>
-              </h3>
-              <div id="result"></div>
+              <div class="section-label">
+                상황 선택
+                <small>연애 / 친구 / 직장 / 가족</small>
+              </div>
+              <div class="tone-row">
+                <select id="toneSelect">
+                  <option value="기본">기본</option>
+                  <option value="연애">연애 · 썸</option>
+                  <option value="직장">직장 상사 · 회사</option>
+                  <option value="친구">친구</option>
+                  <option value="가족">가족</option>
+                </select>
+                <div class="helper-text">상대와 관계가 제일 가까운 걸 골라주세요.</div>
+              </div>
             </div>
 
             <div class="section">
-              <h3>최근 대화 기록</h3>
-              <div id="history" class="history-empty">기록이 없습니다.</div>
+              <div class="section-label">
+                상대방 메시지
+                <small>카톡 내용을 그대로 붙여 넣어도 됩니다.</small>
+              </div>
+              <textarea id="inputText" placeholder="예) 왜 요즘 연락 안 해?"></textarea>
+            </div>
+
+            <div class="scroll-area">
+              <div class="section">
+                <h3>예시</h3>
+                <div class="original-box">
+                  <div class="original-label">예시 상황 · 연애</div>
+                  <div>“왜 이렇게 답장이 느려?”</div>
+                  <div style="margin-top:4px; font-size:11px; color:#6b7280;">
+                    → 답장 생성 후, 더 안전하고 센스 있게 바꾼 문장을 추천해줍니다.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bottom-bar">
+              <div class="bottom-hint">답장을 만들고 싶은 카톡 내용을 붙여 넣어 주세요.</div>
+              <button class="primary" onclick="sendText()">답장 생성</button>
             </div>
           </div>
 
-          <!-- 하단 바 -->
-          <div class="bottom-bar">
-            <div class="bottom-hint">답장을 고른 뒤, 오른쪽 버튼으로 복사해 사용하세요.</div>
-            <button class="primary" onclick="sendText()">답장 생성</button>
+          <!-- 🔵 화면 2: 결과 화면 -->
+          <div id="screen-result" class="screen">
+            <div class="back-row">
+              <div class="back-btn" onclick="backToInputScreen()">
+                <span class="back-btn-arrow">←</span>
+                <span>다시 입력하기</span>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-label">
+                상대방 메시지
+                <small>이 내용 기준으로 답장을 만들었어요.</small>
+              </div>
+              <div class="original-box">
+                <div class="original-label">메시지</div>
+                <div id="originalMessageText"></div>
+              </div>
+            </div>
+
+            <div class="scroll-area">
+              <div class="section">
+                <h3>
+                  AI 추천 답장
+                  <span class="label-pill">위험도 · 센스 점수</span>
+                </h3>
+                <div id="result"></div>
+              </div>
+
+              <div class="section">
+                <h3>최근 대화 기록</h3>
+                <div id="history" class="history-empty">기록이 없습니다.</div>
+              </div>
+            </div>
+
+            <div class="bottom-bar">
+              <div class="bottom-hint">마음에 드는 답장을 복사해서 카톡에 붙여 넣어 보세요.</div>
+              <button class="secondary" onclick="backToInputScreen()">← 다시 입력</button>
+            </div>
           </div>
         </div>
       </div>
@@ -469,6 +552,23 @@
   </div>
 
   <script>
+    function showScreen(name) {
+      const inputScreen = document.getElementById("screen-input");
+      const resultScreen = document.getElementById("screen-result");
+
+      if (name === "input") {
+        inputScreen.classList.add("active");
+        resultScreen.classList.remove("active");
+      } else if (name === "result") {
+        inputScreen.classList.remove("active");
+        resultScreen.classList.add("active");
+      }
+    }
+
+    function backToInputScreen() {
+      showScreen("input");
+    }
+
     function riskClass(score) {
       if (score >= 70) return "risk-high";
       if (score >= 30) return "risk-mid";
@@ -540,7 +640,7 @@
               const row = document.createElement("div");
               row.className = "reply-row";
               const main = document.createElement("div");
-                main.className = "reply-main";
+              main.className = "reply-main";
 
               const parts = line.split("||").map(p => p.trim());
               const textPart = parts[0] || line;
@@ -553,6 +653,10 @@
               row.appendChild(main);
               resultDiv.appendChild(row);
             });
+
+            // 과거 기록 눌렀을 때도 결과 화면으로 전환
+            document.getElementById("originalMessageText").textContent = item.input;
+            showScreen("result");
           };
 
           wrap.appendChild(meta);
@@ -578,7 +682,8 @@
       }
 
       resultDiv.textContent = "생성 중입니다...";
-
+      // 결과 화면으로 먼저 전환해도 되고, 성공 이후에 전환해도 됨
+      // 여기서는 성공 후에 전환
       try {
         const res = await fetch("/reply", {
           method: "POST",
@@ -597,110 +702,114 @@
           resultDiv.innerHTML = "";
           if (lines.length === 0) {
             resultDiv.textContent = "생성된 답장이 없습니다.";
-            return;
-          }
+          } else {
+            lines.forEach((line, idx) => {
+              const parts = line.split("||").map(p => p.trim());
+              let textPart = parts[0] || line;
+              const riskStr = parts[1] || "0";
+              const senseStr = parts[2] || "0";
+              const commentStr = parts[3] || "";
 
-          lines.forEach((line, idx) => {
-            const parts = line.split("||").map(p => p.trim());
-            let textPart = parts[0] || line;
-            const riskStr = parts[1] || "0";
-            const senseStr = parts[2] || "0";
-            const commentStr = parts[3] || "";
+              const risk = parseInt(riskStr) || 0;
+              const sense = parseInt(senseStr) || 0;
 
-            const risk = parseInt(riskStr) || 0;
-            const sense = parseInt(senseStr) || 0;
+              const row = document.createElement("div");
+              row.className = "reply-row";
 
-            const row = document.createElement("div");
-            row.className = "reply-row";
+              const main = document.createElement("div");
+              main.className = "reply-main";
 
-            const main = document.createElement("div");
-            main.className = "reply-main";
+              const mainText = document.createElement("div");
+              mainText.className = "reply-main-text";
+              mainText.textContent = `${idx + 1}. ${textPart}`;
 
-            const mainText = document.createElement("div");
-            mainText.className = "reply-main-text";
-            mainText.textContent = `${idx + 1}. ${textPart}`;
+              const actions = document.createElement("div");
+              actions.className = "reply-actions";
 
-            const actions = document.createElement("div");
-            actions.className = "reply-actions";
-
-            const copyBtn = document.createElement("button");
-            copyBtn.className = "copy-btn";
-            copyBtn.textContent = "복사";
-            copyBtn.onclick = async () => {
-              try {
-                await navigator.clipboard.writeText(textPart);
-                copyBtn.textContent = "복사됨";
-                setTimeout(() => (copyBtn.textContent = "복사"), 1100);
-              } catch (e) {
-                alert("복사에 실패했습니다: " + e);
-              }
-            };
-            actions.appendChild(copyBtn);
-
-            if (risk >= 70) {
-              const fixBtn = document.createElement("button");
-              fixBtn.className = "copy-btn";
-              fixBtn.textContent = "⚠ 안전 수정";
-              fixBtn.onclick = async () => {
+              const copyBtn = document.createElement("button");
+              copyBtn.className = "copy-btn";
+              copyBtn.textContent = "복사";
+              copyBtn.onclick = async () => {
                 try {
-                  fixBtn.textContent = "수정 중...";
-                  const toneNow = document.getElementById("toneSelect").value;
-                  const resFix = await fetch("/fix", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ text: textPart, tone: toneNow })
-                  });
-                  const fixData = await resFix.json();
-                  if (resFix.ok && fixData.fixed) {
-                    textPart = fixData.fixed;
-                    mainText.textContent = `${idx + 1}. ${textPart}`;
-                    fixBtn.textContent = "완료";
-                  } else {
-                    alert("수정 실패: " + JSON.stringify(fixData));
-                    fixBtn.textContent = "⚠ 안전 수정";
-                  }
+                  await navigator.clipboard.writeText(textPart);
+                  copyBtn.textContent = "복사됨";
+                  setTimeout(() => (copyBtn.textContent = "복사"), 1100);
                 } catch (e) {
-                  alert("수정 중 오류 발생: " + e);
-                  fixBtn.textContent = "⚠ 안전 수정";
+                  alert("복사에 실패했습니다: " + e);
                 }
               };
-              actions.appendChild(fixBtn);
-            }
+              actions.appendChild(copyBtn);
 
-            main.appendChild(mainText);
-            main.appendChild(actions);
+              if (risk >= 70) {
+                const fixBtn = document.createElement("button");
+                fixBtn.className = "copy-btn";
+                fixBtn.textContent = "⚠ 안전 수정";
+                fixBtn.onclick = async () => {
+                  try {
+                    fixBtn.textContent = "수정 중...";
+                    const toneNow = document.getElementById("toneSelect").value;
+                    const resFix = await fetch("/fix", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ text: textPart, tone: toneNow })
+                    });
+                    const fixData = await resFix.json();
+                    if (resFix.ok && fixData.fixed) {
+                      textPart = fixData.fixed;
+                      mainText.textContent = `${idx + 1}. ${textPart}`;
+                      fixBtn.textContent = "완료";
+                    } else {
+                      alert("수정 실패: " + JSON.stringify(fixData));
+                      fixBtn.textContent = "⚠ 안전 수정";
+                    }
+                  } catch (e) {
+                    alert("수정 중 오류 발생: " + e);
+                    fixBtn.textContent = "⚠ 안전 수정";
+                  }
+                };
+                actions.appendChild(fixBtn);
+              }
 
-            const meta = document.createElement("div");
-            meta.className = "meta";
+              main.appendChild(mainText);
+              main.appendChild(actions);
 
-            const riskSpan = document.createElement("span");
-            riskSpan.textContent = `위험도: ${risk}`;
-            riskSpan.className = riskClass(risk);
+              const meta = document.createElement("div");
+              meta.className = "meta";
 
-            const senseSpan = document.createElement("span");
-            senseSpan.textContent = ` / 센스: ${sense}`;
+              const riskSpan = document.createElement("span");
+              riskSpan.textContent = `위험도: ${risk}`;
+              riskSpan.className = riskClass(risk);
 
-            const commentSpan = document.createElement("span");
-            if (commentStr) {
-              commentSpan.textContent = ` / 설명: ${commentStr}`;
-            }
+              const senseSpan = document.createElement("span");
+              senseSpan.textContent = ` / 센스: ${sense}`;
 
-            meta.appendChild(riskSpan);
-            meta.appendChild(senseSpan);
-            if (commentStr) meta.appendChild(commentSpan);
+              const commentSpan = document.createElement("span");
+              if (commentStr) {
+                commentSpan.textContent = ` / 설명: ${commentStr}`;
+              }
 
-            row.appendChild(main);
-            row.appendChild(meta);
-            resultDiv.appendChild(row);
-          });
+              meta.appendChild(riskSpan);
+              meta.appendChild(senseSpan);
+              if (commentStr) meta.appendChild(commentSpan);
 
+              row.appendChild(main);
+              row.appendChild(meta);
+              resultDiv.appendChild(row);
+            });
+          }
+
+          // 원본 메시지 표시 + 히스토리 저장 + 결과 화면으로 전환
+          document.getElementById("originalMessageText").textContent = text;
           saveHistory(text, tone, lines);
           loadHistory();
+          showScreen("result");
         } else {
           resultDiv.textContent = "API 에러: " + JSON.stringify(data, null, 2);
+          showScreen("result");
         }
       } catch (err) {
         resultDiv.textContent = "요청 중 오류 발생: " + err;
+        showScreen("result");
       }
     }
 
