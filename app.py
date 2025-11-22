@@ -182,5 +182,21 @@ def icon_192():
 @app.route('/icon-512.png')
 def icon_512():
     return send_from_directory('.', 'icon-512.png')
+@app.route('/')
+def index():
+    return send_from_directory('.', 'index.html')
+
+@app.route('/manifest.json')
+def manifest():
+    return send_from_directory('.', 'manifest.json')
+
+@app.route('/icon-192.png')
+def icon192():
+    return send_from_directory('.', 'icon-192.png')
+
+@app.route('/icon-512.png')
+def icon512():
+    return send_from_directory('.', 'icon-512.png')
+
 
 
