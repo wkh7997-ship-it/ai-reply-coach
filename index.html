@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>AI 대화 코치 테스트</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    textarea {
+      width: 100%;
+      max-width: 500px;
+    }
+    #result > .reply-row {
+      margin-bottom: 10px;
+      padding: 6px 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .reply-main {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .meta {
+      font-size: 12px;
+      color: #555;
+    }
+    .risk-low {
+      color: #1a7f37;
+    }
+    .risk-mid {
+      color: #d97706;
+    }
+    .risk-high {
+      color: #b91c1c;
+      font-weight: 700;
+    }
+    .copy-btn {
+      padding: 2px 6px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: 4px;
+    }
+    #history .history-item {
+      border-bottom: 1px solid #eee;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+    #history .history-meta {
+      color: #555;
+    }
+    #history button {
+      font-size: 11px;
+      padding: 2px 6px;
+      margin-top: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>AI 답장 생성기</h1>
+
+  <!-- 상황(톤) 선택 -->
+  <label for="toneSelect">상황 선택:</label>
+  <select id="toneSelect">
+    <option value="기본">기본</option>
+    <option value="연애">연애/썸</option>
+    <option value="직장">직장 상사/회사</option>
+    <option value="친구">친구</option>
+    <option value="가족">가족</option>
+  </select>
+
+  <br><br>
+
+  <!-- 상대방 메시지 입력 -->
+  <textarea id="inputText" rows="5" cols="40" placeholder="상대방 메시지를 입력하세요"></textarea>
+  <br><br>
+  <button onclick="sendText()">답장 생성</button>
+
+  <h3>AI 추천 답장</h3>
+  <div id="result"></div>
+
+  <h3>최근 대화 기록</h3>
+  <div id="history"></div>
+
+  <script>
+    function riskClass(score) {
+      if (score >= 70) return "risk-high";
+      if (score >= 30) return "risk-mid";
+      return "risk-low";
+    }
+
+    // 🔹 히스토리 저장
+    function saveHistory(inputText, tone, lines) {
+      try {
+        const key = "reply_history_v1";
+        const raw = localStorage.getItem(key);
+        let arr = [];
+        if (raw) {
+          arr = JSON.parse(raw);
+        }
+
+        const item = {
+          time: Date.now(),
+          tone,
+          input: inputText,
+          replies: lines   // "문장 || 위험도 || ..." 형식 그대로 저장
+        };
+
+        arr.unshift(item);          // 앞에 추가
+        if (arr.length > 20) {      // 최대 20개만 유지
+          arr = arr.slice(0, 20);
+        }
+
+        localStorage.setItem(key, JSON.stringify(arr));
+      } catch (e) {
+        console.error("히스토리 저장 오류:", e);
+      }
+    }
+
+    // 🔹 히스토리 렌더링
+    function loadHistory() {
+      const key = "reply_history_v1";
+      const historyDiv = document.getElementById("history");
+      historyDiv.innerHTML = "";
+
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) {
+          historyDiv.textContent = "기록이 없습니다.";
+          return;
+        }
+
+        const arr = JSON.parse(raw);
+        if (!arr.length) {
+          historyDiv.textContent = "기록이 없습니다.";
+          return;
+        }
+
+        arr.forEach((item, idx) => {
+          const wrap = document.createElement("div");
+          wrap.className = "history-item";
+
+          const date = new Date(item.time);
+          const timeStr = date.toLocaleString();
+
+          const meta = document.createElement("div");
+          meta.className = "history-meta";
+          meta.textContent =
+            `${idx + 1}. [${item.tone}] ${timeStr}`;
+
+          const preview = document.createElement("div");
+          const inputPreview =
+            item.input.length > 30
+              ? item.input.slice(0, 30) + "..."
+              : item.input;
+          preview.textContent = `메시지: ${inputPreview}`;
+
+          const btn = document.createElement("button");
+          btn.textContent = "불러오기";
+          btn.onclick = () => {
+            document.getElementById("toneSelect").value = item.tone;
+            document.getElementById("inputText").value = item.input;
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = "";
+            item.replies.forEach((line, idx2) => {
+              const row = document.createElement("div");
+              row.className = "reply-row";
+              const main = document.createElement("div");
+              main.className = "reply-main";
+
+              const parts = line.split("||").map(p => p.trim());
+              const textPart = parts[0] || line;
+
+              main.textContent = `${idx2 + 1}. ${textPart}`;
+              row.appendChild(main);
+              resultDiv.appendChild(row);
+            });
+          };
+
+          wrap.appendChild(meta);
+          wrap.appendChild(preview);
+          wrap.appendChild(btn);
+
+          historyDiv.appendChild(wrap);
+        });
+      } catch (e) {
+        historyDiv.textContent = "히스토리를 불러오는 중 오류가 발생했습니다.";
+        console.error(e);
+      }
+    }
+
+    async function sendText() {
+      const text = document.getElementById("inputText").value.trim();
+      const tone = document.getElementById("toneSelect").value;
+      const resultDiv = document.getElementById("result");
+
+      if (!text) {
+        alert("먼저 메시지를 입력하세요!");
+        return;
+      }
+
+      resultDiv.textContent = "생성 중...";
+
+      try {
+        const res = await fetch("/reply", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, tone })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.reply) {
+          const lines = data.reply
+            .split("\n")
+            .map(l => l.trim())
+            .filter(l => l.length > 0);
+
+          resultDiv.innerHTML = "";
+
+          if (lines.length === 0) {
+            resultDiv.textContent = "생성된 답장이 없습니다.";
+            return;
+          }
+
+          // 화면에 표시 + 복사/수정 버튼
+          lines.forEach((line, idx) => {
+            const parts = line.split("||").map(p => p.trim());
+            let textPart   = parts[0] || line;
+            const riskStr    = parts[1] || "0";
+            const senseStr   = parts[2] || "0";
+            const commentStr = parts[3] || "";
+
+            const risk = parseInt(riskStr) || 0;
+            const sense = parseInt(senseStr) || 0;
+
+            const row = document.createElement("div");
+            row.className = "reply-row";
+
+            const main = document.createElement("div");
+            main.className = "reply-main";
+            main.textContent = `${idx + 1}. ${textPart}`;
+
+            // 복사 버튼
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "copy-btn";
+            copyBtn.textContent = "복사";
+            copyBtn.onclick = async () => {
+              try {
+                await navigator.clipboard.writeText(textPart);
+                copyBtn.textContent = "복사됨!";
+                setTimeout(() => (copyBtn.textContent = "복사"), 1200);
+              } catch (e) {
+                alert("복사에 실패했습니다: " + e);
+              }
+            };
+            main.appendChild(copyBtn);
+
+            // 🔥 위험도가 높으면 '안전하게 수정' 버튼 추가
+            if (risk >= 70) {
+              const fixBtn = document.createElement("button");
+              fixBtn.className = "copy-btn";
+              fixBtn.textContent = "⚠ 안전하게 수정";
+              fixBtn.onclick = async () => {
+                try {
+                  fixBtn.textContent = "수정 중...";
+                  const toneNow = document.getElementById("toneSelect").value;
+                  const resFix = await fetch("/fix", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: textPart, tone: toneNow })
+                  });
+                  const fixData = await resFix.json();
+                  if (resFix.ok && fixData.fixed) {
+                    textPart = fixData.fixed;
+                    main.firstChild.textContent = `${idx + 1}. ${textPart}`;
+                    fixBtn.textContent = "수정 완료";
+                  } else {
+                    alert("수정 실패: " + JSON.stringify(fixData));
+                    fixBtn.textContent = "⚠ 안전하게 수정";
+                  }
+                } catch (e) {
+                  alert("수정 중 오류 발생: " + e);
+                  fixBtn.textContent = "⚠ 안전하게 수정";
+                }
+              };
+              main.appendChild(fixBtn);
+            }
+
+            const meta = document.createElement("div");
+            meta.className = "meta";
+
+            const riskSpan = document.createElement("span");
+            riskSpan.textContent = `위험도: ${risk}`;
+            riskSpan.className = riskClass(risk);
+
+            const senseSpan = document.createElement("span");
+            senseSpan.textContent = ` / 센스: ${sense}`;
+
+            const commentSpan = document.createElement("span");
+            if (commentStr) {
+              commentSpan.textContent = ` / 설명: ${commentStr}`;
+            }
+
+            meta.appendChild(riskSpan);
+            meta.appendChild(senseSpan);
+            if (commentStr) meta.appendChild(commentSpan);
+
+            row.appendChild(main);
+            row.appendChild(meta);
+            resultDiv.appendChild(row);
+          });
+
+          // 🔹 히스토리 저장 & 갱신
+          saveHistory(text, tone, lines);
+          loadHistory();
+
+        } else {
+          resultDiv.textContent =
+            "API 에러: " + JSON.stringify(data, null, 2);
+        }
+      } catch (err) {
+        resultDiv.textContent = "요청 중 오류 발생: " + err;
+      }
+    }
+
+    // 페이지 처음 열릴 때 히스토리 로딩
+    window.onload = loadHistory;
+  </script>
+</body>
+</html>
