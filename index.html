@@ -8,8 +8,8 @@
     :root {
       --primary: #6366f1;
       --primary-dark: #4f46e5;
-      --bg1: #050816;   /* 상단 짙은 남색 */
-      --bg2: #3b1d6a;   /* 하단 보라색 */
+      --bg1: #050816;
+      --bg2: #3b1d6a;
       --text-main: #f9fafb;
       --text-sub: #a5b4fc;
       --border: rgba(255, 255, 255, 0.16);
@@ -28,7 +28,7 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(145deg, var(--bg1), var(--bg2)); /* 네가 올린 이미지 톤 */
+      background: linear-gradient(145deg, var(--bg1), var(--bg2));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -230,15 +230,18 @@
     }
   </style>
 </head>
+
 <body>
   <div class="page">
+
     <!-- 입력 카드 -->
     <div class="card" id="inputCard">
       <div class="header">
-        <!-- 🔹 메시지(채팅) 아이콘 – 카톡 로고 아님, 일반 말풍선 아이콘 -->
+
+        <!-- ✔ 메시지 말풍선 아이콘 (돋보기 아님) -->
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
              stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 11.5a8.38 8.38 0 0 1-1.9 5.4 8.5 8.5 0 0 1-6.6 3.1 8.38 8.38 0 0 1-5.4-1.9L3 21l2.9-4.1A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 7.1 4.9 8.38 8.38 0 0 1 12 3a8.5 8.5 0 0 1 8.5 8.5z"/>
+          <path d="M4 5h16v9H8l-4 4v-4z" />
         </svg>
 
         <div>
@@ -266,10 +269,13 @@
     <!-- 결과 카드 -->
     <div class="result-card" id="resultCard" style="display:none;">
       <div class="header">
+        
+        <!-- ✔ 메시지 말풍선 아이콘 (돋보기 아님) -->
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
              stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 11.5a8.38 8.38 0 0 1-1.9 5.4 8.5 8.5 0 0 1-6.6 3.1 8.38 8.38 0 0 1-5.4-1.9L3 21l2.9-4.1A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 7.1 4.9 8.38 8.38 0 0 1 12 3a8.5 8.5 0 0 1 8.5 8.5z"/>
+          <path d="M4 5h16v9H8l-4 4v-4z" />
         </svg>
+
         <div>
           <div class="title">AI 추천 답장</div>
           <div class="subtitle">위험도·센스 점수를 함께 참고해 보세요.</div>
@@ -283,157 +289,161 @@
 
       <div class="back-link" id="backBtn">← 다시 입력하기</div>
     </div>
+
   </div>
 
-  <script>
-    const btn = document.getElementById("generateBtn");
-    const msg = document.getElementById("message");
-    const ctx = document.getElementById("context");
-    const inputCard = document.getElementById("inputCard");
-    const resultCard = document.getElementById("resultCard");
-    const replyList = document.getElementById("replyList");
-    const emptyText = document.getElementById("emptyText");
-    const backBtn = document.getElementById("backBtn");
+<script>
+  const btn = document.getElementById("generateBtn");
+  const msg = document.getElementById("message");
+  const ctx = document.getElementById("context");
+  const inputCard = document.getElementById("inputCard");
+  const resultCard = document.getElementById("resultCard");
+  const replyList = document.getElementById("replyList");
+  const emptyText = document.getElementById("emptyText");
+  const backBtn = document.getElementById("backBtn");
 
-    btn.addEventListener("click", async () => {
-      if (!msg.value.trim()) {
-        alert("메시지를 입력해 주세요.");
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = "생성 중…";
-
-      try {
-        const res = await fetch("/reply", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: msg.value, context: ctx.value })
-        });
-
-        const data = await res.json();
-        render(extract(data));
-
-        inputCard.style.display = "none";
-        resultCard.style.display = "block";
-      } catch (e) {
-        console.error(e);
-        render("");
-        inputCard.style.display = "none";
-        resultCard.style.display = "block";
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "답장 생성";
-      }
-    });
-
-    function extract(d) {
-      if (!d) return "";
-      if (typeof d === "string") return d;
-      if (d.reply) return d.reply;
-      if (d.message) return d.message;
-      if (Array.isArray(d.replies)) return d.replies.join("\n\n");
-      return "";
+  btn.addEventListener("click", async () => {
+    if (!msg.value.trim()) {
+      alert("메시지를 입력해 주세요.");
+      return;
     }
 
-    function render(raw) {
-      replyList.innerHTML = "";
-      emptyText.style.display = "none";
+    btn.disabled = true;
+    btn.textContent = "생성 중…";
 
-      if (!raw || !raw.trim()) {
-        emptyText.style.display = "block";
-        return;
-      }
+    try {
+      const res = await fetch("/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: msg.value, context: ctx.value })
+      });
 
-      const blocks = raw.split(/\n\s*\n/).map(x => x.trim()).filter(Boolean);
-      if (!blocks.length) {
-        emptyText.style.display = "block";
-        return;
-      }
+      const data = await res.json();
+      render(extract(data));
 
-      blocks.forEach(b => replyList.appendChild(makeCard(b)));
+      inputCard.style.display = "none";
+      resultCard.style.display = "block";
+    } catch (e) {
+      console.error(e);
+      render("");
+      inputCard.style.display = "none";
+      resultCard.style.display = "block";
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "답장 생성";
+    }
+  });
+
+  function extract(d) {
+    if (!d) return "";
+    if (typeof d === "string") return d;
+    if (d.reply) return d.reply;
+    if (d.message) return d.message;
+    if (Array.isArray(d.replies)) return d.replies.join("\n\n");
+    return "";
+  }
+
+  function render(raw) {
+    replyList.innerHTML = "";
+    emptyText.style.display = "none";
+
+    if (!raw || !raw.trim()) {
+      emptyText.style.display = "block";
+      return;
     }
 
-    function makeCard(text) {
-      const p = text.split("||").map(x => x.trim());
-      const msg = p[0] || "";
-      const risk = parseInt(p[1] || "");
-      const warm = parseInt(p[2] || "");
-      const desc = p[3] || "";
-
-      let bar = "var(--safe)", cls = "", label = "위험도 정보 없음";
-
-      if (!isNaN(risk)) {
-        if (risk <= 30) {
-          bar = "var(--safe)"; cls = "tag-safe"; label = "위험도 낮음";
-        } else if (risk <= 60) {
-          bar = "var(--warn)"; cls = "tag-warn"; label = "주의 필요";
-        } else {
-          bar = "var(--danger)"; cls = "tag-danger"; label = "위험 가능성 높음";
-        }
-      }
-
-      const wrap = document.createElement("div");
-      wrap.className = "reply-card";
-
-      const barDiv = document.createElement("div");
-      barDiv.className = "reply-bar";
-      barDiv.style.background = bar;
-
-      const box = document.createElement("div");
-      box.className = "reply-content";
-
-      const msgEl = document.createElement("div");
-      msgEl.className = "reply-text";
-      msgEl.textContent = msg;
-
-      const meta = document.createElement("div");
-      meta.className = "meta";
-
-      if (!isNaN(risk)) {
-        const t = document.createElement("span");
-        t.className = `tag ${cls}`;
-        t.textContent = label;
-        meta.appendChild(t);
-      }
-
-      if (!isNaN(warm)) {
-        const t2 = document.createElement("span");
-        t2.className = "tag";
-        t2.textContent = `친절도 ${warm}`;
-        meta.appendChild(t2);
-      }
-
-      if (desc) {
-        const d = document.createElement("span");
-        d.textContent = desc;
-        meta.appendChild(d);
-      }
-
-      const copy = document.createElement("button");
-      copy.className = "copy-btn";
-      copy.textContent = "복사";
-      copy.onclick = () => navigator.clipboard.writeText(msg);
-
-      meta.appendChild(copy);
-
-      box.appendChild(msgEl);
-      box.appendChild(meta);
-
-      wrap.appendChild(barDiv);
-      wrap.appendChild(box);
-
-      return wrap;
+    const blocks = raw.split(/\n\s*\n/).map(x => x.trim()).filter(Boolean);
+    if (!blocks.length) {
+      emptyText.style.display = "block";
+      return;
     }
 
-    backBtn.onclick = () => {
-      resultCard.style.display = "none";
-      inputCard.style.display = "block";
-      window.scrollTo(0, 0);
-    };
-  </script>
+    blocks.forEach(b => replyList.appendChild(makeCard(b)));
+  }
+
+  function makeCard(text) {
+    const p = text.split("||").map(x => x.trim());
+    const msg = p[0] || "";
+    const risk = parseInt(p[1] || "");
+    const warm = parseInt(p[2] || "");
+    const desc = p[3] || "";
+
+    let bar = "var(--safe)", cls = "", label = "위험도 정보 없음";
+
+    if (!isNaN(risk)) {
+      if (risk <= 30) {
+        bar = "var(--safe)"; cls = "tag-safe"; label = "위험도 낮음";
+      } else if (risk <= 60) {
+        bar = "var(--warn)"; cls = "tag-warn"; label = "주의 필요";
+      } else {
+        bar = "var(--danger)"; cls = "tag-danger"; label = "위험 가능성 높음";
+      }
+    }
+
+    const wrap = document.createElement("div");
+    wrap.className = "reply-card";
+
+    const barDiv = document.createElement("div");
+    barDiv.className = "reply-bar";
+    barDiv.style.background = bar;
+
+    const box = document.createElement("div");
+    box.className = "reply-content";
+
+    const msgEl = document.createElement("div");
+    msgEl.className = "reply-text";
+    msgEl.textContent = msg;
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+
+    if (!isNaN(risk)) {
+      const t = document.createElement("span");
+      t.className = `tag ${cls}`;
+      t.textContent = label;
+      meta.appendChild(t);
+    }
+
+    if (!isNaN(warm)) {
+      const t2 = document.createElement("span");
+      t2.className = "tag";
+      t2.textContent = `친절도 ${warm}`;
+      meta.appendChild(t2);
+    }
+
+    if (desc) {
+      const d = document.createElement("span");
+      d.textContent = desc;
+      meta.appendChild(d);
+    }
+
+    const copy = document.createElement("button");
+    copy.className = "copy-btn";
+    copy.textContent = "복사";
+    copy.onclick = () => navigator.clipboard.writeText(msg);
+
+    meta.appendChild(copy);
+
+    box.appendChild(msgEl);
+    box.appendChild(meta);
+
+    wrap.appendChild(barDiv);
+    wrap.appendChild(box);
+
+    return wrap;
+  }
+
+  backBtn.onclick = () => {
+    resultCard.style.display = "none";
+    inputCard.style.display = "block";
+    window.scrollTo(0, 0);
+  };
+</script>
+
 </body>
 </html>
+
+
 
 
 
