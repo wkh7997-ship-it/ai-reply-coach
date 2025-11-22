@@ -29,6 +29,10 @@ def icon_192():
 @app.route("/icon-512.png")
 def icon_512():
     return send_from_directory(".", "icon-512.png")
+@app.route("/service-worker.js")
+def service_worker():
+    # service-worker.js 파일을 루트에서 그대로 내려줌
+    return send_from_directory(".", "service-worker.js")
 
 
 # ----------------------
@@ -175,6 +179,7 @@ def fix_reply():
 if __name__ == "__main__":
     # Render에서는 이 블록이 직접 실행되진 않지만, 로컬 테스트용으로 둬도 됨
     app.run(host="0.0.0.0", port=5000, debug=True)
+
 
 
 
