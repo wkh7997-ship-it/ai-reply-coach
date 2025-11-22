@@ -6,14 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg-start: #111827;
-      --bg-end: #1f2937;
       --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --card-bg: rgba(15, 23, 42, 0.9);
-      --border: rgba(148, 163, 184, 0.6);
-      --text-main: #f9fafb;
-      --text-sub: #9ca3af;
+      --primary-dark: #4338ca;
+      --bg1: #0d0f25;
+      --bg2: #2d0f45;
+      --text-main: #ffffff;
+      --text-sub: #a5b4fc;
+      --border: rgba(255, 255, 255, 0.15);
       --safe: #22c55e;
       --warn: #eab308;
       --danger: #ef4444;
@@ -23,18 +22,17 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     body {
       min-height: 100vh;
-      background: radial-gradient(circle at bottom, #4c1d95 0, #020617 55%);
-      color: var(--text-main);
+      background: linear-gradient(145deg, var(--bg1), var(--bg2));
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 20px;
+      color: var(--text-main);
     }
 
     .page {
@@ -43,71 +41,50 @@
     }
 
     .card {
-      background: var(--card-bg);
-      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(25px);
+      border-radius: 22px;
       border: 1px solid var(--border);
-      padding: 22px 20px 18px;
-      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(20px);
+      padding: 25px 22px 22px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
     }
 
-    .card-header {
+    .header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .title-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
     .title {
       font-size: 22px;
       font-weight: 800;
-      letter-spacing: -0.03em;
     }
 
     .subtitle {
       font-size: 12px;
       color: var(--text-sub);
-    }
-
-    .badge-outline {
-      font-size: 11px;
-      color: var(--text-sub);
-      border-radius: 999px;
-      padding: 4px 10px;
-      border: 1px solid var(--border);
+      margin-top: 2px;
     }
 
     label {
       display: block;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
-      color: #e5e7eb;
+      margin-top: 16px;
       margin-bottom: 6px;
-      margin-top: 12px;
+      color: #c7d2fe;
     }
 
     select,
     textarea {
       width: 100%;
       border-radius: 16px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      padding: 11px 13px;
-      font-size: 14px;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      outline: none;
-    }
-
-    select:focus,
-    textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 12px 15px;
+      background: rgba(255, 255, 255, 0.07);
+      color: #ffffff;
+      font-size: 15px;
     }
 
     textarea {
@@ -117,168 +94,144 @@
 
     .hint {
       font-size: 11px;
-      color: var(--text-sub);
+      color: #c7c9ff;
       margin-top: 4px;
     }
 
     .btn-primary {
       width: 100%;
       border: none;
-      border-radius: 999px;
-      padding: 13px 16px;
+      border-radius: 14px;
+      padding: 14px 16px;
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: #ffffff;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
-      margin-top: 18px;
+      margin-top: 22px;
       cursor: pointer;
     }
 
     .btn-primary:disabled {
       opacity: 0.6;
-      cursor: default;
     }
 
-    .btn-primary:active {
-      transform: translateY(1px);
-    }
-
-    /* 결과 카드 */
     .result-card {
-      margin-top: 18px;
-      background: var(--card-bg);
-      border-radius: 26px;
+      margin-top: 24px;
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(25px);
+      border-radius: 22px;
       border: 1px solid var(--border);
-      padding: 20px 18px 18px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
-      backdrop-filter: blur(20px);
-    }
-
-    .result-title {
-      font-size: 19px;
-      font-weight: 800;
-      margin-bottom: 4px;
-    }
-
-    .result-sub {
-      font-size: 12px;
-      color: var(--text-sub);
-      margin-bottom: 12px;
+      padding: 25px 22px 22px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
     }
 
     .reply-list {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 15px;
     }
 
     .reply-card {
-      position: relative;
       display: flex;
-      gap: 10px;
+      gap: 12px;
     }
 
     .reply-bar {
-      width: 5px;
+      width: 6px;
       border-radius: 999px;
-      margin-top: 6px;
-      margin-bottom: 6px;
-      background: var(--safe);
     }
 
     .reply-content {
       flex: 1;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(255, 255, 255, 0.07);
       border-radius: 18px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      padding: 11px 12px 9px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 14px 15px 10px;
     }
 
     .reply-text {
+      white-space: pre-wrap;
       font-size: 14px;
       line-height: 1.55;
-      color: #e5e7eb;
-      white-space: pre-wrap;
     }
 
-    .reply-meta {
-      margin-top: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .meta {
+      margin-top: 8px;
       font-size: 11px;
-      color: var(--text-sub);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: #d1d5db;
     }
 
     .tag {
-      padding: 3px 8px;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      font-size: 11px;
+      padding: 3px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
     }
 
     .tag-safe {
-      border-color: rgba(34, 197, 94, 0.7);
       color: var(--safe);
-      background: rgba(22, 163, 74, 0.08);
+      border-color: var(--safe);
+      background: rgba(34, 197, 94, 0.12);
     }
 
     .tag-warn {
-      border-color: rgba(234, 179, 8, 0.7);
       color: var(--warn);
-      background: rgba(234, 179, 8, 0.08);
+      border-color: var(--warn);
+      background: rgba(234, 179, 8, 0.12);
     }
 
     .tag-danger {
-      border-color: rgba(239, 68, 68, 0.7);
       color: var(--danger);
-      background: rgba(239, 68, 68, 0.08);
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.12);
     }
 
     .copy-btn {
       margin-left: auto;
       border: none;
-      border-radius: 999px;
-      background: rgba(99, 102, 241, 1);
-      color: #ffffff;
+      background: rgba(99, 102, 241, 0.8);
+      padding: 6px 10px;
+      border-radius: 10px;
       font-size: 11px;
-      padding: 5px 9px;
       cursor: pointer;
-    }
-
-    .back-link {
-      margin-top: 14px;
-      font-size: 13px;
-      color: var(--text-sub);
-      text-align: center;
-      cursor: pointer;
-    }
-
-    .back-link span {
-      color: #e5e7eb;
-      text-decoration: underline;
+      color: white;
     }
 
     .empty-text {
+      margin-top: 12px;
       font-size: 13px;
-      color: var(--text-sub);
-      margin-top: 6px;
+      color: #d1d5db;
+    }
+
+    .back-link {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 13px;
+      cursor: pointer;
+      color: #cbd5ff;
     }
   </style>
 </head>
 <body>
   <div class="page">
-    <!-- 입력 카드 -->
     <div class="card" id="inputCard">
-      <div class="card-header">
-        <div class="title-wrap">
+
+      <div class="header">
+        <!-- 메시지 아이콘 -->
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+             stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 11.5a8.38 8.38 0 0 1-1.9 5.4 8.5 8.5 0 0 1-6.6 3.1 8.38 8.38 0 0 1-5.4-1.9L3 21l2.9-4.1A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 7.1 4.9 8.38 8.38 0 0 1 12 3a8.5 8.5 0 0 1 8.5 8.5z"/>
+        </svg>
+
+        <div>
           <div class="title">AI 대화 코치</div>
           <div class="subtitle">카톡 답장, 같이 생각해주는 파트너</div>
         </div>
-        <div class="badge-outline">베타 버전</div>
       </div>
 
-      <label for="context">상황 선택</label>
+      <label>상황 선택</label>
       <select id="context">
         <option value="basic">기본</option>
         <option value="love">연애</option>
@@ -287,24 +240,23 @@
         <option value="family">가족</option>
       </select>
 
-      <label for="message">상대방 메시지</label>
-      <textarea
-        id="message"
-        placeholder="예) 오늘 뭐할까?"
-      ></textarea>
-      <div class="hint">답장을 만들고 싶은 카톡 내용을 그대로 붙여 넣어 주세요.</div>
+      <label>상대방 메시지</label>
+      <textarea id="message" placeholder="예) 오늘 뭐할까?"></textarea>
+      <div class="hint">카톡 내용을 그대로 붙여 넣어주세요.</div>
 
       <button class="btn-primary" id="generateBtn">답장 생성</button>
     </div>
 
-    <!-- 결과 카드 -->
     <div class="result-card" id="resultCard" style="display:none;">
-      <div class="card-header" style="margin-bottom:10px;">
-        <div class="title-wrap">
-          <div class="result-title">AI 추천 답장</div>
-          <div class="result-sub">위험도 · 센스 점수를 함께 참고해 보세요.</div>
+      <div class="header">
+        <svg width="26" height="26" fill="none" stroke="#ffffff" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M21 11.5a8.38 8.38 0 0 1-1.9 5.4 8.5 8.5 0 0 1-6.6 3.1 8.38 8.38 0 0 1-5.4-1.9L3 21l2.9-4.1A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 7.1 4.9 8.38 8.38 0 0 1 12 3a8.5 8.5 0 0 1 8.5 8.5z"/>
+        </svg>
+        <div>
+          <div class="title">AI 추천 답장</div>
+          <div class="subtitle">위험도·센스 점수를 함께 참고하세요.</div>
         </div>
-        <div class="badge-outline">베타 버전</div>
       </div>
 
       <div class="reply-list" id="replyList"></div>
@@ -312,211 +264,147 @@
         추천 답장을 가져오지 못했습니다.
       </div>
 
-      <div class="back-link" id="backBtn">
-        ← <span>다른 메시지로 다시 해보기</span>
-      </div>
+      <div class="back-link" id="backBtn">← 다시 입력하기</div>
     </div>
   </div>
 
   <script>
-    const generateBtn = document.getElementById("generateBtn");
-    const contextEl = document.getElementById("context");
-    const messageEl = document.getElementById("message");
+    const btn = document.getElementById("generateBtn");
+    const msg = document.getElementById("message");
+    const ctx = document.getElementById("context");
     const inputCard = document.getElementById("inputCard");
     const resultCard = document.getElementById("resultCard");
-    const replyListEl = document.getElementById("replyList");
-    const emptyTextEl = document.getElementById("emptyText");
+    const replyList = document.getElementById("replyList");
+    const emptyText = document.getElementById("emptyText");
     const backBtn = document.getElementById("backBtn");
 
-    // 답장 생성 버튼
-    generateBtn.addEventListener("click", async () => {
-      const text = messageEl.value.trim();
-      if (!text) {
-        alert("상대방 메시지를 입력해 주세요.");
-        return;
-      }
+    btn.addEventListener("click", async () => {
+      if (!msg.value.trim()) return alert("메시지를 입력해 주세요.");
 
-      generateBtn.disabled = true;
-      generateBtn.textContent = "생성 중…";
+      btn.disabled = true;
+      btn.textContent = "생성 중…";
 
       try {
         const res = await fetch("/reply", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text,
-            context: contextEl.value,
-          }),
+          body: JSON.stringify({ text: msg.value, context: ctx.value })
         });
 
         const data = await res.json();
-
-        // 서버 응답 디버그가 필요하면 이 줄 잠깐 풀어서 확인:
-        // alert(JSON.stringify(data));
-
-        const raw = extractRawText(data);
-        renderReplies(raw);
+        render(extract(data));
 
         inputCard.style.display = "none";
         resultCard.style.display = "block";
-      } catch (e) {
-        console.error(e);
-        renderReplies("");
-        inputCard.style.display = "none";
-        resultCard.style.display = "block";
+      } catch {
+        render("");
       } finally {
-        generateBtn.disabled = false;
-        generateBtn.textContent = "답장 생성";
+        btn.disabled = false;
+        btn.textContent = "답장 생성";
       }
     });
 
-    // 여러 타입의 응답에서 문자열 뽑기
-    function extractRawText(data) {
-      if (!data) return "";
-
-      // 1) 문자열 그대로 온 경우
-      if (typeof data === "string") return data;
-
-      // 2) { reply: "..." }
-      if (typeof data.reply === "string" && data.reply.trim().length > 0) {
-        return data.reply;
-      }
-
-      // 3) { message: "..." }
-      if (typeof data.message === "string" && data.message.trim().length > 0) {
-        return data.message;
-      }
-
-      // 4) { replies: ["...", "..."] }
-      if (Array.isArray(data.replies) && data.replies.length > 0) {
-        return data.replies.join("\n\n");
-      }
-
+    function extract(d) {
+      if (!d) return "";
+      if (typeof d === "string") return d;
+      if (d.reply) return d.reply;
+      if (d.message) return d.message;
+      if (Array.isArray(d.replies)) return d.replies.join("\n\n");
       return "";
     }
 
-    // 추천 답장 렌더링
-    function renderReplies(raw) {
-      replyListEl.innerHTML = "";
-      emptyTextEl.style.display = "none";
+    function render(raw) {
+      replyList.innerHTML = "";
+      emptyText.style.display = "none";
 
-      if (!raw || raw.trim().length === 0) {
-        emptyTextEl.style.display = "block";
+      if (!raw.trim()) {
+        emptyText.style.display = "block";
         return;
       }
 
-      const blocks = raw
-        .split(/\n\s*\n/)
-        .map((b) => b.trim())
-        .filter((b) => b.length > 0);
+      const blocks = raw.split(/\n\s*\n/).map(x => x.trim()).filter(Boolean);
 
-      if (blocks.length === 0) {
-        emptyTextEl.style.display = "block";
-        return;
-      }
-
-      blocks.forEach((block) => {
-        const card = createReplyCard(block);
-        replyListEl.appendChild(card);
-      });
+      blocks.forEach(b => replyList.appendChild(makeCard(b)));
     }
 
-    // 한 개 카드 만들기: "문장 || 10 || 80 || 설명"
-    function createReplyCard(block) {
-      const parts = block.split("||").map((p) => p.trim());
+    function makeCard(text) {
+      const p = text.split("||").map(x => x.trim());
+      const msg = p[0] || "";
+      const risk = parseInt(p[1] || "");
+      const warm = parseInt(p[2] || "");
+      const desc = p[3] || "";
 
-      const text = parts[0] || block;
-      const risk = parts[1] ? parseInt(parts[1], 10) : null;
-      const warm = parts[2] ? parseInt(parts[2], 10) : null;
-      const desc = parts[3] || "";
-
-      let riskLabel = "위험도 정보 없음";
-      let riskClass = "";
-      let barColor = "var(--safe)";
+      let bar = "var(--safe)", cls = "", label = "위험도 정보 없음";
 
       if (!isNaN(risk)) {
-        if (risk <= 30) {
-          riskLabel = "위험도 낮음";
-          riskClass = "tag-safe";
-          barColor = "var(--safe)";
-        } else if (risk <= 60) {
-          riskLabel = "주의 필요";
-          riskClass = "tag-warn";
-          barColor = "var(--warn)";
-        } else {
-          riskLabel = "위험 가능성 높음";
-          riskClass = "tag-danger";
-          barColor = "var(--danger)";
-        }
+        if (risk <= 30) { bar="var(--safe)"; cls="tag-safe"; label="위험도 낮음"; }
+        else if (risk <= 60) { bar="var(--warn)"; cls="tag-warn"; label="주의 필요"; }
+        else { bar="var(--danger)"; cls="tag-danger"; label="위험 가능성 높음"; }
       }
 
       const wrap = document.createElement("div");
       wrap.className = "reply-card";
 
-      const bar = document.createElement("div");
-      bar.className = "reply-bar";
-      bar.style.background = barColor;
+      const barDiv = document.createElement("div");
+      barDiv.className = "reply-bar";
+      barDiv.style.background = bar;
 
-      const content = document.createElement("div");
-      content.className = "reply-content";
+      const box = document.createElement("div");
+      box.className = "reply-content";
 
-      const textEl = document.createElement("div");
-      textEl.className = "reply-text";
-      textEl.textContent = text;
+      const msgEl = document.createElement("div");
+      msgEl.className = "reply-text";
+      msgEl.textContent = msg;
 
       const meta = document.createElement("div");
-      meta.className = "reply-meta";
+      meta.className = "meta";
 
-      if (riskClass) {
-        const riskTag = document.createElement("span");
-        riskTag.className = `tag ${riskClass}`;
-        riskTag.textContent = riskLabel;
-        meta.appendChild(riskTag);
+      if (!isNaN(risk)) {
+        const t = document.createElement("span");
+        t.className = `tag ${cls}`;
+        t.textContent = label;
+        meta.appendChild(t);
       }
 
       if (!isNaN(warm)) {
-        const warmTag = document.createElement("span");
-        warmTag.className = "tag";
-        warmTag.textContent = `친절도 ${warm}`;
-        meta.appendChild(warmTag);
+        const t2 = document.createElement("span");
+        t2.className = "tag";
+        t2.textContent = `친절도 ${warm}`;
+        meta.appendChild(t2);
       }
 
       if (desc) {
-        const descSpan = document.createElement("span");
-        descSpan.textContent = desc;
-        meta.appendChild(descSpan);
+        const d = document.createElement("span");
+        d.textContent = desc;
+        meta.appendChild(d);
       }
 
-      const copyBtn = document.createElement("button");
-      copyBtn.className = "copy-btn";
-      copyBtn.textContent = "복사";
-      copyBtn.addEventListener("click", () => {
-        navigator.clipboard
-          .writeText(text)
-          .then(() => alert("클립보드에 복사되었습니다."))
-          .catch(() => alert("복사에 실패했습니다."));
-      });
+      const copy = document.createElement("button");
+      copy.className = "copy-btn";
+      copy.textContent = "복사";
+      copy.onclick = () => navigator.clipboard.writeText(msg);
 
-      meta.appendChild(copyBtn);
+      meta.appendChild(copy);
 
-      content.appendChild(textEl);
-      content.appendChild(meta);
+      box.appendChild(msgEl);
+      box.appendChild(meta);
 
-      wrap.appendChild(bar);
-      wrap.appendChild(content);
+      wrap.appendChild(barDiv);
+      wrap.appendChild(box);
 
       return wrap;
     }
 
-    // 다시 입력하기
-    backBtn.addEventListener("click", () => {
+    backBtn.onclick = () => {
       resultCard.style.display = "none";
       inputCard.style.display = "block";
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
+      window.scrollTo(0, 0);
+    };
   </script>
 </body>
 </html>
+
+
 
 
 
