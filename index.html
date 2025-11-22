@@ -21,7 +21,51 @@
       --warn: #eab308;
       --danger: #ef4444;
     }
+.primary-btn {
+  position: relative;
+  width: 100%;
+  padding: 16px 24px;
+  border-radius: 999px; /* 완전 동그란 캡슐형 */
+  border: none;
+  outline: none;
+  cursor: pointer;
 
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.45);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.2s ease,
+    filter 0.2s ease;
+}
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(129, 140, 248, 0.6);
+  filter: brightness(1.05);
+}
+
+.primary-btn:active {
+  transform: translateY(1px) scale(0.99);
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.5);
+}
+
+.primary-btn:focus-visible {
+  outline: 2px solid rgba(129, 140, 248, 0.9);
+  outline-offset: 3px;
+}
+
+.primary-btn:disabled {
+  cursor: default;
+  background: linear-gradient(135deg, #4b5563, #6b7280);
+  box-shadow: none;
+  filter: grayscale(0.1);
+  opacity: 0.85;
+}
     * {
       box-sizing: border-box;
       margin: 0;
@@ -571,6 +615,7 @@
   </script>
 </body>
 </html>
+
 
 
 
