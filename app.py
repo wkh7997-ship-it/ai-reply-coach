@@ -168,4 +168,19 @@ def fix_reply():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+from flask import Flask, send_from_directory
+
+app = Flask(__name__)
+
+@app.route('/manifest.json')
+def manifest():
+    return send_from_directory('.', 'manifest.json')
+@app.route('/icon-192.png')
+def icon_192():
+    return send_from_directory('.', 'icon-192.png')
+
+@app.route('/icon-512.png')
+def icon_512():
+    return send_from_directory('.', 'icon-512.png')
+
 
