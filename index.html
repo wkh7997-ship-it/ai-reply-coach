@@ -94,20 +94,20 @@
     }
 
     .header-text-main {
-      font-size: 20px;
+      font-size: 21px;
       font-weight: 800;
       letter-spacing: -0.02em;
     }
 
     .header-text-sub {
       margin-top: 2px;
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-sub);
     }
 
     .status-text {
       margin-top: 10px;
-      font-size: 12px;
+      font-size: 13px;
       color: #a5b4fc;
       min-height: 16px;
     }
@@ -119,7 +119,7 @@
     }
 
     .field-label {
-      font-size: 13px;
+      font-size: 14px;
       margin-bottom: 6px;
       color: #c7d2fe;
     }
@@ -136,7 +136,7 @@
       border: 1px solid var(--border);
       background: rgba(15, 23, 42, 0.98);
       color: var(--text-main);
-      font-size: 15px;
+      font-size: 16px;
       padding: 12px 14px;
       outline: none;
       transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
@@ -171,7 +171,7 @@
     }
 
     .hint {
-      font-size: 12px;
+      font-size: 13px;
       color: #94a3b8;
       margin-top: -2px;
       margin-bottom: 16px;
@@ -182,7 +182,7 @@
       border: none;
       border-radius: 18px;
       padding: 13px 16px;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
       color: white;
       background: linear-gradient(90deg, var(--primary), var(--primary-dark));
@@ -197,7 +197,7 @@
     }
 
     .btn-primary span {
-      font-size: 17px;
+      font-size: 18px;
     }
 
     .btn-primary:active {
@@ -214,7 +214,7 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 8px;
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-sub);
     }
 
@@ -227,7 +227,7 @@
       gap: 4px;
       cursor: pointer;
       color: #c7d2fe;
-      font-size: 13px;
+      font-size: 14px;
     }
 
     .back-link span {
@@ -242,14 +242,14 @@
       border-radius: 14px;
       border: 1px solid rgba(148, 163, 184, 0.4);
       background: rgba(15, 23, 42, 0.98);
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.5;
       color: #e5e7eb;
       word-break: break-word;
     }
 
     .original-msg-label {
-      font-size: 11px;
+      font-size: 12px;
       color: #9ca3af;
       margin-bottom: 4px;
     }
@@ -266,7 +266,7 @@
     }
 
     .result-title {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       margin-bottom: 10px;
       display: flex;
@@ -276,7 +276,7 @@
     }
 
     .result-title span {
-      font-size: 11px;
+      font-size: 12px;
       color: #94a3b8;
       font-weight: 400;
     }
@@ -290,17 +290,17 @@
     }
 
     .answer-text {
-      font-size: 14px;
-      margin-bottom: 4px;
+      font-size: 15px;
+      margin-bottom: 5px;
     }
 
     .answer-meta {
       display: flex;
-      justify-content: space-between;
-      align-items: flex-start; /* 복사 버튼을 항상 위쪽에 */
-      font-size: 11px;
-      color: #9ca3af;
+      flex-direction: column;   /* 칩 위, 복사 버튼 아래 */
+      align-items: stretch;
       gap: 6px;
+      font-size: 12px;
+      color: #9ca3af;
     }
 
     .chips {
@@ -311,10 +311,17 @@
     }
 
     .chip {
-      padding: 2px 8px;
+      padding: 3px 9px;
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, 0.7);
       background: rgba(15, 23, 42, 0.9);
+      font-size: 12px;
+      /* 긴 설명칩도 카드 안에서 줄바꿈되도록 */
+      white-space: normal;
+    }
+
+    /* 점수칩만 한 줄 유지 */
+    .chip.score {
       white-space: nowrap;
     }
 
@@ -339,15 +346,15 @@
     .copy-btn {
       border-radius: 999px;
       border: none;
-      padding: 4px 12px;
-      font-size: 11px;
+      padding: 5px 14px;
+      font-size: 12px;
       background: rgba(79, 70, 229, 0.9);
       color: #e5e7ff;
       cursor: pointer;
       white-space: nowrap;
-      min-width: 44px;
+      min-width: 52px;
       text-align: center;
-      margin-left: auto;
+      align-self: flex-end;   /* 항상 오른쪽 아래 정렬 */
     }
 
     .copy-btn:active {
@@ -549,7 +556,7 @@
       };
     }
 
-    // "위험도 낮음", "낮음", "센스 높음" 같은 문자열에서 레벨/점수 추출
+    // "위험도 낮음", "센스 높음" 같은 문자열을 점수/레벨로 변환
     function parseLevel(raw, kind) {
       const s = (raw || "").toString();
       let level = "";
@@ -562,23 +569,12 @@
       else if (level === "중간") score = "55";
       else if (level === "높음") score = "85";
 
-      // 레이블 텍스트 생성
-      if (!level) {
-        return { level: "", score: "", text: "" };
-      }
+      if (!level) return { level: "", score: "", text: "" };
 
       if (kind === "risk") {
-        return {
-          level,
-          score,
-          text: `위험도 ${score}점 · ${level}`
-        };
+        return { level, score, text: `위험도 ${score}점 · ${level}` };
       } else {
-        return {
-          level,
-          score,
-          text: `센스 ${score}점 · ${level}`
-        };
+        return { level, score, text: `센스 ${score}점 · ${level}` };
       }
     }
 
@@ -660,7 +656,7 @@
         lines.forEach((line, idx) => {
           const { text: rawText, risk, sense, comment } = parseLine(line);
 
-          // 앞쪽 "1. " 같은 번호 제거
+          // 앞에 붙은 "1. " 같은 번호 제거
           const answerText = rawText.replace(/^\d+\.\s*/, "");
 
           const riskInfo = parseLevel(risk, "risk");
@@ -675,12 +671,12 @@
               <div class="chips">
                 ${
                   riskInfo.text
-                    ? `<span class="chip ${levelClass(riskInfo.level)}">${riskInfo.text}</span>`
+                    ? `<span class="chip score ${levelClass(riskInfo.level)}">${riskInfo.text}</span>`
                     : ""
                 }
                 ${
                   senseInfo.text
-                    ? `<span class="chip">${senseInfo.text}</span>`
+                    ? `<span class="chip score">${senseInfo.text}</span>`
                     : ""
                 }
                 ${comment ? `<span class="chip">${comment}</span>` : ""}
@@ -714,6 +710,7 @@
   </script>
 </body>
 </html>
+
 
 
 
