@@ -12,7 +12,7 @@
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(135deg, #283048, #4b6cb7); /* 🔹 컬러 배경 */
+      background: linear-gradient(135deg, #283048, #4b6cb7);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -21,65 +21,64 @@
 
     .app-container {
       width: 100%;
-      max-width: 420px;               /* 모바일 기준 폭 */
-      padding: 12px;
+      max-width: 420px;
+      padding: 8px;
     }
 
     .card {
       background: rgba(255, 255, 255, 0.98);
-      border-radius: 22px;
-      padding: 16px 16px 14px 16px;   /* 패딩 줄여서 한 화면에 */
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+      border-radius: 20px;
+      padding: 12px 14px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
     }
 
-    /* 상단 헤더 영역 */
     .header-row {
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .icon-circle {
-      width: 40px;
-      height: 40px;
+      width: 34px;
+      height: 34px;
       border-radius: 999px;
       background: #e5edff;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 10px;
+      margin-right: 8px;
       flex-shrink: 0;
     }
 
     .icon-circle img {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
     }
 
     .header-text-main {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 800;
       color: #111827;
       margin-bottom: 2px;
     }
 
     .header-text-sub {
-      font-size: 12px;
+      font-size: 11px;
       color: #6b7280;
     }
 
     .section-title {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
-      margin: 8px 0 6px 0;
+      margin: 6px 0 4px 0;
       color: #111827;
     }
 
     select {
       width: 100%;
-      padding: 8px 10px;
-      font-size: 14px;
-      border-radius: 10px;
+      padding: 7px 8px;
+      font-size: 13px;
+      border-radius: 8px;
       border: 1px solid #d1d5db;
       background: #f9fafb;
       outline: none;
@@ -87,10 +86,10 @@
 
     textarea {
       width: 100%;
-      height: 80px;        /* 🔹 높이 줄임 */
-      padding: 10px;
-      font-size: 14px;
-      border-radius: 10px;
+      height: 70px;
+      padding: 8px;
+      font-size: 13px;
+      border-radius: 8px;
       border: 1px solid #d1d5db;
       background: #f9fafb;
       resize: none;
@@ -105,16 +104,16 @@
 
     .btn {
       width: 100%;
-      margin-top: 10px;
-      padding: 10px;
-      font-size: 15px;
+      margin-top: 8px;
+      padding: 9px;
+      font-size: 14px;
       font-weight: 700;
       border-radius: 999px;
       border: none;
       cursor: pointer;
       background: #4b6cb7;
       color: #ffffff;
-      box-shadow: 0 3px 10px rgba(75, 108, 183, 0.4);
+      box-shadow: 0 3px 8px rgba(75, 108, 183, 0.4);
     }
 
     .btn:active {
@@ -122,17 +121,16 @@
     }
 
     .reply-box {
-      margin-top: 10px;
-      padding: 10px 12px;
+      margin-top: 8px;
+      padding: 10px 10px;
       border-radius: 14px;
       background: #f3f4ff;
       border-left: 4px solid #4b6cb7;
       font-size: 14px;
-      color: #111827;    /* 🔹 검은 계열 텍스트 */
+      color: #111827;
       white-space: pre-wrap;
-      max-height: 120px; /* 너무 길면 내부 스크롤 */
+      max-height: 180px;
       overflow-y: auto;
-      display: none;
     }
 
     .reply-label {
@@ -142,25 +140,34 @@
       margin-bottom: 4px;
     }
 
+    .small-btn {
+      margin-top: 10px;
+      width: 100%;
+      padding: 8px;
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      color: #374151;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
 <div class="app-container">
-  <div class="card">
-    <!-- 상단 헤더 -->
+  <!-- 🔵 화면 1: 입력 화면 -->
+  <div id="screen-input" class="card">
     <div class="header-row">
       <div class="icon-circle">
-        <!-- 간단한 말풍선 아이콘 -->
         <img src="https://cdn-icons-png.flaticon.com/512/2462/2462719.png" alt="chat">
       </div>
       <div>
         <div class="header-text-main">AI 대화 코치</div>
-        <div class="header-text-sub">카톡 답장, 말실수 걱정될 때 써보세요.</div>
+        <div class="header-text-sub">카톡 답장, 뭐라고 보낼지 막막할 때 써보세요.</div>
       </div>
     </div>
 
-    <!-- 상황 선택 -->
     <div>
       <div class="section-title">상황</div>
       <select id="situation">
@@ -172,21 +179,33 @@
       </select>
     </div>
 
-    <!-- 메시지 입력 -->
     <div>
-      <div class="section-title" style="margin-top: 10px;">상대방 메시지</div>
+      <div class="section-title" style="margin-top: 8px;">상대방 메시지</div>
       <textarea id="inputText" placeholder="카톡 내용을 그대로 붙여넣거나 적어보세요."></textarea>
-      <div class="hint">예) “부모님상이라 지인한테 보낼 안내문 좀 정리해줘”</div>
+      <div class="hint">예) “오늘 모임 못 갈 것 같은데 뭐라고 얘기하지?”</div>
     </div>
 
-    <!-- 버튼 -->
     <button class="btn" onclick="sendText()">답장 생성하기</button>
+  </div>
 
-    <!-- 결과 -->
-    <div id="result" class="reply-box">
-      <div class="reply-label">AI 추천 답장</div>
+  <!-- 🟣 화면 2: 결과 화면 -->
+  <div id="screen-result" class="card" style="display:none;">
+    <div class="header-row">
+      <div class="icon-circle">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712104.png" alt="ai">
+      </div>
+      <div>
+        <div class="header-text-main">AI 추천 답장</div>
+        <div class="header-text-sub">상황에 맞게 부드럽게 정리해봤어요.</div>
+      </div>
+    </div>
+
+    <div class="reply-box">
+      <div class="reply-label">이렇게 보내보는 건 어때요?</div>
       <div id="replyText"></div>
     </div>
+
+    <button class="small-btn" onclick="goBack()">다른 메시지로 다시 작성하기</button>
   </div>
 </div>
 
@@ -209,19 +228,29 @@ async function sendText() {
 
     const data = await res.json();
 
-    const box = document.getElementById("result");
-    const replyDiv = document.getElementById("replyText");
+    // 화면 전환: 입력 화면 숨기고 결과 화면 보여주기
+    document.getElementById("screen-input").style.display = "none";
+    document.getElementById("screen-result").style.display = "block";
 
-    box.style.display = "block";
+    // 답장 텍스트 채우기
+    const replyDiv = document.getElementById("replyText");
     replyDiv.textContent = data.reply || "답장을 불러오지 못했습니다.";
   } catch (e) {
     alert("서버 요청 중 오류가 발생했습니다.");
   }
 }
+
+function goBack() {
+  // 다시 입력 화면으로
+  document.getElementById("screen-result").style.display = "none";
+  document.getElementById("screen-input").style.display = "block";
+}
 </script>
 
 </body>
 </html>
+
+
 
 
 
