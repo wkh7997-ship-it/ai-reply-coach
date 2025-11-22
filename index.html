@@ -1,821 +1,140 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>AI 대화 코치</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
     body {
+      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
-      color: #f9fafb;
-      font-size: 17px;
-      background:
-        linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 64, 175, 0.9)),
-        url("https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=1600&q=80")
-          center/cover fixed no-repeat;
+      padding: 20px;
+      background: #f3f4f8;
     }
 
-    .page {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 16px;
-    }
-
-    /* 폰 프레임 */
-    .phone-frame {
+    .header-img {
       width: 100%;
-      max-width: 430px;
-      aspect-ratio: 9 / 19;
-      background: #020617;
-      border-radius: 32px;
-      box-shadow: 0 28px 60px rgba(15, 23, 42, 0.9);
-      padding: 10px;
-      position: relative;
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
+      max-width: 260px;
+      display: block;
+      margin: 0 auto 20px auto;
     }
 
-    .phone-notch {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 120px;
-      height: 20px;
-      background: #020617;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.9);
-      z-index: 5;
-    }
-    .notch-speaker {
-      width: 52px;
-      height: 5px;
-      border-radius: 999px;
-      background: #111827;
-    }
-    .notch-camera {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 30%, #f9fafb 0, #111827 60%, #020617 100%);
-    }
-
-    .phone-inner {
-      background: #f3f4f6;
-      border-radius: 24px;
-      padding: 40px 12px 12px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .status-bar {
-      position: absolute;
-      top: 18px;
-      left: 22px;
-      right: 22px;
-      display: flex;
-      justify-content: space-between;
-      color: #e5e7eb;
-      font-size: 11px;
-      z-index: 4;
-    }
-    .status-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: #22c55e;
-    }
-
-    .app-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 4px 6px 8px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      background:
-        radial-gradient(circle at 30% 20%, #f9fafb 0, #e5e7eb 35%, #9ca3af 100%);
-      border: 1px solid #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: #111827;
-      font-size: 15px;
-    }
-    .header-text {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .header-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #111827;
-      letter-spacing: -0.03em;
-    }
-    .header-sub {
-      font-size: 11px;
-      color: #6b7280;
-    }
-    .header-right {
-      font-size: 11px;
-      color: #6b7280;
-    }
-
-    .content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 8px 6px 4px;
-      overflow: hidden;
-      gap: 8px;
-    }
-
-    /* 화면(스크린) 공통 */
-    .screen {
-      height: 100%;
-      display: none;
-      flex-direction: column;
-    }
-    .screen.active {
-      display: flex;
-    }
-
-    .section {
-      margin-top: 4px;
-    }
-    .section-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #374151;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .section-label small {
-      font-size: 11px;
-      font-weight: 400;
-      color: #9ca3af;
-    }
-
-    select,
-    textarea {
-      width: 100%;
-      font-family: inherit;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
-      padding: 9px 10px;
-      font-size: 15px;
-      outline: none;
-      background: #ffffff;
-    }
-    select:focus,
-    textarea:focus {
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.2);
-      background: #ffffff;
-    }
-    textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
-
-    .tone-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .tone-row select {
-      max-width: 210px;
-    }
-    .helper-text {
-      font-size: 11px;
-      color: #9ca3af;
-    }
-
-    .scroll-area {
-      flex: 1;
-      overflow-y: auto;
-      padding-right: 2px;
-      margin-top: 4px;
-    }
-
-    h3 {
-      margin: 10px 0 4px;
-      font-size: 14px;
-      color: #111827;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .label-pill {
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: #eef2ff;
-      color: #4f46e5;
-    }
-
-    #result {
-      margin-top: 4px;
-    }
-    .reply-row {
-      margin-bottom: 8px;
-      padding: 8px 9px;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      background: #ffffff;
-    }
-    .reply-main {
-      font-size: 15px;
-      font-weight: 500;
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-    .reply-main-text {
-      flex: 1;
-      line-height: 1.5;
-    }
-    .reply-actions {
-      display: flex;
-      gap: 4px;
-      flex-shrink: 0;
-    }
-    .meta {
-      font-size: 11px;
-      color: #6b7280;
-    }
-    .risk-low {
-      color: #16a34a;
-      font-weight: 600;
-    }
-    .risk-mid {
-      color: #d97706;
-      font-weight: 600;
-    }
-    .risk-high {
-      color: #b91c1c;
-      font-weight: 700;
-    }
-    .copy-btn {
-      padding: 4px 8px;
-      font-size: 11px;
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      background: #f9fafb;
-      cursor: pointer;
-    }
-    .copy-btn:hover {
-      background: #eef2ff;
-      border-color: #c7d2fe;
-    }
-
-    #history {
-      max-height: 130px;
-      overflow-y: auto;
-      padding-right: 2px;
-    }
-    .history-empty {
-      font-size: 12px;
-      color: #9ca3af;
-      padding-top: 4px;
-    }
-    .history-item {
-      border-bottom: 1px solid #e5e7eb;
-      padding: 4px 0;
-      font-size: 12px;
-    }
-    .history-meta {
-      color: #6b7280;
-      margin-bottom: 2px;
-    }
-    .history-preview {
-      color: #374151;
-    }
-    .history-item button {
-      font-size: 11px;
-      padding: 3px 7px;
-      margin-top: 3px;
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      background: #f9fafb;
-      cursor: pointer;
-    }
-    .history-item button:hover {
-      background: #eef2ff;
-      border-color: #c7d2fe;
-    }
-
-    .bottom-bar {
-      margin-top: 6px;
-      padding-top: 6px;
-      border-top: 1px solid #e5e7eb;
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    .bottom-hint {
-      font-size: 11px;
-      color: #9ca3af;
-      flex: 1;
-    }
-    button.primary,
-    button.secondary {
-      border: none;
-      border-radius: 999px;
-      padding: 9px 16px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-    button.primary {
-      background: #4f46e5;
-      color: #ffffff;
-      box-shadow: 0 8px 22px rgba(79, 70, 229, 0.4);
-    }
-    button.primary:hover {
-      opacity: 0.95;
-    }
-    button.secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
-    button.secondary:hover {
-      background: #d4d4d8;
-    }
-
-    .back-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
-    .back-btn-arrow {
-      font-size: 18px;
-      line-height: 1;
-    }
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 13px;
-      color: #4b5563;
-      cursor: pointer;
-    }
-    .back-btn span {
-      font-size: 12px;
-    }
-    .original-box {
-      font-size: 12px;
-      color: #4b5563;
-      background: #e5e7eb;
-      border-radius: 10px;
-      padding: 6px 8px;
+    h1 {
+      text-align: center;
+      font-size: 28px;
       margin-bottom: 6px;
-    }
-    .original-label {
-      font-weight: 600;
-      margin-bottom: 2px;
+      font-weight: bold;
     }
 
-    @media (max-width: 480px) {
-      .phone-frame {
-        max-width: 380px;
-      }
-      .phone-inner {
-        padding: 38px 10px 10px;
-      }
-      .content {
-        padding: 6px 4px 4px;
-      }
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      resize: none;
+      box-sizing: border-box;
+      background: #fff;
+    }
+
+    button {
+      margin-top: 18px;
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      font-weight: bold;
+      background: #5c6bff;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .reply-box {
+      margin-top: 24px;
+      padding: 18px;
+      background: #fff;
+      border-radius: 14px;
+      border: 1px solid #ddd;
+      white-space: pre-wrap;
+      font-size: 16px;
+      color: #000;  /* 검정색 유지 */
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <div class="status-bar">
-      <div>오후 9:27</div>
-      <div class="status-right">
-        <span class="status-dot"></span>
-        <span>LTE</span>
-        <span>🔋82%</span>
-      </div>
-    </div>
 
-    <div class="phone-frame">
-      <div class="phone-notch">
-        <div class="notch-speaker"></div>
-        <div class="notch-camera"></div>
-      </div>
+  <!-- 🔥 그림 들어간 부분 -->
+  <img src="https://cdn-icons-png.flaticon.com/512/4712/4712104.png" class="header-img">
 
-      <div class="phone-inner">
-        <div class="app-header">
-          <div class="header-left">
-            <div class="avatar">AI</div>
-            <div class="header-text">
-              <div class="header-title">AI 대화 코치</div>
-              <div class="header-sub">카톡 답장, 같이 생각해주는 파트너</div>
-            </div>
-          </div>
-          <div class="header-right">베타</div>
-        </div>
+  <h1>AI 대화 코치</h1>
+  <p class="subtitle">카톡 답장 고민될 때 바로 사용하세요.</p>
 
-        <div class="content">
-          <!-- 🟢 화면 1: 입력 화면 -->
-          <div id="screen-input" class="screen active">
-            <div class="section">
-              <div class="section-label">
-                상황 선택
-                <small>연애 / 친구 / 직장 / 가족</small>
-              </div>
-              <div class="tone-row">
-                <select id="toneSelect">
-                  <option value="기본">기본</option>
-                  <option value="연애">연애 · 썸</option>
-                  <option value="직장">직장 상사 · 회사</option>
-                  <option value="친구">친구</option>
-                  <option value="가족">가족</option>
-                </select>
-                <div class="helper-text">상대와 관계가 제일 가까운 걸 골라주세요.</div>
-              </div>
-            </div>
-
-            <div class="section">
-              <div class="section-label">
-                상대방 메시지
-                <small>카톡 내용을 그대로 붙여 넣어도 됩니다.</small>
-              </div>
-              <textarea id="inputText" placeholder="예) 왜 요즘 연락 안 해?"></textarea>
-            </div>
-
-            <div class="scroll-area">
-              <div class="section">
-                <h3>예시</h3>
-                <div class="original-box">
-                  <div class="original-label">예시 상황 · 연애</div>
-                  <div>“왜 이렇게 답장이 느려?”</div>
-                  <div style="margin-top:4px; font-size:11px; color:#6b7280;">
-                    → 답장 생성 후, 더 안전하고 센스 있게 바꾼 문장을 추천해줍니다.
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="bottom-bar">
-              <div class="bottom-hint">답장을 만들고 싶은 카톡 내용을 붙여 넣어 주세요.</div>
-              <button class="primary" onclick="sendText()">답장 생성</button>
-            </div>
-          </div>
-
-          <!-- 🔵 화면 2: 결과 화면 -->
-          <div id="screen-result" class="screen">
-            <div class="back-row">
-              <div class="back-btn" onclick="backToInputScreen()">
-                <span class="back-btn-arrow">←</span>
-                <span>다시 입력하기</span>
-              </div>
-            </div>
-
-            <div class="section">
-              <div class="section-label">
-                상대방 메시지
-                <small>이 내용 기준으로 답장을 만들었어요.</small>
-              </div>
-              <div class="original-box">
-                <div class="original-label">메시지</div>
-                <div id="originalMessageText"></div>
-              </div>
-            </div>
-
-            <div class="scroll-area">
-              <div class="section">
-                <h3>
-                  AI 추천 답장
-                  <span class="label-pill">위험도 · 센스 점수</span>
-                </h3>
-                <div id="result"></div>
-              </div>
-
-              <div class="section">
-                <h3>최근 대화 기록</h3>
-                <div id="history" class="history-empty">기록이 없습니다.</div>
-              </div>
-            </div>
-
-            <div class="bottom-bar">
-              <div class="bottom-hint">마음에 드는 답장을 복사해서 카톡에 붙여 넣어 보세요.</div>
-              <button class="secondary" onclick="backToInputScreen()">← 다시 입력</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+ 
+  <div class="section">
+    <div class="section-title">상황 선택</div>
+    <select id="situation" style="padding: 10px; width: 100%; font-size: 16px; border-radius: 10px;">
+      <option value="기본">기본</option>
+      <option value="연애">연애</option>
+      <option value="친구">친구</option>
+      <option value="직장">직장</option>
+      <option value="가족">가족</option>
+    </select>
   </div>
 
-  <script>
-    function showScreen(name) {
-      const inputScreen = document.getElementById("screen-input");
-      const resultScreen = document.getElementById("screen-result");
+  <div style="margin-top: 18px;">
+    <div class="section-title">상대방 메시지</div>
+    <textarea id="inputText" placeholder="카톡 내용을 그대로 붙여넣으세요"></textarea>
+  </div>
 
-      if (name === "input") {
-        inputScreen.classList.add("active");
-        resultScreen.classList.remove("active");
-      } else if (name === "result") {
-        inputScreen.classList.remove("active");
-        resultScreen.classList.add("active");
-      }
-    }
+  <button onclick="sendText()">답장 생성</button>
 
-    function backToInputScreen() {
-      showScreen("input");
-    }
+  <div id="result" class="reply-box" style="display:none;"></div>
 
-    function riskClass(score) {
-      if (score >= 70) return "risk-high";
-      if (score >= 30) return "risk-mid";
-      return "risk-low";
-    }
+<script>
+async function sendText() {
+  const text = document.getElementById("inputText").value.trim();
+  const situation = document.getElementById("situation").value;
 
-    function saveHistory(inputText, tone, lines) {
-      try {
-        const key = "reply_history_v1";
-        const raw = localStorage.getItem(key);
-        let arr = [];
-        if (raw) {
-          arr = JSON.parse(raw);
-        }
-        const item = { time: Date.now(), tone, input: inputText, replies: lines };
-        arr.unshift(item);
-        if (arr.length > 20) arr = arr.slice(0, 20);
-        localStorage.setItem(key, JSON.stringify(arr));
-      } catch (e) {
-        console.error("히스토리 저장 오류:", e);
-      }
-    }
+  if (!text) {
+    alert("상대방 메시지를 입력하세요.");
+    return;
+  }
 
-    function loadHistory() {
-      const key = "reply_history_v1";
-      const historyDiv = document.getElementById("history");
-      historyDiv.innerHTML = "";
+  const res = await fetch("/reply", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      text: text,
+      situation: situation
+    })
+  });
 
-      try {
-        const raw = localStorage.getItem(key);
-        if (!raw) {
-          historyDiv.textContent = "기록이 없습니다.";
-          historyDiv.className = "history-empty";
-          return;
-        }
-        const arr = JSON.parse(raw);
-        if (!arr.length) {
-          historyDiv.textContent = "기록이 없습니다.";
-          historyDiv.className = "history-empty";
-          return;
-        }
-        historyDiv.className = "";
-        arr.forEach((item, idx) => {
-          const wrap = document.createElement("div");
-          wrap.className = "history-item";
+  const data = await res.json();
 
-          const date = new Date(item.time);
-          const timeStr = date.toLocaleString();
+  const box = document.getElementById("result");
+  box.style.display = "block";
+  box.textContent = data.reply;
+}
+</script>
 
-          const meta = document.createElement("div");
-          meta.className = "history-meta";
-          meta.textContent = `${idx + 1}. [${item.tone}] ${timeStr}`;
-
-          const preview = document.createElement("div");
-          preview.className = "history-preview";
-          const inputPreview =
-            item.input.length > 32 ? item.input.slice(0, 32) + "..." : item.input;
-          preview.textContent = `메시지: ${inputPreview}`;
-
-          const btn = document.createElement("button");
-          btn.textContent = "이 대화 불러오기";
-          btn.onclick = () => {
-            document.getElementById("toneSelect").value = item.tone;
-            document.getElementById("inputText").value = item.input;
-
-            const resultDiv = document.getElementById("result");
-            resultDiv.innerHTML = "";
-            item.replies.forEach((line, idx2) => {
-              const row = document.createElement("div");
-              row.className = "reply-row";
-              const main = document.createElement("div");
-              main.className = "reply-main";
-
-              const parts = line.split("||").map(p => p.trim());
-              const textPart = parts[0] || line;
-
-              const mainText = document.createElement("div");
-              mainText.className = "reply-main-text";
-              mainText.textContent = `${idx2 + 1}. ${textPart}`;
-
-              main.appendChild(mainText);
-              row.appendChild(main);
-              resultDiv.appendChild(row);
-            });
-
-            // 과거 기록 눌렀을 때도 결과 화면으로 전환
-            document.getElementById("originalMessageText").textContent = item.input;
-            showScreen("result");
-          };
-
-          wrap.appendChild(meta);
-          wrap.appendChild(preview);
-          wrap.appendChild(btn);
-          historyDiv.appendChild(wrap);
-        });
-      } catch (e) {
-        historyDiv.textContent = "히스토리를 불러오는 중 오류가 발생했습니다.";
-        historyDiv.className = "history-empty";
-        console.error(e);
-      }
-    }
-
-    async function sendText() {
-      const text = document.getElementById("inputText").value.trim();
-      const tone = document.getElementById("toneSelect").value;
-      const resultDiv = document.getElementById("result");
-
-      if (!text) {
-        alert("먼저 메시지를 입력하세요!");
-        return;
-      }
-
-      resultDiv.textContent = "생성 중입니다...";
-      // 결과 화면으로 먼저 전환해도 되고, 성공 이후에 전환해도 됨
-      // 여기서는 성공 후에 전환
-      try {
-        const res = await fetch("/reply", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, tone })
-        });
-
-        const data = await res.json();
-
-        if (res.ok && data.reply) {
-          const lines = data.reply
-            .split("\n")
-            .map(l => l.trim())
-            .filter(l => l.length > 0);
-
-          resultDiv.innerHTML = "";
-          if (lines.length === 0) {
-            resultDiv.textContent = "생성된 답장이 없습니다.";
-          } else {
-            lines.forEach((line, idx) => {
-              const parts = line.split("||").map(p => p.trim());
-              let textPart = parts[0] || line;
-              const riskStr = parts[1] || "0";
-              const senseStr = parts[2] || "0";
-              const commentStr = parts[3] || "";
-
-              const risk = parseInt(riskStr) || 0;
-              const sense = parseInt(senseStr) || 0;
-
-              const row = document.createElement("div");
-              row.className = "reply-row";
-
-              const main = document.createElement("div");
-              main.className = "reply-main";
-
-              const mainText = document.createElement("div");
-              mainText.className = "reply-main-text";
-              mainText.textContent = `${idx + 1}. ${textPart}`;
-
-              const actions = document.createElement("div");
-              actions.className = "reply-actions";
-
-              const copyBtn = document.createElement("button");
-              copyBtn.className = "copy-btn";
-              copyBtn.textContent = "복사";
-              copyBtn.onclick = async () => {
-                try {
-                  await navigator.clipboard.writeText(textPart);
-                  copyBtn.textContent = "복사됨";
-                  setTimeout(() => (copyBtn.textContent = "복사"), 1100);
-                } catch (e) {
-                  alert("복사에 실패했습니다: " + e);
-                }
-              };
-              actions.appendChild(copyBtn);
-
-              if (risk >= 70) {
-                const fixBtn = document.createElement("button");
-                fixBtn.className = "copy-btn";
-                fixBtn.textContent = "⚠ 안전 수정";
-                fixBtn.onclick = async () => {
-                  try {
-                    fixBtn.textContent = "수정 중...";
-                    const toneNow = document.getElementById("toneSelect").value;
-                    const resFix = await fetch("/fix", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ text: textPart, tone: toneNow })
-                    });
-                    const fixData = await resFix.json();
-                    if (resFix.ok && fixData.fixed) {
-                      textPart = fixData.fixed;
-                      mainText.textContent = `${idx + 1}. ${textPart}`;
-                      fixBtn.textContent = "완료";
-                    } else {
-                      alert("수정 실패: " + JSON.stringify(fixData));
-                      fixBtn.textContent = "⚠ 안전 수정";
-                    }
-                  } catch (e) {
-                    alert("수정 중 오류 발생: " + e);
-                    fixBtn.textContent = "⚠ 안전 수정";
-                  }
-                };
-                actions.appendChild(fixBtn);
-              }
-
-              main.appendChild(mainText);
-              main.appendChild(actions);
-
-              const meta = document.createElement("div");
-              meta.className = "meta";
-
-              const riskSpan = document.createElement("span");
-              riskSpan.textContent = `위험도: ${risk}`;
-              riskSpan.className = riskClass(risk);
-
-              const senseSpan = document.createElement("span");
-              senseSpan.textContent = ` / 센스: ${sense}`;
-
-              const commentSpan = document.createElement("span");
-              if (commentStr) {
-                commentSpan.textContent = ` / 설명: ${commentStr}`;
-              }
-
-              meta.appendChild(riskSpan);
-              meta.appendChild(senseSpan);
-              if (commentStr) meta.appendChild(commentSpan);
-
-              row.appendChild(main);
-              row.appendChild(meta);
-              resultDiv.appendChild(row);
-            });
-          }
-
-          // 원본 메시지 표시 + 히스토리 저장 + 결과 화면으로 전환
-          document.getElementById("originalMessageText").textContent = text;
-          saveHistory(text, tone, lines);
-          loadHistory();
-          showScreen("result");
-        } else {
-          resultDiv.textContent = "API 에러: " + JSON.stringify(data, null, 2);
-          showScreen("result");
-        }
-      } catch (err) {
-        resultDiv.textContent = "요청 중 오류 발생: " + err;
-        showScreen("result");
-      }
-    }
-
-    window.onload = loadHistory;
-  </script>
 </body>
 </html>
+
+
 
 
