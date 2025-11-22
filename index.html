@@ -48,6 +48,15 @@
       border: 1px solid var(--border);
       padding: 24px 22px 20px;
       box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .card.hidden {
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
     }
 
     .header {
@@ -118,15 +127,24 @@
       font-weight: 700;
       margin-top: 22px;
       cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.2s ease;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
+      transform: translateY(-1px);
     }
 
     .btn-primary:disabled {
       opacity: 0.6;
       cursor: default;
+      box-shadow: none;
+      transform: none;
     }
 
-    .btn-primary:active {
+    .btn-primary:active:not(:disabled) {
       transform: translateY(1px);
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.8);
     }
 
     .result-card {
@@ -137,6 +155,14 @@
       border: 1px solid var(--border);
       padding: 24px 22px 20px;
       box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .result-card.show {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .reply-list {
@@ -228,6 +254,30 @@
       cursor: pointer;
       color: #cbd5ff;
     }
+
+    /* 토스트 알림 */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 32px;
+      transform: translateX(-50%) translateY(10px);
+      background: rgba(15, 23, 42, 0.96);
+      color: #e5e7eb;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 50;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   </style>
 </head>
 
@@ -238,10 +288,9 @@
     <div class="card" id="inputCard">
       <div class="header">
 
-        <!-- ✔ 메시지 말풍선 아이콘 (삼성 메시지 스타일 비슷하게) -->
+        <!-- 메시지 말풍선 아이콘 -->
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
              xmlns="http://www.w3.org/2000/svg">
-          <!-- 말풍선 외곽 -->
           <path
             d="M12 4C7.6 4 4 6.9 4 10.5C4 12.4 5 14.1 6.7 15.3L6 20L9.9 17.8C10.6 17.9 11.3 18 12 18C16.4 18 20 15.1 20 11.5C20 7.9 16.4 4 12 4Z"
             stroke="#ffffff"
@@ -249,7 +298,6 @@
             stroke-linejoin="round"
             fill="none"
           />
-          <!-- 안쪽 점 3개 -->
           <circle cx="9"  cy="11" r="1.1" fill="#ffffff" />
           <circle cx="12" cy="11" r="1.1" fill="#ffffff" />
           <circle cx="15" cy="11" r="1.1" fill="#ffffff" />
@@ -280,8 +328,6 @@
     <!-- 결과 카드 -->
     <div class="result-card" id="resultCard" style="display:none;">
       <div class="header">
-
-        <!-- ✔ 동일한 메시지 말풍선 아이콘 -->
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
              xmlns="http://www.w3.org/2000/svg">
           <path
@@ -312,6 +358,9 @@
 
   </div>
 
+  <!-- 토스트 알림 -->
+  <div class="toast" id="toast">복사되었습니다</div>
+
 <script>
   const btn = document.getElementById("generateBtn");
   const msg = document.getElementById("message");
@@ -321,6 +370,16 @@
   const replyList = document.getElementById("replyList");
   const emptyText = document.getElementById("emptyText");
   const backBtn = document.getElementById("backBtn");
+  const toast = document.getElementById("toast");
+
+  function showToast(text) {
+    if (!toast) return;
+    toast.textContent = text;
+    toast.classList.add("show");
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 1800);
+  }
 
   btn.addEventListener("click", async () => {
     if (!msg.value.trim()) {
@@ -329,6 +388,7 @@
     }
 
     btn.disabled = true;
+    const originalText = btn.textContent;
     btn.textContent = "생성 중…";
 
     try {
@@ -341,16 +401,28 @@
       const data = await res.json();
       render(extract(data));
 
-      inputCard.style.display = "none";
-      resultCard.style.display = "block";
+      inputCard.classList.add("hidden");
+      setTimeout(() => {
+        inputCard.style.display = "none";
+        resultCard.style.display = "block";
+        requestAnimationFrame(() => {
+          resultCard.classList.add("show");
+        });
+      }, 200);
     } catch (e) {
       console.error(e);
       render("");
-      inputCard.style.display = "none";
-      resultCard.style.display = "block";
+      inputCard.classList.add("hidden");
+      setTimeout(() => {
+        inputCard.style.display = "none";
+        resultCard.style.display = "block";
+        requestAnimationFrame(() => {
+          resultCard.classList.add("show");
+        });
+      }, 200);
     } finally {
       btn.disabled = false;
-      btn.textContent = "답장 생성";
+      btn.textContent = originalText;
     }
   });
 
@@ -383,7 +455,7 @@
 
   function makeCard(text) {
     const p = text.split("||").map(x => x.trim());
-    const msg = p[0] || "";
+    const msgText = p[0] || "";
     const risk = parseInt(p[1] || "");
     const warm = parseInt(p[2] || "");
     const desc = p[3] || "";
@@ -412,7 +484,7 @@
 
     const msgEl = document.createElement("div");
     msgEl.className = "reply-text";
-    msgEl.textContent = msg;
+    msgEl.textContent = msgText;
 
     const meta = document.createElement("div");
     meta.className = "meta";
@@ -440,7 +512,27 @@
     const copy = document.createElement("button");
     copy.className = "copy-btn";
     copy.textContent = "복사";
-    copy.onclick = () => navigator.clipboard.writeText(msg);
+    copy.onclick = () => {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard
+          .writeText(msgText)
+          .then(() => showToast("복사되었습니다"))
+          .catch(() => showToast("복사에 실패했습니다"));
+      } else {
+        // 구형 브라우저 대응
+        const temp = document.createElement("textarea");
+        temp.value = msgText;
+        document.body.appendChild(temp);
+        temp.select();
+        try {
+          document.execCommand("copy");
+          showToast("복사되었습니다");
+        } catch {
+          showToast("복사에 실패했습니다");
+        }
+        document.body.removeChild(temp);
+      }
+    };
 
     meta.appendChild(copy);
 
@@ -454,14 +546,19 @@
   }
 
   backBtn.onclick = () => {
-    resultCard.style.display = "none";
-    inputCard.style.display = "block";
-    window.scrollTo(0, 0);
+    resultCard.classList.remove("show");
+    setTimeout(() => {
+      resultCard.style.display = "none";
+      inputCard.style.display = "block";
+      inputCard.classList.remove("hidden");
+      window.scrollTo(0, 0);
+    }, 180);
   };
 </script>
 
 </body>
 </html>
+
 
 
 
