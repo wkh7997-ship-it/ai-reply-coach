@@ -10,8 +10,6 @@
     :root {
       --primary: #6366f1;
       --primary-dark: #4f46e5;
-      --bg1: #050816;
-      --bg2: #3b1d6a;
       --card-bg: rgba(8, 12, 32, 0.96);
       --text-main: #f9fafb;
       --text-sub: #a5b4fc;
@@ -48,21 +46,20 @@
     .app {
       width: 100%;
       max-width: 480px;
-      position: relative;
     }
 
     .card {
       background: var(--card-bg);
       border-radius: 28px;
       border: 1px solid rgba(148, 163, 184, 0.35);
-      padding: 22px 18px 18px;
+      padding: 22px 18px 22px;
       box-shadow:
         0 26px 60px rgba(15, 23, 42, 0.95),
         0 0 0 1px rgba(15, 23, 42, 0.9);
       backdrop-filter: blur(18px);
     }
 
-    /* 공통 헤더 */
+    /* 헤더 */
 
     .header {
       display: flex;
@@ -105,18 +102,7 @@
       color: var(--text-sub);
     }
 
-    .status-text {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #a5b4fc;
-      min-height: 16px;
-    }
-
-    /* 1페이지: 입력 화면 */
-
-    .field {
-      margin-bottom: 14px;
-    }
+    /* 상대방 메시지 */
 
     .field-label {
       font-size: 14px;
@@ -124,46 +110,26 @@
       color: #c7d2fe;
     }
 
-    .select-wrap,
     .textarea-wrap {
       position: relative;
+      margin-bottom: 10px;
     }
 
-    select,
     textarea {
       width: 100%;
-      border-radius: 16px;
+      border-radius: 18px;
       border: 1px solid var(--border);
       background: rgba(15, 23, 42, 0.98);
       color: var(--text-main);
       font-size: 16px;
       padding: 12px 14px;
+      min-height: 72px;
+      line-height: 1.5;
+      resize: vertical;
       outline: none;
       transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     }
 
-    select {
-      appearance: none;
-      padding-right: 40px;
-    }
-
-    .select-arrow {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 18px;
-      color: #818cf8;
-      pointer-events: none;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 120px;
-      line-height: 1.5;
-    }
-
-    select:focus,
     textarea:focus {
       border-color: #818cf8;
       box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.75);
@@ -173,9 +139,10 @@
     .hint {
       font-size: 13px;
       color: #94a3b8;
-      margin-top: -2px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
+
+    /* 버튼 */
 
     .btn-primary {
       width: 100%;
@@ -194,10 +161,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-    }
-
-    .btn-primary span {
-      font-size: 18px;
+      margin-bottom: 6px;
     }
 
     .btn-primary:active {
@@ -207,62 +171,24 @@
         0 0 0 1px rgba(129, 140, 248, 0.6);
     }
 
-    /* 2페이지: 결과 화면 */
-
-    .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 14px;
-      color: var(--text-sub);
+    .status-text {
+      font-size: 13px;
+      color: #a5b4fc;
+      min-height: 18px;
+      margin-bottom: 6px;
     }
 
-    .back-link {
-      border: none;
-      background: none;
-      padding: 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      color: #c7d2fe;
-      font-size: 14px;
-    }
-
-    .back-link span {
-      font-size: 17px;
-      line-height: 1;
-    }
-
-    .original-msg {
-      margin-top: 4px;
-      margin-bottom: 12px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      background: rgba(15, 23, 42, 0.98);
-      font-size: 14px;
-      line-height: 1.5;
-      color: #e5e7eb;
-      word-break: break-word;
-    }
-
-    .original-msg-label {
-      font-size: 12px;
-      color: #9ca3af;
-      margin-bottom: 4px;
-    }
+    /* 결과 영역 */
 
     .result-card {
-      margin-top: 4px;
+      margin-top: 10px;
       background: radial-gradient(circle at top left,
           rgba(79, 70, 229, 0.26) 0,
           rgba(79, 70, 229, 0.03) 38%,
           rgba(15, 23, 42, 0.96) 100%);
       border-radius: 20px;
       border: 1px solid rgba(148, 163, 184, 0.4);
-      padding: 18px 16px 12px;
+      padding: 18px 16px 14px;
     }
 
     .result-title {
@@ -270,9 +196,8 @@
       font-weight: 600;
       margin-bottom: 10px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 6px;
+      gap: 8px;
     }
 
     .result-title span {
@@ -282,7 +207,7 @@
     }
 
     .answer-item {
-      padding: 9px 9px 7px;
+      padding: 9px 9px 8px;
       border-radius: 12px;
       background: rgba(15, 23, 42, 0.96);
       border: 1px solid rgba(51, 65, 85, 0.85);
@@ -296,8 +221,7 @@
 
     .answer-meta {
       display: flex;
-      flex-direction: column;   /* 칩 위, 복사 버튼 아래 */
-      align-items: stretch;
+      flex-direction: column;
       gap: 6px;
       font-size: 12px;
       color: #9ca3af;
@@ -306,8 +230,8 @@
     .chips {
       display: flex;
       gap: 4px;
-      align-items: center;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .chip {
@@ -316,7 +240,6 @@
       border: 1px solid rgba(148, 163, 184, 0.7);
       background: rgba(15, 23, 42, 0.9);
       font-size: 12px;
-      white-space: normal;
     }
 
     .chip.score {
@@ -342,6 +265,7 @@
     }
 
     .copy-btn {
+      align-self: flex-end;
       border-radius: 999px;
       border: none;
       padding: 5px 14px;
@@ -352,7 +276,6 @@
       white-space: nowrap;
       min-width: 52px;
       text-align: center;
-      align-self: flex-end;
     }
 
     .copy-btn:active {
@@ -360,28 +283,23 @@
       background: rgba(79, 70, 229, 1);
     }
 
-    /* 화면 전환 애니메이션 */
+    /* 다시 입력하기 링크 */
 
-    #screen-input,
-    #screen-result {
-      position: absolute;
-      left: 0;
-      right: 0;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateX(12px);
-      transition: opacity 0.23s ease-out, transform 0.23s ease-out;
+    .again-wrap {
+      text-align: center;
+      margin-top: 18px;
     }
 
-    #screen-input.active,
-    #screen-result.active {
-      position: relative;
-      opacity: 1;
-      pointer-events: auto;
-      transform: translateX(0);
+    .again-btn {
+      border: none;
+      background: none;
+      color: #a5b4fc;
+      font-size: 14px;
+      text-decoration: underline;
+      cursor: pointer;
     }
 
-    /* 로딩용 스켈레톤 */
+    /* 로딩 스켈레톤 */
 
     .skeleton-item {
       padding: 9px 9px 7px;
@@ -440,56 +358,8 @@
 </head>
 <body>
   <main class="app">
-    <!-- 1페이지: 입력 -->
-    <section class="card" id="screen-input">
-      <header class="header">
-        <div class="header-icon">
-          <img src="/icon-192.png" alt="AI 대화 코치 아이콘" />
-        </div>
-        <div>
-          <div class="header-text-main">AI 대화 코치</div>
-          <div class="header-text-sub">카톡 답장, 같이 생각해주는 파트너</div>
-        </div>
-      </header>
-
-      <div class="field">
-        <div class="field-label">상황 선택</div>
-        <div class="select-wrap">
-          <select id="tone">
-            <option value="기본">기본</option>
-            <option value="연애">연애</option>
-            <option value="직장">직장</option>
-            <option value="친구">친구</option>
-            <option value="가족">가족</option>
-          </select>
-          <div class="select-arrow">▾</div>
-        </div>
-      </div>
-
-      <div class="field">
-        <div class="field-label">상대방 메시지</div>
-        <div class="textarea-wrap">
-          <textarea id="message" placeholder="예) 오늘 뭐할까?"></textarea>
-        </div>
-      </div>
-
-      <p class="hint">카톡 내용을 그대로 붙여 넣어주세요.</p>
-
-      <button class="btn-primary" id="generateBtn" type="button">
-        <span>답장 생성</span>
-      </button>
-      <div class="status-text" id="status-input"></div>
-    </section>
-
-    <!-- 2페이지: 결과 -->
-    <section class="card" id="screen-result">
-      <div class="top-bar">
-        <button class="back-link" type="button" id="backBtn">
-          <span>←</span> 다시 입력하기
-        </button>
-        <div>AI 추천 답장</div>
-      </div>
-
+    <section class="card">
+      <!-- 헤더 -->
       <header class="header">
         <div class="header-icon">
           <img src="/icon-192.png" alt="AI 대화 코치 아이콘" />
@@ -500,12 +370,23 @@
         </div>
       </header>
 
-      <div class="original-msg">
-        <div class="original-msg-label">상대방 메시지</div>
-        <div id="originalText"></div>
+      <!-- 상대방 메시지 입력 -->
+      <div class="field">
+        <div class="field-label">상대방 메시지</div>
+        <div class="textarea-wrap">
+          <textarea id="message" placeholder="예) 오늘 뭐해?"></textarea>
+        </div>
       </div>
+      <p class="hint">카톡 내용을 그대로 붙여 넣어주세요.</p>
 
-      <section class="result-card">
+      <!-- 버튼 + 상태 -->
+      <button class="btn-primary" id="generateBtn" type="button">
+        <span>AI 추천 답장 생성</span>
+      </button>
+      <div class="status-text" id="status"></div>
+
+      <!-- 결과 카드 -->
+      <section class="result-card" id="result" style="display:none;">
         <div class="result-title">
           <strong>AI 추천 답장</strong>
           <span>위험도·센스 점수는 가볍게 참고만 해주세요</span>
@@ -513,52 +394,20 @@
         <div id="answers"></div>
       </section>
 
-      <div class="status-text" id="status-result"></div>
-
-      <!-- 🔽 새로 추가된 '다시 입력하기' 버튼 (하단) -->
-      <div style="text-align:center; margin-top:18px;">
-        <button
-          id="resultAgainBtn"
-          type="button"
-          style="
-            border:none;
-            background:none;
-            color:#a5b4fc;
-            font-size:14px;
-            text-decoration:underline;
-            cursor:pointer;
-          "
-        >
-          다시 입력하기
-        </button>
+      <!-- 다시 입력하기 -->
+      <div class="again-wrap">
+        <button class="again-btn" id="againBtn" type="button">다시 입력하기</button>
       </div>
     </section>
   </main>
 
   <script>
-    const screenInput = document.getElementById("screen-input");
-    const screenResult = document.getElementById("screen-result");
-
-    const toneEl = document.getElementById("tone");
     const msgEl = document.getElementById("message");
     const generateBtn = document.getElementById("generateBtn");
-    const statusInputEl = document.getElementById("status-input");
-
-    const backBtn = document.getElementById("backBtn");
-    const originalTextEl = document.getElementById("originalText");
+    const statusEl = document.getElementById("status");
+    const resultEl = document.getElementById("result");
     const answersEl = document.getElementById("answers");
-    const statusResultEl = document.getElementById("status-result");
-
-    function showScreen(name) {
-      if (name === "input") {
-        screenInput.classList.add("active");
-        screenResult.classList.remove("active");
-      } else {
-        screenInput.classList.remove("active");
-        screenResult.classList.add("active");
-      }
-      window.scrollTo({ top: 0, behavior: "instant" });
-    }
+    const againBtn = document.getElementById("againBtn");
 
     function parseLine(line) {
       const parts = line.split("||").map(p => p.trim());
@@ -570,7 +419,7 @@
       };
     }
 
-    // ✨ 수정된 부분: fallbackLevel 추가
+    // 위험도/센스 문자열을 점수·레벨로 변환
     function parseLevel(raw, kind, fallbackLevel) {
       const s = (raw || "").toString();
       let level = "";
@@ -579,17 +428,20 @@
       else if (s.includes("중간")) level = "중간";
       else if (s.includes("높음")) level = "높음";
 
-      // 센스가 비어 있으면 위험도 레벨 복사
+      // 센스는 위험도 레벨을 그대로 따라가게
       if (!level && fallbackLevel) {
         level = fallbackLevel;
+      }
+
+      // 완전 비어 있으면 기본값: 낮음
+      if (!level) {
+        level = "낮음";
       }
 
       let score = "";
       if (level === "낮음") score = "25";
       else if (level === "중간") score = "55";
       else if (level === "높음") score = "85";
-
-      if (!level) return { level: "", score: "", text: "" };
 
       if (kind === "risk") {
         return { level, score, text: `위험도 ${score}점 · ${level}` };
@@ -617,48 +469,39 @@
         `;
         answersEl.appendChild(sk);
       }
+      resultEl.style.display = "block";
     }
 
     function clearSkeleton() {
       answersEl.innerHTML = "";
     }
 
-    showScreen("input");
-
     generateBtn.addEventListener("click", async () => {
       const text = msgEl.value.trim();
-      const tone = toneEl.value;
-
       if (!text) {
-        statusInputEl.textContent = "먼저 상대방 메시지를 입력해 주세요.";
+        statusEl.textContent = "먼저 상대방 메시지를 입력해 주세요.";
         return;
       }
 
-      statusInputEl.textContent = "";
-
-      originalTextEl.textContent = text;
-      statusResultEl.textContent = "AI가 답장을 생각 중입니다...";
-      showScreen("result");
-
+      statusEl.textContent = "AI가 답장을 생각 중입니다...";
       showSkeleton();
 
       try {
         const res = await fetch("/reply", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, tone })
+          body: JSON.stringify({ text, tone: "기본" })
         });
 
         const data = await res.json();
 
         if (!res.ok) {
           clearSkeleton();
-          statusResultEl.textContent = data.error || "답장 생성 중 오류가 발생했습니다.";
+          statusEl.textContent = data.error || "답장 생성 중 오류가 발생했습니다.";
           return;
         }
 
-        statusResultEl.textContent = "";
-
+        statusEl.textContent = "";
         const lines = (data.reply || "")
           .split("\n")
           .map(l => l.trim())
@@ -668,16 +511,15 @@
         clearSkeleton();
 
         if (lines.length === 0) {
-          statusResultEl.textContent = "생성된 답장이 없습니다.";
+          statusEl.textContent = "생성된 답장이 없습니다.";
+          resultEl.style.display = "none";
           return;
         }
 
         lines.forEach((line, idx) => {
           const { text: rawText, risk, sense, comment } = parseLine(line);
-
           const answerText = rawText.replace(/^\d+\.\s*/, "");
 
-          // ✨ 수정된 부분: 센스에 위험도 레벨을 fallback으로 사용
           const riskInfo = parseLevel(risk, "risk");
           const senseInfo = parseLevel(sense, "sense", riskInfo.level);
 
@@ -688,16 +530,8 @@
             <div class="answer-text">${idx + 1}. ${answerText}</div>
             <div class="answer-meta">
               <div class="chips">
-                ${
-                  riskInfo.text
-                    ? `<span class="chip score ${levelClass(riskInfo.level)}">${riskInfo.text}</span>`
-                    : ""
-                }
-                ${
-                  senseInfo.text
-                    ? `<span class="chip score">${senseInfo.text}</span>`
-                    : ""
-                }
+                <span class="chip score ${levelClass(riskInfo.level)}">${riskInfo.text}</span>
+                <span class="chip score">${senseInfo.text}</span>
                 ${comment ? `<span class="chip">${comment}</span>` : ""}
               </div>
               <button class="copy-btn" type="button">복사</button>
@@ -714,23 +548,20 @@
 
           answersEl.appendChild(wrapper);
         });
+
+        resultEl.style.display = "block";
       } catch (err) {
         console.error(err);
         clearSkeleton();
-        statusResultEl.textContent = "서버와 통신 중 오류가 발생했습니다.";
+        statusEl.textContent = "서버와 통신 중 오류가 발생했습니다.";
       }
     });
 
-    backBtn.addEventListener("click", () => {
-      statusResultEl.textContent = "";
-      showScreen("input");
-      msgEl.focus();
-    });
-
-    // 🔽 새로 추가된 하단 '다시 입력하기' 버튼 이벤트
-    document.getElementById("resultAgainBtn").addEventListener("click", () => {
-      statusResultEl.textContent = "";
-      showScreen("input");
+    againBtn.addEventListener("click", () => {
+      msgEl.value = "";
+      statusEl.textContent = "";
+      resultEl.style.display = "none";
+      answersEl.innerHTML = "";
       msgEl.focus();
     });
   </script>
