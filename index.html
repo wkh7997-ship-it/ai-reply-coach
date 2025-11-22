@@ -46,6 +46,7 @@
     .app {
       width: 100%;
       max-width: 480px;
+      position: relative;
     }
 
     .card {
@@ -59,7 +60,28 @@
       backdrop-filter: blur(18px);
     }
 
-    /* 헤더 */
+    /* 화면 전환 */
+
+    #screen-select,
+    #screen-main {
+      position: absolute;
+      left: 0;
+      right: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(12px);
+      transition: opacity 0.23s ease-out, transform 0.23s ease-out;
+    }
+
+    #screen-select.active,
+    #screen-main.active {
+      position: relative;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    /* 공통 헤더 */
 
     .header {
       display: flex;
@@ -102,7 +124,78 @@
       color: var(--text-sub);
     }
 
-    /* 상대방 메시지 */
+    .status-text {
+      font-size: 13px;
+      color: #a5b4fc;
+      min-height: 18px;
+      margin-bottom: 6px;
+    }
+
+    /* 1페이지: 상황 선택 */
+
+    .select-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .select-sub {
+      font-size: 13px;
+      color: #a5b4fc;
+      margin-bottom: 16px;
+    }
+
+    .tone-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tone-btn {
+      padding: 10px 8px;
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.98);
+      color: #e5e7eb;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .tone-btn.active {
+      border-color: #818cf8;
+      background: radial-gradient(circle at top, rgba(129, 140, 248, 0.28), rgba(15, 23, 42, 0.98));
+      box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.8);
+    }
+
+    .btn-primary {
+      width: 100%;
+      border: none;
+      border-radius: 18px;
+      padding: 13px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+      box-shadow:
+        0 14px 32px rgba(79, 70, 229, 0.75),
+        0 0 0 1px rgba(129, 140, 248, 0.6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow:
+        0 8px 20px rgba(79, 70, 229, 0.7),
+        0 0 0 1px rgba(129, 140, 248, 0.6);
+    }
+
+    /* 2페이지: 메인 화면 (캡쳐한 부분) */
 
     .field-label {
       font-size: 14px;
@@ -141,44 +234,6 @@
       color: #94a3b8;
       margin-bottom: 14px;
     }
-
-    /* 버튼 */
-
-    .btn-primary {
-      width: 100%;
-      border: none;
-      border-radius: 18px;
-      padding: 13px 16px;
-      font-size: 16px;
-      font-weight: 700;
-      color: white;
-      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-      box-shadow:
-        0 14px 32px rgba(79, 70, 229, 0.75),
-        0 0 0 1px rgba(129, 140, 248, 0.6);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-bottom: 6px;
-    }
-
-    .btn-primary:active {
-      transform: translateY(1px);
-      box-shadow:
-        0 8px 20px rgba(79, 70, 229, 0.7),
-        0 0 0 1px rgba(129, 140, 248, 0.6);
-    }
-
-    .status-text {
-      font-size: 13px;
-      color: #a5b4fc;
-      min-height: 18px;
-      margin-bottom: 6px;
-    }
-
-    /* 결과 영역 */
 
     .result-card {
       margin-top: 10px;
@@ -283,8 +338,6 @@
       background: rgba(79, 70, 229, 1);
     }
 
-    /* 다시 입력하기 링크 */
-
     .again-wrap {
       text-align: center;
       margin-top: 18px;
@@ -358,8 +411,38 @@
 </head>
 <body>
   <main class="app">
-    <section class="card">
-      <!-- 헤더 -->
+    <!-- 1페이지: 상황 선택 -->
+    <section class="card" id="screen-select">
+      <header class="header">
+        <div class="header-icon">
+          <img src="/icon-192.png" alt="AI 대화 코치 아이콘" />
+        </div>
+        <div>
+          <div class="header-text-main">AI 대화 코치</div>
+          <div class="header-text-sub">먼저 대화 상황을 선택해 주세요</div>
+        </div>
+      </header>
+
+      <div class="select-title">어떤 상황의 답장을 도와드릴까요?</div>
+      <div class="select-sub">상황에 따라 톤을 다르게 추천해드려요.</div>
+
+      <div class="tone-grid">
+        <button class="tone-btn" data-tone="연애">연애</button>
+        <button class="tone-btn" data-tone="썸">썸</button>
+        <button class="tone-btn" data-tone="친구">친구</button>
+        <button class="tone-btn" data-tone="직장">직장</button>
+        <button class="tone-btn" data-tone="가족">가족</button>
+        <button class="tone-btn" data-tone="기타">기타</button>
+      </div>
+
+      <button class="btn-primary" id="nextBtn" type="button">
+        <span>다음 (답장 쓰러가기)</span>
+      </button>
+      <div class="status-text" id="status-select"></div>
+    </section>
+
+    <!-- 2페이지: 캡쳐한 메인 화면 -->
+    <section class="card" id="screen-main">
       <header class="header">
         <div class="header-icon">
           <img src="/icon-192.png" alt="AI 대화 코치 아이콘" />
@@ -370,7 +453,6 @@
         </div>
       </header>
 
-      <!-- 상대방 메시지 입력 -->
       <div class="field">
         <div class="field-label">상대방 메시지</div>
         <div class="textarea-wrap">
@@ -379,13 +461,11 @@
       </div>
       <p class="hint">카톡 내용을 그대로 붙여 넣어주세요.</p>
 
-      <!-- 버튼 + 상태 -->
       <button class="btn-primary" id="generateBtn" type="button">
         <span>AI 추천 답장 생성</span>
       </button>
-      <div class="status-text" id="status"></div>
+      <div class="status-text" id="status-main"></div>
 
-      <!-- 결과 카드 -->
       <section class="result-card" id="result" style="display:none;">
         <div class="result-title">
           <strong>AI 추천 답장</strong>
@@ -394,7 +474,6 @@
         <div id="answers"></div>
       </section>
 
-      <!-- 다시 입력하기 -->
       <div class="again-wrap">
         <button class="again-btn" id="againBtn" type="button">다시 입력하기</button>
       </div>
@@ -402,12 +481,54 @@
   </main>
 
   <script>
+    const screenSelect = document.getElementById("screen-select");
+    const screenMain = document.getElementById("screen-main");
+
+    const toneButtons = document.querySelectorAll(".tone-btn");
+    const nextBtn = document.getElementById("nextBtn");
+    const statusSelectEl = document.getElementById("status-select");
+
     const msgEl = document.getElementById("message");
     const generateBtn = document.getElementById("generateBtn");
-    const statusEl = document.getElementById("status");
+    const statusMainEl = document.getElementById("status-main");
     const resultEl = document.getElementById("result");
     const answersEl = document.getElementById("answers");
     const againBtn = document.getElementById("againBtn");
+
+    let currentTone = ""; // 연애/썸/친구/직장/가족/기타
+
+    function showScreen(name) {
+      if (name === "select") {
+        screenSelect.classList.add("active");
+        screenMain.classList.remove("active");
+      } else {
+        screenSelect.classList.remove("active");
+        screenMain.classList.add("active");
+      }
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    // 처음엔 상황 선택 화면
+    showScreen("select");
+
+    // 상황 버튼 선택
+    toneButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        toneButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentTone = btn.dataset.tone;
+        statusSelectEl.textContent = "";
+      });
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (!currentTone) {
+        statusSelectEl.textContent = "먼저 상황을 선택해 주세요.";
+        return;
+      }
+      showScreen("main");
+      msgEl.focus();
+    });
 
     function parseLine(line) {
       const parts = line.split("||").map(p => p.trim());
@@ -433,7 +554,7 @@
         level = fallbackLevel;
       }
 
-      // 완전 비어 있으면 기본값: 낮음
+      // 완전 비어 있으면 기본값: 낮음 (1번 답장이라도 무조건 점수 표시)
       if (!level) {
         level = "낮음";
       }
@@ -479,29 +600,29 @@
     generateBtn.addEventListener("click", async () => {
       const text = msgEl.value.trim();
       if (!text) {
-        statusEl.textContent = "먼저 상대방 메시지를 입력해 주세요.";
+        statusMainEl.textContent = "먼저 상대방 메시지를 입력해 주세요.";
         return;
       }
 
-      statusEl.textContent = "AI가 답장을 생각 중입니다...";
+      statusMainEl.textContent = "AI가 답장을 생각 중입니다...";
       showSkeleton();
 
       try {
         const res = await fetch("/reply", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, tone: "기본" })
+          body: JSON.stringify({ text, tone: currentTone || "기타" })
         });
 
         const data = await res.json();
 
         if (!res.ok) {
           clearSkeleton();
-          statusEl.textContent = data.error || "답장 생성 중 오류가 발생했습니다.";
+          statusMainEl.textContent = data.error || "답장 생성 중 오류가 발생했습니다.";
           return;
         }
 
-        statusEl.textContent = "";
+        statusMainEl.textContent = "";
         const lines = (data.reply || "")
           .split("\n")
           .map(l => l.trim())
@@ -511,7 +632,7 @@
         clearSkeleton();
 
         if (lines.length === 0) {
-          statusEl.textContent = "생성된 답장이 없습니다.";
+          statusMainEl.textContent = "생성된 답장이 없습니다.";
           resultEl.style.display = "none";
           return;
         }
@@ -553,13 +674,13 @@
       } catch (err) {
         console.error(err);
         clearSkeleton();
-        statusEl.textContent = "서버와 통신 중 오류가 발생했습니다.";
+        statusMainEl.textContent = "서버와 통신 중 오류가 발생했습니다.";
       }
     });
 
     againBtn.addEventListener("click", () => {
       msgEl.value = "";
-      statusEl.textContent = "";
+      statusMainEl.textContent = "";
       resultEl.style.display = "none";
       answersEl.innerHTML = "";
       msgEl.focus();
