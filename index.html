@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <title>AI 대화 코치</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- PWA manifest -->
   <link rel="manifest" href="/manifest.json" />
 
   <style>
@@ -14,18 +12,10 @@
       --primary-dark: #4f46e5;
       --bg1: #050816;
       --bg2: #3b1d6a;
-      --card-bg: rgba(8, 12, 32, 0.96);
-      --border: rgba(255, 255, 255, 0.12);
+      --card-bg: rgba(8, 12, 32, 0.94);
       --text-main: #f9fafb;
       --text-sub: #a5b4fc;
-      --text-muted: #9ca3af;
-      --safe: #22c55e;
-      --warn: #eab308;
-      --danger: #f97316;
-      --radius-xl: 24px;
-      --radius-lg: 20px;
-      --radius-md: 14px;
-      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.65);
+      --border: rgba(255, 255, 255, 0.16);
     }
 
     * {
@@ -40,771 +30,202 @@
       background: radial-gradient(circle at top, #3b1d6a 0, #050816 45%, #020617 100%);
       color: var(--text-main);
       display: flex;
-      align-items: stretch;
       justify-content: center;
+      align-items: flex-start;
+      padding: 24px 16px 32px;
     }
 
-    .app-shell {
+    .app {
       width: 100%;
       max-width: 480px;
-      margin: 0 auto;
-      padding: 20px 16px 28px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
     }
 
     .card {
       background: var(--card-bg);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-soft);
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      padding: 20px 18px 22px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      padding: 24px 20px 20px;
+      box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(148, 163, 184, 0.12);
     }
 
-    @media (min-width: 420px) {
-      .card {
-        padding: 24px 22px 26px;
-      }
+    .header {
+      margin-bottom: 20px;
     }
 
-    .app-header {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .app-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 11px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      width: fit-content;
-      font-size: 11px;
-      letter-spacing: 0.02em;
-      color: var(--text-sub);
-      text-transform: uppercase;
-    }
-
-    .app-pill-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 8px rgba(34, 197, 94, 0.9);
-    }
-
-    .title-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .title-main {
+    .header-title {
       display: flex;
       align-items: center;
       gap: 10px;
+      font-size: 20px;
+      font-weight: 700;
     }
 
-    .title-icon {
+    .header-title-icon {
       width: 28px;
       height: 28px;
       border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, #a855f7, #4f46e5);
+      border: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 14px;
     }
 
-    .title-icon span {
-      font-size: 16px;
-    }
-
-    .title-text h1 {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-    }
-
-    .title-text p {
-      margin-top: 2px;
-      font-size: 12px;
+    .header-sub {
+      margin-top: 4px;
+      font-size: 13px;
       color: var(--text-sub);
     }
 
-    .badge-beta {
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      color: #e5e7eb;
-      background: rgba(15, 23, 42, 0.75);
-    }
-
-    .section-title {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #e5e7eb;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .section-title span {
-      font-size: 11px;
-      font-weight: 400;
-      color: var(--text-muted);
-    }
-
     label {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 5px;
       display: block;
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #cbd5f5;
+    }
+
+    .select-wrap,
+    .textarea-wrap {
+      margin-bottom: 14px;
     }
 
     select,
     textarea {
       width: 100%;
       border-radius: 14px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
+      border: 1px solid var(--border);
       background: rgba(15, 23, 42, 0.9);
       color: var(--text-main);
-      padding: 10px 12px;
       font-size: 14px;
+      padding: 11px 14px;
       outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-    }
-
-    select {
-      height: 40px;
-    }
-
-    select:focus,
-    textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.6);
-      background: rgba(15, 23, 42, 0.95);
     }
 
     textarea {
       resize: vertical;
-      min-height: 90px;
-      max-height: 220px;
-      line-height: 1.55;
-    }
-
-    .field-group {
-      margin-bottom: 14px;
+      min-height: 110px;
+      line-height: 1.5;
     }
 
     .hint {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .btn-row {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 10px;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 14px;
     }
 
     .btn-primary {
       width: 100%;
       border: none;
-      border-radius: 16px;
-      padding: 11px 14px;
+      border-radius: 18px;
+      padding: 12px 16px;
       font-size: 15px;
       font-weight: 600;
-      letter-spacing: -0.01em;
       color: white;
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      box-shadow: 0 14px 30px rgba(79, 70, 229, 0.55);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.08s ease;
+      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+      box-shadow: 0 8px 22px rgba(79, 70, 229, 0.65);
     }
 
     .btn-primary:active {
-      transform: translateY(1px) scale(0.99);
-      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.5);
-      opacity: 0.95;
-    }
-
-    .btn-primary[disabled] {
-      opacity: 0.7;
-      cursor: default;
-      box-shadow: none;
-    }
-
-    .btn-secondary {
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      cursor: pointer;
-    }
-
-    .btn-secondary span {
-      font-size: 10px;
-    }
-
-    .btn-secondary:active {
-      opacity: 0.8;
+      transform: translateY(1px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.6);
     }
 
     .status-text {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .status-text strong {
-      color: var(--text-sub);
-      font-weight: 500;
-    }
-
-    .error-banner {
-      margin-top: 8px;
-      border-radius: 12px;
-      padding: 7px 9px;
-      font-size: 11px;
-      background: rgba(248, 113, 113, 0.09);
-      border: 1px solid rgba(248, 113, 113, 0.6);
-      color: #fecaca;
-      display: none;
-    }
-
-    .error-banner.visible {
-      display: block;
-    }
-
-    /* 결과 영역 */
-
-    .result-section {
-      margin-top: 18px;
-      padding-top: 12px;
-      border-top: 1px dashed rgba(148, 163, 184, 0.45);
-    }
-
-    .result-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-    }
-
-    .result-header-left {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .result-title {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    .result-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .result-chip {
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      color: var(--text-sub);
-    }
-
-    .replies {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 6px;
-    }
-
-    .reply-card {
-      position: relative;
-      border-radius: var(--radius-lg);
-      background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), rgba(15, 23, 42, 0.96));
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      padding: 10px 11px 10px 11px;
-      display: grid;
-      grid-template-columns: auto 1fr;
-      column-gap: 8px;
-    }
-
-    .reply-accent {
-      width: 3px;
-      border-radius: 999px;
-      background: var(--safe);
-      margin-right: 6px;
-      grid-row: 1 / span 2;
-    }
-
-    .reply-content {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .reply-text {
-      font-size: 14px;
-      line-height: 1.55;
-      padding-right: 54px;
-    }
-
-    .reply-meta-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .pill-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .pill {
-      font-size: 10px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background: rgba(15, 23, 42, 0.85);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      color: #e5e7eb;
-    }
-
-    .pill-label {
-      font-size: 9px;
-      text-transform: uppercase;
-      opacity: 0.7;
-    }
-
-    .pill-value {
-      font-weight: 600;
-      font-size: 10px;
-    }
-
-    .pill-risk-low {
-      border-color: rgba(34, 197, 94, 0.7);
-      color: #bbf7d0;
-    }
-
-    .pill-risk-mid {
-      border-color: rgba(234, 179, 8, 0.8);
-      color: #fef3c7;
-    }
-
-    .pill-risk-high {
-      border-color: rgba(248, 113, 113, 0.9);
-      color: #fee2e2;
-    }
-
-    .pill-sense {
-      border-color: rgba(129, 140, 248, 0.8);
-      color: #e0e7ff;
-    }
-
-    .pill-desc {
-      max-width: 56%;
-      color: var(--text-muted);
-    }
-
-    .copy-btn {
-      position: absolute;
-      right: 8px;
-      top: 8px;
-      border: none;
-      border-radius: 999px;
-      padding: 5px 9px;
-      font-size: 11px;
-      background: rgba(79, 70, 229, 0.18);
-      color: #e0e7ff;
-      border: 1px solid rgba(129, 140, 248, 0.9);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .copy-btn span {
-      font-size: 11px;
-    }
-
-    .copy-btn:active {
-      transform: translateY(1px);
-      opacity: 0.9;
-    }
-
-    /* 토스트 */
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%) translateY(80px);
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(129, 140, 248, 0.9);
-      color: #e5e7eb;
+      margin-top: 10px;
       font-size: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.9);
-      opacity: 0;
-      pointer-events: none;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-      z-index: 40;
-    }
-
-    .toast-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-      pointer-events: auto;
-    }
-
-    /* 빈 상태 텍스트 */
-
-    .empty-hint {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 4px;
+      color: #a5b4fc;
+      min-height: 16px;
     }
   </style>
 </head>
 <body>
-  <main class="app-shell">
+  <main class="app">
     <section class="card">
-      <header class="app-header">
-        <div class="app-pill">
-          <div class="app-pill-dot"></div>
-          AI 대화 코치 · 카톡 답장 도우미
+      <header class="header">
+        <div class="header-title">
+          <div class="header-title-icon">💬</div>
+          <div>AI 대화 코치</div>
         </div>
-
-        <div class="title-row">
-          <div class="title-main">
-            <div class="title-icon">
-              <span>💬</span>
-            </div>
-            <div class="title-text">
-              <h1>AI 대화 코치</h1>
-              <p>카톡 답장, 같이 생각해주는 파트너</p>
-            </div>
-          </div>
-          <div class="badge-beta">위험도·센스 점수 표시</div>
-        </div>
+        <p class="header-sub">카톡 답장, 같이 생각해주는 파트너</p>
       </header>
 
-      <section>
-        <div class="section-title">
-          상황 선택
-          <span>대화 상대에 맞는 톤을 골라주세요.</span>
-        </div>
-        <div class="field-group">
-          <label for="tone">상황</label>
-          <select id="tone">
-            <option value="기본">기본 · 무난한 답장</option>
-            <option value="연애">연애 · 썸 / 호감 상대</option>
-            <option value="직장">직장 · 상사 / 동료</option>
-            <option value="친구">친구 · 편한 사이</option>
-            <option value="가족">가족 · 솔직하지만 따뜻하게</option>
-          </select>
-        </div>
+      <div class="select-wrap">
+        <label for="tone">상황 선택</label>
+        <select id="tone">
+          <option value="기본">기본</option>
+          <option value="연애">연애</option>
+          <option value="직장">직장</option>
+          <option value="친구">친구</option>
+          <option value="가족">가족</option>
+        </select>
+      </div>
 
-        <div class="section-title" style="margin-top: 10px;">
-          상대방 메시지
-          <span>카톡 내용을 그대로 붙여넣어 주세요.</span>
-        </div>
-        <div class="field-group">
-          <label for="message">상대방이 보낸 메시지</label>
-          <textarea id="message" placeholder="예) 오늘 뭐할까?&#10;혹은 상대가 보낸 카톡 내용을 그대로 붙여넣기 해주세요."></textarea>
-          <p class="hint">대화 흐름을 같이 넣어주면 더 자연스러운 답장이 만들어져요.</p>
-        </div>
+      <div class="textarea-wrap">
+        <label for="message">상대방 메시지</label>
+        <textarea
+          id="message"
+          placeholder="예) 오늘 뭐할까?"
+        ></textarea>
+      </div>
 
-        <div class="btn-row">
-          <button id="generateBtn" class="btn-primary">
-            <span id="generateLabel">답장 생성</span>
-          </button>
-          <button id="resetBtn" type="button" class="btn-secondary">
-            ↺ 다시 입력하기
-          </button>
-          <p class="status-text">
-            <strong>Tip.</strong> 조금 애매한 답장은 복사 후 직접 한두 단어만 고쳐 써도 충분해요.
-          </p>
-          <div id="errorBanner" class="error-banner"></div>
-        </div>
-      </section>
+      <p class="hint">카톡 내용을 그대로 붙여 넣어주세요.</p>
 
-      <section class="result-section" id="resultSection" style="display:none;">
-        <div class="result-header">
-          <div class="result-header-left">
-            <div class="result-title">AI 추천 답장</div>
-            <div class="result-sub">위험도·센스 점수를 참고해 골라 쓰세요.</div>
-          </div>
-          <div class="result-chip" id="toneChip">기본 톤</div>
-        </div>
-
-        <div class="replies" id="repliesContainer">
-          <!-- JS가 카드 3개를 렌더링 -->
-        </div>
-
-        <p class="empty-hint" id="emptyHint" style="display:none;">
-          아직 생성된 답장이 없습니다. 위에서 메시지를 입력하고 &lt;답장 생성&gt;을 눌러주세요.
-        </p>
-      </section>
+      <button class="btn-primary" id="generateBtn">답장 생성</button>
+      <div class="status-text" id="status"></div>
     </section>
-
-    <div class="toast" id="toast">
-      <div class="toast-dot"></div>
-      <span id="toastMessage">클립보드에 복사되었습니다.</span>
-    </div>
   </main>
 
   <script>
-    const toneSelect = document.getElementById("tone");
-    const messageInput = document.getElementById("message");
-    const generateBtn = document.getElementById("generateBtn");
-    const generateLabel = document.getElementById("generateLabel");
-    const resetBtn = document.getElementById("resetBtn");
-    const resultSection = document.getElementById("resultSection");
-    const repliesContainer = document.getElementById("repliesContainer");
-    const toneChip = document.getElementById("toneChip");
-    const errorBanner = document.getElementById("errorBanner");
-    const emptyHint = document.getElementById("emptyHint");
-    const toast = document.getElementById("toast");
-    const toastMessage = document.getElementById("toastMessage");
+    const btn = document.getElementById("generateBtn");
+    const toneEl = document.getElementById("tone");
+    const msgEl = document.getElementById("message");
+    const statusEl = document.getElementById("status");
 
-    function setLoading(isLoading) {
-      if (isLoading) {
-        generateBtn.disabled = true;
-        generateLabel.textContent = "생성 중...";
-      } else {
-        generateBtn.disabled = false;
-        generateLabel.textContent = "답장 생성";
-      }
-    }
-
-    function showError(msg) {
-      errorBanner.textContent = msg;
-      errorBanner.classList.add("visible");
-    }
-
-    function clearError() {
-      errorBanner.textContent = "";
-      errorBanner.classList.remove("visible");
-    }
-
-    function showToast(msg) {
-      toastMessage.textContent = msg;
-      toast.classList.add("show");
-      setTimeout(() => {
-        toast.classList.remove("show");
-      }, 1600);
-    }
-
-    function riskClass(risk) {
-      const n = Number(risk);
-      if (isNaN(n)) return "pill-risk-mid";
-      if (n <= 30) return "pill-risk-low";
-      if (n <= 60) return "pill-risk-mid";
-      return "pill-risk-high";
-    }
-
-    function accentColor(risk) {
-      const n = Number(risk);
-      if (isNaN(n)) return "var(--warn)";
-      if (n <= 30) return "var(--safe)";
-      if (n <= 60) return "var(--warn)";
-      return "var(--danger)";
-    }
-
-    function renderReplies(lines) {
-      repliesContainer.innerHTML = "";
-
-      if (!lines || !lines.length) {
-        resultSection.style.display = "block";
-        emptyHint.style.display = "block";
-        return;
-      }
-
-      emptyHint.style.display = "none";
-      resultSection.style.display = "block";
-
-      lines.forEach((line, idx) => {
-        const trimmed = line.trim();
-        if (!trimmed) return;
-
-        const parts = trimmed.split("||").map(p => p.trim());
-        const sentence = parts[0] || "";
-        const risk = parts[1] || "?";
-        const sense = parts[2] || "?";
-        const desc = parts[3] || "";
-
-        const card = document.createElement("article");
-        card.className = "reply-card";
-
-        const accent = document.createElement("div");
-        accent.className = "reply-accent";
-        accent.style.background = accentColor(risk);
-
-        const content = document.createElement("div");
-        content.className = "reply-content";
-
-        const textEl = document.createElement("div");
-        textEl.className = "reply-text";
-        textEl.textContent = sentence;
-
-        const metaRow = document.createElement("div");
-        metaRow.className = "reply-meta-row";
-
-        const pillRowEl = document.createElement("div");
-        pillRowEl.className = "pill-row";
-
-        const pillRisk = document.createElement("div");
-        pillRisk.className = `pill ${riskClass(risk)}`;
-        pillRisk.innerHTML = `<span class="pill-label">위험도</span><span class="pill-value">${risk}</span>`;
-
-        const pillSense = document.createElement("div");
-        pillSense.className = "pill pill-sense";
-        pillSense.innerHTML = `<span class="pill-label">센스</span><span class="pill-value">${sense}</span>`;
-
-        pillRowEl.appendChild(pillRisk);
-        pillRowEl.appendChild(pillSense);
-
-        const descEl = document.createElement("div");
-        descEl.className = "pill pill-desc";
-        descEl.textContent = desc || "톤에 대한 간단한 설명입니다.";
-
-        metaRow.appendChild(pillRowEl);
-        metaRow.appendChild(descEl);
-
-        const copyBtn = document.createElement("button");
-        copyBtn.className = "copy-btn";
-        copyBtn.type = "button";
-        copyBtn.innerHTML = `<span>복사</span>`;
-        copyBtn.addEventListener("click", async () => {
-          try {
-            await navigator.clipboard.writeText(sentence);
-            showToast("답장이 클립보드에 복사되었습니다.");
-          } catch (e) {
-            showToast("복사에 실패했습니다. 직접 길게 눌러 복사해 주세요.");
-          }
-        });
-
-        content.appendChild(textEl);
-        content.appendChild(metaRow);
-
-        card.appendChild(accent);
-        card.appendChild(content);
-        card.appendChild(copyBtn);
-
-        repliesContainer.appendChild(card);
-      });
-    }
-
-    generateBtn.addEventListener("click", async () => {
-      clearError();
-      const text = messageInput.value.trim();
-      const tone = toneSelect.value;
+    btn.addEventListener("click", async () => {
+      const text = msgEl.value.trim();
+      const tone = toneEl.value;
 
       if (!text) {
-        showError("먼저 상대방 메시지를 입력해 주세요.");
-        messageInput.focus();
+        statusEl.textContent = "먼저 상대방 메시지를 입력해 주세요.";
         return;
       }
 
-      setLoading(true);
+      statusEl.textContent = "AI가 답장을 생각 중입니다...";
 
       try {
         const res = await fetch("/reply", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text, tone })
         });
 
         const data = await res.json();
 
         if (!res.ok) {
-          console.error("API error:", data);
-          showError("AI 답장 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
-          setLoading(false);
+          statusEl.textContent = data.error || "답장 생성 중 오류가 발생했습니다.";
           return;
         }
 
-        const raw = (data.reply || "").trim();
-        const lines = raw.split(/\r?\n/).filter(l => l.trim().length > 0);
+        // ✅ 결과를 localStorage에 저장하고 /result로 이동
+        const payload = {
+          tone,
+          text,
+          reply: data.reply || ""
+        };
+        localStorage.setItem("aiReplyCoach_lastResult", JSON.stringify(payload));
+        window.location.href = "/result";
 
-        toneChip.textContent = `${tone} 톤`;
-        renderReplies(lines);
-        showToast("AI 추천 답장을 생성했어요.");
       } catch (err) {
         console.error(err);
-        showError("서버와의 연결에 문제가 있습니다. 네트워크 상태를 확인해 주세요.");
-      } finally {
-        setLoading(false);
+        statusEl.textContent = "서버와 통신 중 오류가 발생했습니다.";
       }
     });
-
-    resetBtn.addEventListener("click", () => {
-      messageInput.value = "";
-      messageInput.focus();
-      repliesContainer.innerHTML = "";
-      resultSection.style.display = "none";
-      emptyHint.style.display = "none";
-      clearError();
-    });
-
-    // PWA 서비스워커 등록 (있는 경우만)
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("/service-worker.js")
-          .catch((err) => {
-            console.warn("Service worker registration failed:", err);
-          });
-      });
-    }
   </script>
 </body>
 </html>
+
+
 
 
