@@ -52,12 +52,8 @@
       gap: 12px;
     }
 
-    .screen {
-      display: none;
-    }
-    .screen.active {
-      display: block;
-    }
+    .screen { display: none; }
+    .screen.active { display: block; }
 
     .card {
       background: var(--card-bg);
@@ -145,9 +141,7 @@
       cursor: pointer;
     }
 
-    .feature-main {
-      flex: 1;
-    }
+    .feature-main { flex: 1; }
 
     .feature-title {
       font-size: 17px;
@@ -259,9 +253,7 @@
       cursor: pointer;
     }
 
-    .back-btn .arrow {
-      font-size: 15px;
-    }
+    .back-btn .arrow { font-size: 15px; }
 
     .top-row {
       display: flex;
@@ -270,10 +262,7 @@
       margin-bottom: 4px;
     }
 
-    .tone-chip {
-      font-size: 12px;
-      color: #cbd5f5;
-    }
+    .tone-chip { font-size: 12px; color: #cbd5f5; }
 
     .chip-row {
       display: flex;
@@ -291,6 +280,7 @@
       font-size: 13px;
       cursor: pointer;
     }
+
     .tone-btn.selected {
       background: rgba(99, 102, 241, 0.25);
       border-color: #818cf8;
@@ -351,9 +341,7 @@
       margin-bottom: 4px;
     }
 
-    .original-text {
-      font-size: 14px;
-    }
+    .original-text { font-size: 14px; }
 
     .answer-list {
       display: flex;
@@ -489,8 +477,8 @@
       margin-bottom: 6px;
     }
 
-    .skeleton-line.long { width: 80%; }
-    .skeleton-line.mid { width: 60%; }
+    .skeleton-line.long  { width: 80%; }
+    .skeleton-line.mid   { width: 60%; }
     .skeleton-line.short { width: 50%; }
 
     @keyframes shimmer {
@@ -520,9 +508,7 @@
       gap: 8px;
     }
 
-    .tone-sample-text {
-      flex: 1;
-    }
+    .tone-sample-text { flex: 1; }
 
     .tone-sample-del {
       border: none;
@@ -556,10 +542,7 @@
       margin-bottom: 4px;
     }
 
-    .fav-text {
-      font-size: 14px;
-      flex: 1;
-    }
+    .fav-text { font-size: 14px; flex: 1; }
 
     .fav-meta {
       font-size: 11px;
@@ -567,10 +550,7 @@
       margin-bottom: 4px;
     }
 
-    .fav-actions {
-      display: flex;
-      gap: 6px;
-    }
+    .fav-actions { display: flex; gap: 6px; }
 
     .btn-mini {
       border-radius: 999px;
@@ -584,9 +564,7 @@
     }
 
     /* 캡쳐 화면 */
-    #screen-capture input[type="file"] {
-      font-size: 13px;
-    }
+    #screen-capture input[type="file"] { font-size: 13px; }
 
     /* 바텀 내비게이션 */
     .nav-bar {
@@ -663,7 +641,7 @@
           <div class="feature-main">
             <div class="feature-title">1. AI가 카톡 답장 만들어주기</div>
             <div class="feature-desc">
-              상대가 보낸 메시지 내용을 붙여 넣으면, 딱 맞는 답장 3개를 추천해 드려요.
+              상대가 보낸 메시지를 붙여 넣으면, 딱 맞는 답장 3개를 추천해 드려요.
             </div>
           </div>
           <div class="feature-badge primary">바로 시작</div>
@@ -673,7 +651,7 @@
           <div class="feature-main">
             <div class="feature-title">2. 내 말투 학습시키기</div>
             <div class="feature-desc">
-              내가 실제로 자주 쓰는 말들을 저장해 두면, 답장이 점점 나와 더 비슷해져요.
+              내가 자주 쓰는 말들을 저장해 두면, 답장이 점점 나와 더 비슷해져요.
             </div>
           </div>
           <div class="feature-badge">말투 저장</div>
@@ -693,7 +671,7 @@
           <div class="feature-main">
             <div class="feature-title">4. 캡쳐로 답장 만들기</div>
             <div class="feature-desc">
-              대화 캡쳐 이미지를 업로드하면, 그 내용을 읽고 어울리는 답장을 추천해 드려요.
+              대화 캡쳐 이미지를 업로드하면, 어울리는 답장을 추천해 드려요.
             </div>
           </div>
           <div class="feature-badge">캡쳐 모드</div>
@@ -906,7 +884,7 @@
       }
 
       [navHome, navReply, navMy, navFav].forEach(b => b && b.classList.remove("active"));
-      if (name === "home")      navHome.classList.add("active");
+      if (name === "home") navHome.classList.add("active");
       else if (name === "make" || name === "capture" || name === "result") navReply.classList.add("active");
       else if (name === "myTone") navMy.classList.add("active");
       else if (name === "fav") navFav.classList.add("active");
@@ -1062,22 +1040,22 @@
       }
       favs.forEach((f, idx) => {
         const item = document.createElement("div");
-        item.className = "fav-item";
-        item.innerHTML = `
-          <div class="fav-top-row">
-            <div class="fav-text">${f.text}</div>
-            <div class="fav-meta">${f.tone || "톤 정보 없음"} · ${f.source === "capture" ? "캡쳐" : "텍스트"}</div>
-          </div>
-          <div class="chips">
-            ${f.risk ? `<span class="chip chip-risk">${f.risk}</span>` : ""}
-            ${f.sense ? `<span class="chip chip-sense">${f.sense}</span>` : ""}
-          </div>
-          ${f.comment ? `<div class="comment-text">${f.comment}</div>` : ""}
-          <div class="fav-actions">
-            <button class="btn-mini btn-fav-copy" type="button">복사</button>
-            <button class="btn-mini btn-fav-del" data-idx="${idx}" type="button">삭제</button>
-          </div>
-        `;
+          item.className = "fav-item";
+          item.innerHTML = `
+            <div class="fav-top-row">
+              <div class="fav-text">${f.text}</div>
+              <div class="fav-meta">${f.tone || "톤 정보 없음"} · ${f.source === "capture" ? "캡쳐" : "텍스트"}</div>
+            </div>
+            <div class="chips">
+              ${f.risk ? `<span class="chip chip-risk">${f.risk}</span>` : ""}
+              ${f.sense ? `<span class="chip chip-sense">${f.sense}</span>` : ""}
+            </div>
+            ${f.comment ? `<div class="comment-text">${f.comment}</div>` : ""}
+            <div class="fav-actions">
+              <button class="btn-mini btn-fav-copy" type="button">복사</button>
+              <button class="btn-mini btn-fav-del" data-idx="${idx}" type="button">삭제</button>
+            </div>
+          `;
         const copyBtn = item.querySelector(".btn-fav-copy");
         const delBtn  = item.querySelector(".btn-fav-del");
         copyBtn.addEventListener("click", () => {
@@ -1094,11 +1072,6 @@
         });
         favListEl.appendChild(item);
       });
-    }
-
-    function isFavoriteText(text) {
-      const favs = loadFavorites();
-      return favs.some(f => f.text === text);
     }
 
     function addFavorite(entry) {
@@ -1193,87 +1166,25 @@
       });
     }
 
-    // ===== /reply 호출 : 어떤 형식이 와도 처리 =====
+    // ===== /reply 호출 : 단순 JSON 기반 =====
     async function callReplyAPI(text, tone) {
       try {
-        const toneSamples = loadMyToneSamples();
         const res  = await fetch("/reply", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, tone, toneSamples })
+          body: JSON.stringify({ text, tone })
         });
-        const body = await res.text();
-        let replyText = "";
 
-        try {
-          const data = JSON.parse(body);
-          if (data && typeof data === "object") {
-            if (typeof data.reply === "string") {
-              replyText = data.reply;
-            } else if (Array.isArray(data.choices) &&
-                       data.choices[0]?.message?.content) {
-              replyText = data.choices[0].message.content;
-            }
-          }
-        } catch (e) {
-          // JSON이 아니면 그대로 사용
-        }
-        if (!replyText) replyText = body || "";
-
-        if (!res.ok && !replyText.trim()) {
-          resultStatusText.textContent = "답장 생성 중 오류가 발생했습니다.";
-          answersEl.innerHTML = "";
-          return;
+        if (!res.ok) {
+          throw new Error("reply 실패");
         }
 
+        const data = await res.json();
+        const replyText = data.reply || "";
         renderReplies(replyText);
       } catch (err) {
         console.error(err);
-        resultStatusText.textContent = "서버와 통신 중 오류가 발생했습니다.";
-        answersEl.innerHTML = "";
-      }
-    }
-
-    // ===== /capture 호출 : 이미지 기반 =====
-    const captureInput  = document.getElementById("captureInput");
-    const captureBtn    = document.getElementById("captureBtn");
-    const statusCapture = document.getElementById("statusCapture");
-
-    async function callCaptureAPI(file) {
-      try {
-        const fd = new FormData();
-        fd.append("image", file);
-
-        const res  = await fetch("/capture", {
-          method: "POST",
-          body: fd
-        });
-        const body = await res.text();
-        let replyText = "";
-
-        try {
-          const data = JSON.parse(body);
-          if (data && typeof data === "object") {
-            if (typeof data.reply === "string") {
-              replyText = data.reply;
-            } else if (Array.isArray(data.choices) &&
-                       data.choices[0]?.message?.content) {
-              replyText = data.choices[0].message.content;
-            }
-          }
-        } catch (e) {}
-        if (!replyText) replyText = body || "";
-
-        if (!res.ok && !replyText.trim()) {
-          resultStatusText.textContent = "캡쳐 기반 답장 생성 중 오류가 발생했습니다.";
-          answersEl.innerHTML = "";
-          return;
-        }
-
-        renderReplies(replyText);
-      } catch (err) {
-        console.error(err);
-        resultStatusText.textContent = "서버와 통신 중 오류가 발생했습니다.";
+        resultStatusText.textContent = "답장 생성 중 오류가 발생했습니다.";
         answersEl.innerHTML = "";
       }
     }
@@ -1301,8 +1212,12 @@
 
     generateBtn.addEventListener("click", startGenerateFlow);
 
-    // ===== 캡쳐 답장 생성 플로우 =====
-    function startCaptureFlow() {
+    // ===== 캡쳐 → /ocr → /reply =====
+    const captureInput  = document.getElementById("captureInput");
+    const captureBtn    = document.getElementById("captureBtn");
+    const statusCapture = document.getElementById("statusCapture");
+
+    async function startCaptureFlow() {
       const file = captureInput && captureInput.files && captureInput.files[0];
       if (!file) {
         statusCapture.textContent = "먼저 캡쳐 이미지를 선택해 주세요.";
@@ -1310,17 +1225,42 @@
       }
 
       currentMode = "capture";
-      lastMessage = "(캡쳐 이미지)";
-      if (toneChip) toneChip.textContent = "캡쳐 모드";
+      statusCapture.textContent = "";
 
       resultTopText.textContent    = "AI가 캡쳐를 분석하고 있어요...";
       resultStatusText.textContent = "이미지에서 텍스트를 읽어 답장을 만드는 중이에요.";
       resultOriginal.textContent   = "대화 캡쳐 이미지 기반으로 생성된 답장입니다.";
 
-      statusCapture.textContent = "";
       showScreen("result");
       showSkeleton();
-      callCaptureAPI(file);
+
+      try {
+        const fd = new FormData();
+        fd.append("image", file);
+
+        // 1단계: OCR
+        const ocrRes = await fetch("/ocr", {
+          method: "POST",
+          body: fd
+        });
+        if (!ocrRes.ok) throw new Error("ocr 실패");
+        const ocrData = await ocrRes.json();
+        const ocrText = (ocrData.text || "").trim();
+
+        if (!ocrText) {
+          resultStatusText.textContent = "이미지에서 텍스트를 읽지 못했습니다. 다시 시도해 주세요.";
+          answersEl.innerHTML = "";
+          return;
+        }
+
+        // 2단계: 읽은 텍스트로 답장 생성
+        lastMessage = ocrText;
+        await callReplyAPI(ocrText, selectedTone);
+      } catch (err) {
+        console.error(err);
+        resultStatusText.textContent = "캡쳐 기반 답장 생성 중 오류가 발생했습니다.";
+        answersEl.innerHTML = "";
+      }
     }
 
     captureBtn.addEventListener("click", startCaptureFlow);
@@ -1354,15 +1294,11 @@
 
     // ===== 다시 생성 / 홈 =====
     regenerateBtn.addEventListener("click", () => {
-      if (currentMode === "text") {
-        if (!lastMessage) return;
-        resultTopText.textContent    = "AI 추천 답장이 준비되는 중이에요...";
-        resultStatusText.textContent = "AI가 답장을 다시 만드는 중이에요.";
-        showSkeleton();
-        callReplyAPI(lastMessage, selectedTone);
-      } else {
-        alert("캡쳐 답장은 이미지를 다시 선택해서 생성해 주세요.");
-      }
+      if (!lastMessage) return;
+      resultTopText.textContent    = "AI 추천 답장이 준비되는 중이에요...";
+      resultStatusText.textContent = "AI가 답장을 다시 만드는 중이에요.";
+      showSkeleton();
+      callReplyAPI(lastMessage, selectedTone);
     });
 
     homeBtn.addEventListener("click", () => {
