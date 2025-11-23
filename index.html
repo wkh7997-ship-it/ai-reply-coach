@@ -10,6 +10,8 @@
     :root {
       --primary: #6366f1;
       --primary-dark: #4f46e5;
+      --bg1: #050816;
+      --bg2: #3b1d6a;
       --card-bg: rgba(8, 12, 32, 0.96);
       --text-main: #f9fafb;
       --text-sub: #a5b4fc;
@@ -26,294 +28,810 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
+    html, body { height: 100%; }
+
     body {
       min-height: 100vh;
       background:
         radial-gradient(circle at top, #4c1d95 0, rgba(76, 29, 149, 0.25) 18%, transparent 35%),
         radial-gradient(circle at bottom, #0b1120 0, #020617 55%, #000 100%);
       color: var(--text-main);
-      padding: 30px 16px 40px;
       display: flex;
       justify-content: center;
+      align-items: center;
+      padding: calc(32px + env(safe-area-inset-top, 0px)) 16px 40px;
+      -webkit-text-size-adjust: 100%;
     }
 
-    .app { width: 100%; max-width: 480px; }
-
-    .screen { display: none; }
-    .screen.active { display: block; }
+    .app {
+      width: 100%;
+      max-width: 480px;
+    }
 
     .card {
       background: var(--card-bg);
       border-radius: 28px;
-      border: 1px solid rgba(148,163,184,0.35);
-      padding: 22px 18px;
-      box-shadow: 0 26px 60px rgba(15,23,42,0.95);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 22px 18px 22px;
+      box-shadow:
+        0 26px 60px rgba(15, 23, 42, 0.95),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(18px);
     }
 
     .header {
       display: flex;
       align-items: center;
       gap: 14px;
-      margin-bottom: 12px;
     }
 
     .header-icon {
-      width: 42px; height: 42px;
+      width: 42px;
+      height: 42px;
       border-radius: 18px;
       padding: 2px;
-      background: radial-gradient(circle at 30% 20%, #9f8cff, #4c1d95 45%, #111827);
-      box-shadow: 0 8px 18px rgba(79,70,229,0.9);
-      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(circle at 30% 20%, #9f8cff 0, #4c1d95 45%, #111827 100%);
+      box-shadow:
+        0 8px 18px rgba(79, 70, 229, 0.9),
+        0 0 0 1px rgba(30, 64, 175, 0.45);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .header-icon img { width: 100%; height: 100%; border-radius: 14px; }
-
-    .header-text-main { font-size: 20px; font-weight: 800; }
-    .header-text-sub  { margin-top: 2px; font-size: 13px; color: var(--text-sub); }
-
-    .field-label { font-size:14px; color:#c7d2fe; margin: 14px 0 6px; }
-    textarea {
-      width: 100%; padding:12px 14px; border-radius:18px;
-      border:1px solid var(--border); background:#0f172a; color:white;
-      font-size:16px; min-height:80px;
+    .header-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 14px;
     }
-    textarea:focus {
-      border-color:#818cf8; box-shadow:0 0 0 1px rgba(129,140,248,0.75);
+
+    .header-text-main {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
     }
+
+    .header-text-sub {
+      margin-top: 4px;
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    /* 화면 공통 */
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .status-text {
+      font-size: 13px;
+      color: #a5b4fc;
+      min-height: 18px;
+      margin-top: 6px;
+    }
+
     .btn-primary {
-      width:100%; margin-top:16px; padding:14px;
-      border-radius:20px; border:none;
+      width: 100%;
+      border: none;
+      border-radius: 20px;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
       background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-      font-size:16px; font-weight:700; color:white;
+      box-shadow:
+        0 18px 38px rgba(79, 70, 229, 0.85),
+        0 0 0 1px rgba(129, 140, 248, 0.7);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 22px;
     }
 
-    /* 3페이지 */
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow:
+        0 10px 26px rgba(79, 70, 229, 0.75),
+        0 0 0 1px rgba(129, 140, 248, 0.7);
+    }
+
+    .btn-outline {
+      border-radius: 20px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: transparent;
+      color: #e5e7ff;
+      font-size: 14px;
+      padding: 10px 0;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .btn-outline:active {
+      transform: translateY(1px);
+      background: rgba(15,23,42,0.85);
+    }
+
+    /* ========= 1페이지 : 상황 선택 ========= */
+
+    .tone-title-main {
+      margin-top: 18px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .tone-title-sub {
+      margin-top: 8px;
+      font-size: 15px;
+    }
+
+    .tone-desc {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #a5b4fc;
+    }
+
+    .tone-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .tone-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(15, 23, 42, 0.96);
+      color: var(--text-main);
+      padding: 12px 10px;
+      font-size: 15px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .tone-btn.selected {
+      border-color: #a5b4fc;
+      box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.6);
+      background: radial-gradient(circle at top, rgba(79,70,229,0.55), rgba(15,23,42,0.98));
+    }
+
+    .tone-hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    /* ========= 2페이지 : 메시지 입력 ========= */
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .back-btn {
+      border: none;
+      background: none;
+      color: #e5e7ff;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+
+    .back-btn span.arrow {
+      font-size: 16px;
+      transform: translateY(1px);
+    }
+
+    .tone-chip-current {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      font-size: 11px;
+      color: #c7d2fe;
+      background: rgba(15, 23, 42, 0.9);
+      white-space: nowrap;
+    }
+
+    .subtitle-main {
+      margin-top: 10px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .subtitle-bar {
+      margin-top: 6px;
+      height: 3px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #4f46e5, #a855f7, #22c55e);
+      background-size: 200% 100%;
+      animation: slideBar 1.4s linear infinite;
+    }
+
+    @keyframes slideBar {
+      0% { background-position: 0% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .subtitle-sub {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #a5b4fc;
+    }
+
+    .field-label {
+      font-size: 14px;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      color: #c7d2fe;
+    }
+
+    .textarea-wrap {
+      position: relative;
+    }
+
+    textarea {
+      width: 100%;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.98);
+      color: var(--text-main);
+      font-size: 16px;
+      padding: 12px 14px;
+      min-height: 80px;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    textarea:focus {
+      border-color: #818cf8;
+      box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.75);
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .hint {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 6px;
+      margin-bottom: 12px;
+    }
+
+    /* ========= 3페이지 : 결과 ========= */
+
     .result-wrapper {
-      margin-top:14px; padding:14px 12px; border-radius:22px;
-      background:rgba(15,23,42,0.96);
-      border:1px solid rgba(148,163,184,0.45);
+      margin-top: 14px;
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at top, rgba(79, 70, 229, 0.25) 0, rgba(15, 23, 42, 0.98) 55%);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      padding: 14px 12px 12px;
+    }
+
+    .result-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .result-header-title {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .result-header-sub {
+      font-size: 12px;
+      color: #cbd5f5;
+      margin-top: 2px;
+    }
+
+    .result-header-right {
+      font-size: 12px;
+      color: #a5b4fc;
+      white-space: nowrap;
+    }
+
+    .original-box {
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.6);
+      padding: 10px 10px 8px;
+      margin-bottom: 10px;
+      background: rgba(15,23,42,0.96);
+    }
+
+    .original-label {
+      font-size: 13px;
+      color: #c7d2fe;
+      margin-bottom: 4px;
+    }
+
+    .original-text {
+      font-size: 14px;
     }
 
     .answer-item {
-      padding:10px; border-radius:16px;
-      background:#0f172a;
-      border:1px solid rgba(51,65,85,0.9);
-      margin-top:10px;
+      padding: 9px 9px 10px;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      margin-top: 8px;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.9);
     }
 
-    .copy-btn {
-      border:none; border-radius:999px;
-      background:#4f46e5; color:white;
-      padding:4px 12px; cursor:pointer;
+    .answer-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
     }
 
-    /* 스켈레톤 */
-    .skeleton-item {
-      padding:12px; margin-top:10px;
-      border-radius:16px;
-      background:#0f172a;
-      border:1px solid rgba(51,65,85,0.9);
-      overflow:hidden;
+    .answer-text {
+      font-size: 15px;
+      flex: 1;
+      padding-right: 4px;
     }
 
-    .skeleton-line {
-      height:10px; border-radius:999px;
-      background: linear-gradient(110deg, rgba(148,163,184,0.25), rgba(148,163,184,0.45), rgba(148,163,184,0.25));
-      background-size:200% 100%;
-      animation: shimmer 1.2s infinite;
-      margin-bottom:6px;
-    }
-    .short{width:40%} .mid{width:65%} .long{width:90%}
-
-    @keyframes shimmer {
-      0% {background-position:-150% 0;}
-      100% {background-position:150% 0;}
+    .chips {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 2px;
+      font-size: 12px;
     }
 
     .chip {
-      padding:3px 8px; border-radius:999px;
-      border:1px solid rgba(148,163,184,0.7);
-      background:rgba(15,23,42,0.9);
-      font-size:12px; margin-right:4px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
     }
-    .safe{color:#22c55e;border-color:#22c55e;}
-    .warn{color:#eab308;border-color:#eab308;}
-    .danger{color:#ef4444;border-color:#ef4444;}
+
+    .chip.score { white-space: nowrap; }
+
+    .chip.safe {
+      border-color: var(--safe);
+      color: var(--safe);
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .chip.warn {
+      border-color: var(--warn);
+      color: var(--warn);
+      background: rgba(234, 179, 8, 0.12);
+    }
+
+    .chip.danger {
+      border-color: var(--danger);
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.12);
+    }
+
+    .copy-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 5px 14px;
+      font-size: 13px;
+      background: rgba(79, 70, 229, 0.96);
+      color: #e5e7ff;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .copy-btn:active {
+      transform: translateY(1px);
+      background: rgba(79, 70, 229, 1);
+    }
+
+    .again-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    /* 스켈레톤 */
+
+    .skeleton-item {
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(51, 65, 85, 0.85);
+      margin-top: 8px;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    .skeleton-line {
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(
+        110deg,
+        rgba(148, 163, 184, 0.25) 8%,
+        rgba(148, 163, 184, 0.45) 18%,
+        rgba(148, 163, 184, 0.18) 33%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+      margin-bottom: 6px;
+    }
+
+    .skeleton-line.short { width: 40%; }
+    .skeleton-line.mid   { width: 65%; }
+    .skeleton-line.long  { width: 90%; }
+
+    @keyframes shimmer {
+      0% { background-position: -150% 0; }
+      100% { background-position: 150% 0; }
+    }
+
+    @media (max-height: 680px) {
+      body {
+        align-items: flex-start;
+        padding-top: 20px;
+      }
+    }
   </style>
 </head>
-
 <body>
-<main class="app">
+  <main class="app">
+    <!-- ===== 1페이지 : 상황 선택 ===== -->
+    <section class="card screen active" id="screen-tone">
+      <header class="header">
+        <div class="header-icon">
+          <img src="/icon-192.png" alt="AI 대화 코치 아이콘" />
+        </div>
+        <div>
+          <div class="header-text-main">AI 대화 코치</div>
+          <div class="header-text-sub">먼저 대화 상황을 선택해 주세요</div>
+        </div>
+      </header>
 
-<!-- ===================== 2페이지 ===================== -->
-<section class="card screen active" id="screen-input">
-  <header class="header">
-    <div class="header-icon"><img src="/icon-192.png" /></div>
-    <div>
-      <div class="header-text-main">AI 대화 코치</div>
-      <div class="header-text-sub" id="inputSubtitle">AI 추천 답장을 3가지로 추천해드려요</div>
-    </div>
-  </header>
+      <div class="tone-title-main">어떤 상황의 답장을 도와드릴까요?</div>
+      <p class="tone-title-sub">상황에 따라 톤을 다르게 추천해드려요.</p>
+      <p class="tone-desc">가장 가까운 상황을 골라 주세요.</p>
 
-  <div class="field-label">상대방 메시지</div>
-  <textarea id="message" placeholder="예) 내일 뭐해?"></textarea>
+      <div class="tone-grid" id="toneGrid">
+        <button type="button" class="tone-btn" data-tone="연애">연애</button>
+        <button type="button" class="tone-btn" data-tone="썸">썸</button>
+        <button type="button" class="tone-btn" data-tone="친구">친구</button>
+        <button type="button" class="tone-btn" data-tone="직장">직장</button>
+        <button type="button" class="tone-btn" data-tone="가족">가족</button>
+        <button type="button" class="tone-btn" data-tone="기타">기타</button>
+      </div>
 
-  <button class="btn-primary" id="generateBtn">AI 추천 답장 생성</button>
-  <div class="status-text" id="statusReply" style="margin-top:8px; font-size:13px; color:#a5b4fc;"></div>
-</section>
+      <p class="tone-hint">나중에 언제든지 상황을 다시 바꿀 수 있어요.</p>
 
-<!-- ===================== 3페이지 ===================== -->
-<section class="card screen" id="screen-result">
-  <header class="header">
-    <div class="header-icon"><img src="/icon-192.png" /></div>
-    <div>
-      <div class="header-text-main">AI 추천 답장</div>
-      <div class="header-text-sub" id="resultStatus">AI가 답장을 만드는 중이에요…</div>
-    </div>
-  </header>
+      <button class="btn-primary" id="nextBtn" type="button">
+        다음 (답장 쓰러가기)
+      </button>
+      <div class="status-text" id="statusTone"></div>
+    </section>
 
-  <div class="result-wrapper">
-    <div style="font-size:13px; margin-bottom:6px; color:#c7d2fe;">상대방 메시지</div>
-    <div id="originalText" style="font-size:14px; margin-bottom:16px;">-</div>
+    <!-- ===== 2페이지 : 메시지 입력 ===== -->
+    <section class="card screen" id="screen-input">
+      <div class="top-row">
+        <button class="back-btn" id="backToToneBtn" type="button">
+          <span class="arrow">←</span><span>상황 다시 선택</span>
+        </button>
+        <div class="tone-chip-current" id="toneChip">친구 톤</div>
+      </div>
 
-    <div id="answers"></div>
-  </div>
-</section>
-
-</main>
-
-<script>
-  const screenInput  = document.getElementById("screen-input");
-  const screenResult = document.getElementById("screen-result");
-  const generateBtn  = document.getElementById("generateBtn");
-  const inputSubtitle = document.getElementById("inputSubtitle");
-  const msgEl         = document.getElementById("message");
-  const resultStatus  = document.getElementById("resultStatus");
-  const originalText  = document.getElementById("originalText");
-  const answersEl     = document.getElementById("answers");
-
-  function showScreen(name) {
-    if (name === "input") {
-      screenInput.classList.add("active");
-      screenResult.classList.remove("active");
-    } else {
-      screenInput.classList.remove("active");
-      screenResult.classList.add("active");
-    }
-  }
-
-  function showSkeleton() {
-    answersEl.innerHTML = "";
-    for (let i = 0; i < 3; i++) {
-      const sk = document.createElement("div");
-      sk.className = "skeleton-item";
-      sk.innerHTML = `
-        <div class="skeleton-line long"></div>
-        <div class="skeleton-line mid"></div>
-        <div class="skeleton-line short"></div>
-      `;
-      answersEl.appendChild(sk);
-    }
-  }
-
-  function parseLine(line) {
-    const p = line.split("||").map(s=>s.trim());
-    return { text:p[0], risk:p[1], sense:p[2], comment:p[3] };
-  }
-
-  function parseLevel(raw){
-    const s = (raw||"");
-    if (s.includes("높음")) return {level:"높음", score:"85"};
-    if (s.includes("중간")) return {level:"중간", score:"55"};
-    return {level:"낮음", score:"25"};
-  }
-
-  function levelClass(level){
-    if(level==="낮음")return"safe";
-    if(level==="중간")return"warn";
-    return"danger";
-  }
-
-  generateBtn.addEventListener("click", () => {
-    const text = msgEl.value.trim();
-    if (!text) {
-      alert("상대방 메시지를 입력해주세요.");
-      return;
-    }
-
-    // ① 2페이지 문구 변경
-    inputSubtitle.textContent = "AI 추천 답장을 생성 중이에요…";
-
-    // ② 3페이지 초기 로딩 설정
-    resultStatus.textContent = "AI가 답장을 만드는 중이에요…";
-    originalText.textContent = text;
-    answersEl.innerHTML = "";
-    showSkeleton();
-
-    // ③ 화면 전환
-    showScreen("result");
-
-    // ④ 실제 AI 호출
-    generateReplies(text);
-  });
-
-  async function generateReplies(text){
-    try {
-      const res = await fetch("/reply", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({text})
-      });
-
-      const data = await res.json();
-
-      const lines = data.reply
-        .split("\n")
-        .map(l=>l.trim())
-        .filter(Boolean)
-        .slice(0,3);
-
-      resultStatus.textContent = "AI 추천 답장이 준비됐어요!";
-      answersEl.innerHTML = "";
-
-      lines.forEach((line, idx)=>{
-        const {text, risk, sense, comment} = parseLine(line);
-        const r = parseLevel(risk);
-        const s = parseLevel(sense);
-
-        const item = document.createElement("div");
-        item.className = "answer-item";
-        item.innerHTML = `
-          <div style="font-size:15px; margin-bottom:6px;">
-            ${idx+1}. ${text}
+      <header class="header">
+        <div class="header-icon">
+          <img src="/icon-192.png" alt="AI 대화 코치 아이콘" />
+        </div>
+        <div>
+          <div class="header-text-main">AI 추천 답장</div>
+          <div class="header-text-sub subtitle-main" id="inputSubtitle">
+            지금 대화에 딱 맞는 답장을 3가지로 추천해드려요
           </div>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <span class="chip ${levelClass(r.level)}">위험도 ${r.score}</span>
-              <span class="chip">센스 ${s.score}</span>
-              ${comment ? `<span class="chip">${comment}</span>` : ""}
+        </div>
+      </header>
+
+      <div class="subtitle-bar"></div>
+      <p class="subtitle-sub">
+        상대방 톡을 그대로 붙여 넣으면, 상황과 말투에 맞게 답장을 만들어 드려요.
+      </p>
+
+      <div class="field-label">상대방 메시지</div>
+      <div class="textarea-wrap">
+        <textarea id="message" placeholder="예) 내일 뭐해?"></textarea>
+      </div>
+      <p class="hint">카톡 내용을 그대로 붙여 넣어주세요.</p>
+
+      <button class="btn-primary" id="generateBtn" type="button">
+        AI 추천 답장 생성
+      </button>
+      <div class="status-text" id="statusReply"></div>
+    </section>
+
+    <!-- ===== 3페이지 : 결과 ===== -->
+    <section class="card screen" id="screen-result">
+      <div class="top-row">
+        <button class="back-btn" id="backToInputBtn" type="button">
+          <span class="arrow">←</span><span>답장 다시 수정</span>
+        </button>
+        <div class="tone-chip-current" id="toneChipResult">친구 톤</div>
+      </div>
+
+      <header class="header">
+        <div class="header-icon">
+          <img src="/icon-192.png" alt="AI 대화 코치 아이콘" />
+        </div>
+        <div>
+          <div class="header-text-main">AI 추천 답장</div>
+          <div class="header-text-sub" id="resultStatus">
+            AI가 답장을 만드는 중이에요…
+          </div>
+        </div>
+      </header>
+
+      <section class="result-wrapper">
+        <div class="result-header-row">
+          <div>
+            <div class="result-header-title">추천 결과</div>
+            <div class="result-header-sub">
+              위험도·센스 점수는 가볍게 참고만 해주세요
             </div>
-            <button class="copy-btn">복사</button>
           </div>
-        `;
+          <div class="result-header-right">최대 3개까지 추천</div>
+        </div>
 
-        item.querySelector(".copy-btn").addEventListener("click",()=>{
-          navigator.clipboard.writeText(text);
-          alert("복사되었습니다!");
+        <div class="original-box">
+          <div class="original-label">상대방 메시지</div>
+          <div class="original-text" id="originalText">-</div>
+        </div>
+
+        <div id="answers"></div>
+
+        <div class="again-row">
+          <button class="btn-outline" id="regenerateBtn" type="button">다시 생성하기</button>
+          <button class="btn-outline" id="goHomeBtn" type="button">처음으로 돌아가기</button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    // ===== 화면 전환 =====
+    const screenTone   = document.getElementById("screen-tone");
+    const screenInput  = document.getElementById("screen-input");
+    const screenResult = document.getElementById("screen-result");
+
+    function showScreen(name) {
+      screenTone.classList.remove("active");
+      screenInput.classList.remove("active");
+      screenResult.classList.remove("active");
+
+      if (name === "tone") screenTone.classList.add("active");
+      else if (name === "input") screenInput.classList.add("active");
+      else if (name === "result") screenResult.classList.add("active");
+    }
+
+    // ===== 1페이지 : 상황 선택 =====
+    const toneButtons = Array.from(document.querySelectorAll(".tone-btn"));
+    const statusTone  = document.getElementById("statusTone");
+    const toneChip    = document.getElementById("toneChip");
+    const toneChipResult = document.getElementById("toneChipResult");
+    const nextBtn     = document.getElementById("nextBtn");
+    const backToToneBtn = document.getElementById("backToToneBtn");
+    const backToInputBtn = document.getElementById("backToInputBtn");
+    const goHomeBtn   = document.getElementById("goHomeBtn");
+
+    let selectedTone = "친구";
+
+    toneButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        toneButtons.forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        selectedTone = btn.dataset.tone || "친구";
+        statusTone.textContent = "";
+      });
+    });
+
+    // 처음 기본 선택: 친구
+    const defaultBtn = toneButtons.find(b => b.dataset.tone === "친구") || toneButtons[0];
+    if (defaultBtn) {
+      defaultBtn.classList.add("selected");
+      selectedTone = defaultBtn.dataset.tone;
+    }
+
+    nextBtn.addEventListener("click", () => {
+      if (!selectedTone) {
+        statusTone.textContent = "먼저 상황을 하나 선택해 주세요.";
+        return;
+      }
+      toneChip.textContent = selectedTone + " 톤";
+      showScreen("input");
+      document.getElementById("message").focus();
+    });
+
+    backToToneBtn.addEventListener("click", () => {
+      showScreen("tone");
+    });
+
+    backToInputBtn.addEventListener("click", () => {
+      showScreen("input");
+    });
+
+    goHomeBtn.addEventListener("click", () => {
+      document.getElementById("message").value = "";
+      document.getElementById("statusReply").textContent = "";
+      showScreen("tone");
+    });
+
+    // ===== 2페이지 : 메시지 입력 =====
+    const msgEl         = document.getElementById("message");
+    const generateBtn   = document.getElementById("generateBtn");
+    const statusReply   = document.getElementById("statusReply");
+    const inputSubtitle = document.getElementById("inputSubtitle");
+
+    // ===== 3페이지 : 결과 =====
+    const resultStatus  = document.getElementById("resultStatus");
+    const originalText  = document.getElementById("originalText");
+    const answersEl     = document.getElementById("answers");
+    const regenerateBtn = document.getElementById("regenerateBtn");
+
+    function showSkeleton() {
+      answersEl.innerHTML = "";
+      for (let i = 0; i < 3; i++) {
+        const sk = document.createElement("div");
+        sk.className = "skeleton-item";
+        sk.innerHTML = `
+          <div class="skeleton-line long"></div>
+          <div class="skeleton-line mid"></div>
+          <div class="skeleton-line short"></div>
+        `;
+        answersEl.appendChild(sk);
+      }
+    }
+
+    function parseLine(line) {
+      const parts = line.split("||").map(p => p.trim());
+      return {
+        text: parts[0] || "",
+        risk: parts[1] || "",
+        sense: parts[2] || "",
+        comment: parts[3] || ""
+      };
+    }
+
+    function parseLevel(raw) {
+      const s = (raw || "").toString();
+      if (s.includes("높음")) return { level: "높음", score: "85" };
+      if (s.includes("중간")) return { level: "중간", score: "55" };
+      return { level: "낮음", score: "25" };
+    }
+
+    function levelClass(level) {
+      if (level === "낮음") return "safe";
+      if (level === "중간") return "warn";
+      return "danger";
+    }
+
+    async function generateReplies(text, tone) {
+      try {
+        const res = await fetch("/reply", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, tone })
         });
 
-        answersEl.appendChild(item);
-      });
+        let data = {};
+        try {
+          data = await res.json();
+        } catch (e) {
+          data = {};
+        }
 
-    } catch (err) {
-      resultStatus.textContent = "오류가 발생했습니다. 다시 시도해주세요.";
-      answersEl.innerHTML = "";
-    } finally {
-      // 2페이지 문구 원래대로 복구
-      inputSubtitle.textContent = "AI 추천 답장을 3가지로 추천해드려요";
+        if (!res.ok) {
+          resultStatus.textContent = data.error || "답장 생성 중 오류가 발생했습니다.";
+          answersEl.innerHTML = "";
+          return;
+        }
+
+        const replyRaw = (data.reply || "").toString();
+        const lines = replyRaw
+          .split("\n")
+          .map(l => l.trim())
+          .filter(Boolean)
+          .slice(0, 3);
+
+        if (lines.length === 0) {
+          resultStatus.textContent = "생성된 답장이 없습니다. 문장을 조금 바꿔서 다시 시도해 주세요.";
+          answersEl.innerHTML = "";
+          return;
+        }
+
+        resultStatus.textContent = "AI 추천 답장이 준비됐어요!";
+        answersEl.innerHTML = "";
+
+        lines.forEach((line, idx) => {
+          const { text: rawText, risk, sense, comment } = parseLine(line);
+          const answerText = rawText.replace(/^\d+\.\s*/, "");
+
+          const riskInfo  = parseLevel(risk);
+          const senseInfo = parseLevel(sense);
+
+          const item = document.createElement("div");
+          item.className = "answer-item";
+
+          item.innerHTML = `
+            <div class="answer-top-row">
+              <div class="answer-text">${idx + 1}. ${answerText}</div>
+              <button class="copy-btn" type="button">복사</button>
+            </div>
+            <div class="chips">
+              <span class="chip score ${levelClass(riskInfo.level)}">위험도 ${riskInfo.score}</span>
+              <span class="chip score">센스 ${senseInfo.score}</span>
+              ${comment ? `<span class="chip">${comment}</span>` : ""}
+            </div>
+          `;
+
+          const copyBtn = item.querySelector(".copy-btn");
+          copyBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(answerText).then(() => {
+              copyBtn.textContent = "복사됨";
+              setTimeout(() => (copyBtn.textContent = "복사"), 1200);
+            });
+          });
+
+          answersEl.appendChild(item);
+        });
+      } catch (err) {
+        console.error(err);
+        resultStatus.textContent = "서버와 통신 중 오류가 발생했습니다.";
+        answersEl.innerHTML = "";
+      } finally {
+        // 2페이지 설명 문구 원래대로 복구
+        inputSubtitle.textContent = "지금 대화에 딱 맞는 답장을 3가지로 추천해드려요";
+        generateBtn.disabled = false;
+      }
     }
-  }
-</script>
 
+    function startGenerateFlow() {
+      const text = msgEl.value.trim();
+      if (!text) {
+        statusReply.textContent = "먼저 상대방 메시지를 입력해 주세요.";
+        return;
+      }
+
+      statusReply.textContent = "";
+      generateBtn.disabled = true;
+
+      // 2페이지 문구를 "생성 중"으로 변경
+      inputSubtitle.textContent = "AI 추천 답장을 생성 중이에요…";
+
+      // 3페이지 초기 세팅
+      resultStatus.textContent = "AI가 답장을 만드는 중이에요…";
+      originalText.textContent = text;
+      answersEl.innerHTML = "";
+      toneChipResult.textContent = selectedTone + " 톤";
+      showSkeleton();
+
+      // 바로 3페이지로 이동
+      showScreen("result");
+
+      // 실제 AI 호출
+      generateReplies(text, selectedTone || "기본");
+    }
+
+    generateBtn.addEventListener("click", startGenerateFlow);
+    regenerateBtn.addEventListener("click", startGenerateFlow);
+  </script>
 </body>
 </html>
