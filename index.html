@@ -10,8 +10,6 @@
     :root {
       --primary: #6366f1;
       --primary-dark: #4f46e5;
-      --bg1: #050816;
-      --bg2: #3b1d6a;
       --card-bg: rgba(8, 12, 32, 0.96);
       --text-main: #f9fafb;
       --text-sub: #a5b4fc;
@@ -43,10 +41,7 @@
       -webkit-text-size-adjust: 100%;
     }
 
-    .app {
-      width: 100%;
-      max-width: 480px;
-    }
+    .app { width: 100%; max-width: 480px; }
 
     .card {
       background: var(--card-bg);
@@ -99,15 +94,8 @@
       color: var(--text-sub);
     }
 
-    /* 화면 공통 */
-
-    .screen {
-      display: none;
-    }
-
-    .screen.active {
-      display: block;
-    }
+    .screen { display: none; }
+    .screen.active { display: block; }
 
     .status-text {
       font-size: 13px;
@@ -159,7 +147,7 @@
       background: rgba(15,23,42,0.85);
     }
 
-    /* ========= 1페이지 : 상황 선택 ========= */
+    /* ===== 1페이지 : 상황 선택 ===== */
 
     .tone-title-main {
       margin-top: 18px;
@@ -208,7 +196,7 @@
       color: #94a3b8;
     }
 
-    /* ========= 2페이지 : 메시지 입력 ========= */
+    /* ===== 2페이지 : 메시지 입력 ===== */
 
     .top-row {
       display: flex;
@@ -277,9 +265,7 @@
       color: #c7d2fe;
     }
 
-    .textarea-wrap {
-      position: relative;
-    }
+    .textarea-wrap { position: relative; }
 
     textarea {
       width: 100%;
@@ -306,10 +292,65 @@
       font-size: 13px;
       color: #94a3b8;
       margin-top: 6px;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
-    /* ========= 3페이지 : 결과 ========= */
+    .usage-text {
+      font-size: 12px;
+      color: #a5b4fc;
+      margin-top: 2px;
+    }
+
+    .style-section {
+      margin-top: 10px;
+      border-radius: 16px;
+      border: 1px dashed rgba(148,163,184,0.6);
+      padding: 8px 10px;
+      background: rgba(15,23,42,0.7);
+    }
+
+    .style-toggle {
+      border: none;
+      background: none;
+      color: #c4b5fd;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+
+    .style-box { margin-top: 8px; }
+
+    .style-desc {
+      font-size: 12px;
+      color: #e5e7ff;
+      margin-bottom: 6px;
+    }
+
+    .style-textarea {
+      width: 100%;
+      min-height: 60px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: rgba(15,23,42,0.98);
+      color: #e5e7ff;
+      font-size: 13px;
+      padding: 8px 10px;
+      resize: vertical;
+    }
+
+    .style-save-btn {
+      margin-top: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(129,140,248,0.7);
+      background: rgba(79,70,229,0.2);
+      color: #e5e7ff;
+      font-size: 12px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    /* ===== 3페이지 : 결과 ===== */
 
     .result-wrapper {
       margin-top: 14px;
@@ -359,9 +400,7 @@
       margin-bottom: 4px;
     }
 
-    .original-text {
-      font-size: 14px;
-    }
+    .original-text { font-size: 14px; }
 
     .answer-item {
       padding: 9px 9px 10px;
@@ -425,7 +464,7 @@
     .copy-btn {
       border-radius: 999px;
       border: none;
-      padding: 5px 14px;
+      padding: 5px 10px;
       font-size: 13px;
       background: rgba(79, 70, 229, 0.96);
       color: #e5e7ff;
@@ -438,10 +477,63 @@
       background: rgba(79, 70, 229, 1);
     }
 
+    .fav-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(248, 250, 252, 0.4);
+      background: rgba(15, 23, 42, 0.8);
+      color: #facc15;
+      font-size: 13px;
+      padding: 4px 10px;
+      cursor: pointer;
+      margin-right: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+
+    .fav-btn.active {
+      background: rgba(250, 204, 21, 0.2);
+      border-color: #facc15;
+    }
+
     .again-row {
       display: flex;
       gap: 10px;
       margin-top: 16px;
+    }
+
+    .favorites-toggle-row {
+      margin-top: 10px;
+    }
+
+    .favorites-list {
+      margin-top: 8px;
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.85);
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    .fav-item {
+      border-bottom: 1px solid rgba(51,65,85,0.7);
+      padding: 6px 0;
+    }
+
+    .fav-item:last-child { border-bottom: none; }
+
+    .fav-meta {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    .favorites-empty {
+      font-size: 12px;
+      color: #9ca3af;
     }
 
     /* 스켈레톤 */
@@ -536,7 +628,7 @@
         </div>
         <div>
           <div class="header-text-main">AI 추천 답장</div>
-          <div class="header-text-sub subtitle-main" id="inputSubtitle">
+          <div class="header-text-sub" id="inputSubtitle">
             지금 대화에 딱 맞는 답장을 3가지로 추천해드려요
           </div>
         </div>
@@ -552,6 +644,26 @@
         <textarea id="message" placeholder="예) 내일 뭐해?"></textarea>
       </div>
       <p class="hint">카톡 내용을 그대로 붙여 넣어주세요.</p>
+
+      <div class="style-section">
+        <button type="button" class="style-toggle" id="toggleStyleBtn">
+          내 말투 학습하기
+        </button>
+        <div id="styleBox" class="style-box" style="display:none;">
+          <p class="style-desc">
+            자주 쓰는 말투 예시를 여러 줄로 적어두면, 답장에 반영해 드릴게요.<br />
+            예) ㅋㅋ, ~하구, 반말 톤, 친한 친구 느낌 등
+          </p>
+          <textarea id="styleExamples" class="style-textarea" placeholder="예시 문장을 줄바꿈으로 여러 개 적어 주세요."></textarea>
+          <button type="button" id="saveStyleBtn" class="style-save-btn">말투 저장</button>
+          <div id="styleStatus" class="status-text"></div>
+        </div>
+      </div>
+
+      <div class="usage-text" id="usageText">오늘 남은 무료 이용: 5/5</div>
+      <button type="button" id="watchAdBtn" class="style-save-btn" style="margin-top:6px;">
+        광고 보고 1회 충전 (최대 5회)
+      </button>
 
       <button class="btn-primary" id="generateBtn" type="button">
         AI 추천 답장 생성
@@ -602,11 +714,23 @@
           <button class="btn-outline" id="regenerateBtn" type="button">다시 생성하기</button>
           <button class="btn-outline" id="goHomeBtn" type="button">처음으로 돌아가기</button>
         </div>
+
+        <div class="favorites-toggle-row">
+          <button class="btn-outline" id="toggleFavBtn" type="button">즐겨찾기 보기</button>
+          <div id="favoritesList" class="favorites-list" style="display:none;"></div>
+        </div>
       </section>
     </section>
   </main>
 
   <script>
+    const DAILY_LIMIT = 5;
+    const LS_KEYS = {
+      STYLE_EXAMPLES: "aiCoach_styleExamples",
+      FAVORITES: "aiCoach_favorites",
+      USAGE: "aiCoach_usage"
+    };
+
     // ===== 화면 전환 =====
     const screenTone   = document.getElementById("screen-tone");
     const screenInput  = document.getElementById("screen-input");
@@ -628,9 +752,9 @@
     const toneChip    = document.getElementById("toneChip");
     const toneChipResult = document.getElementById("toneChipResult");
     const nextBtn     = document.getElementById("nextBtn");
-    const backToToneBtn = document.getElementById("backToToneBtn");
-    const backToInputBtn = document.getElementById("backToInputBtn");
-    const goHomeBtn   = document.getElementById("goHomeBtn");
+    const backToToneBtn   = document.getElementById("backToToneBtn");
+    const backToInputBtn  = document.getElementById("backToInputBtn");
+    const goHomeBtn       = document.getElementById("goHomeBtn");
 
     let selectedTone = "친구";
 
@@ -643,7 +767,6 @@
       });
     });
 
-    // 처음 기본 선택: 친구
     const defaultBtn = toneButtons.find(b => b.dataset.tone === "친구") || toneButtons[0];
     if (defaultBtn) {
       defaultBtn.classList.add("selected");
@@ -674,17 +797,130 @@
       showScreen("tone");
     });
 
-    // ===== 2페이지 : 메시지 입력 =====
+    // ===== 2페이지 : 메시지 입력 & 말투 & 사용량 =====
     const msgEl         = document.getElementById("message");
     const generateBtn   = document.getElementById("generateBtn");
     const statusReply   = document.getElementById("statusReply");
     const inputSubtitle = document.getElementById("inputSubtitle");
+    const usageText     = document.getElementById("usageText");
+    const watchAdBtn    = document.getElementById("watchAdBtn");
 
-    // ===== 3페이지 : 결과 =====
+    const toggleStyleBtn   = document.getElementById("toggleStyleBtn");
+    const styleBox         = document.getElementById("styleBox");
+    const styleExamplesEl  = document.getElementById("styleExamples");
+    const saveStyleBtn     = document.getElementById("saveStyleBtn");
+    const styleStatus      = document.getElementById("styleStatus");
+
+    toggleStyleBtn.addEventListener("click", () => {
+      const isOpen = styleBox.style.display === "block";
+      styleBox.style.display = isOpen ? "none" : "block";
+      toggleStyleBtn.textContent = isOpen ? "내 말투 학습하기" : "말투 입력 닫기";
+    });
+
+    function loadStyleFromStorage() {
+      try {
+        const saved = localStorage.getItem(LS_KEYS.STYLE_EXAMPLES);
+        if (saved) styleExamplesEl.value = saved;
+      } catch (e) {}
+    }
+
+    function saveStyleToStorage() {
+      const value = styleExamplesEl.value.trim();
+      try {
+        if (value) {
+          localStorage.setItem(LS_KEYS.STYLE_EXAMPLES, value);
+          styleStatus.textContent = "말투가 저장되었어요. 이후 답장에 반영해 볼게요.";
+        } else {
+          localStorage.removeItem(LS_KEYS.STYLE_EXAMPLES);
+          styleStatus.textContent = "말투 예시를 모두 지웠어요.";
+        }
+      } catch (e) {
+        styleStatus.textContent = "말투 저장 중 오류가 발생했어요.";
+      }
+    }
+
+    saveStyleBtn.addEventListener("click", saveStyleToStorage);
+
+    function getStyleExamples() {
+      try {
+        return localStorage.getItem(LS_KEYS.STYLE_EXAMPLES) || "";
+      } catch (e) {
+        return "";
+      }
+    }
+
+    function getUsageInfo() {
+      const today = new Date().toISOString().slice(0, 10);
+      try {
+        const raw = localStorage.getItem(LS_KEYS.USAGE);
+        if (!raw) return { date: today, remaining: DAILY_LIMIT };
+
+        const data = JSON.parse(raw);
+        if (data.date !== today) {
+          return { date: today, remaining: DAILY_LIMIT };
+        }
+
+        if (typeof data.remaining !== "number") {
+          return { date: today, remaining: DAILY_LIMIT };
+        }
+
+        const remaining = Math.min(DAILY_LIMIT, Math.max(0, data.remaining));
+        return { date: today, remaining };
+      } catch (e) {
+        return { date: today, remaining: DAILY_LIMIT };
+      }
+    }
+
+    function setUsageInfo(info) {
+      try {
+        localStorage.setItem(
+          LS_KEYS.USAGE,
+          JSON.stringify({
+            date: info.date,
+            remaining: info.remaining
+          })
+        );
+      } catch (e) {}
+    }
+
+    function updateUsageText() {
+      const info = getUsageInfo();
+      usageText.textContent = `오늘 남은 무료 이용: ${info.remaining}/${DAILY_LIMIT}`;
+    }
+
+    function consumeUsage() {
+      const today = new Date().toISOString().slice(0, 10);
+      const info = getUsageInfo();
+      const remaining = Math.max(0, info.remaining - 1);
+      setUsageInfo({ date: today, remaining });
+      updateUsageText();
+    }
+
+    watchAdBtn.addEventListener("click", () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const info = getUsageInfo();
+
+      if (info.remaining >= DAILY_LIMIT) {
+        statusReply.textContent = "이미 오늘 사용할 수 있는 횟수가 가득 찼어요.";
+        return;
+      }
+
+      const newInfo = {
+        date: today,
+        remaining: Math.min(DAILY_LIMIT, info.remaining + 1)
+      };
+      setUsageInfo(newInfo);
+      updateUsageText();
+      statusReply.textContent = "광고 보상으로 1회 충전되었어요. (실제 광고 연동 전 테스트용)";
+    });
+
+    // ===== 3페이지 : 결과 & 즐겨찾기 =====
     const resultStatus  = document.getElementById("resultStatus");
     const originalText  = document.getElementById("originalText");
     const answersEl     = document.getElementById("answers");
     const regenerateBtn = document.getElementById("regenerateBtn");
+    const toggleFavBtn  = document.getElementById("toggleFavBtn");
+    const favoritesList = document.getElementById("favoritesList");
 
     function showSkeleton() {
       answersEl.innerHTML = "";
@@ -714,6 +950,14 @@
       const s = (raw || "").toString();
       if (s.includes("높음")) return { level: "높음", score: "85" };
       if (s.includes("중간")) return { level: "중간", score: "55" };
+      if (s.includes("낮음")) return { level: "낮음", score: "25" };
+
+      const n = parseInt(s, 10);
+      if (!isNaN(n)) {
+        if (n <= 30) return { level: "낮음", score: String(n) };
+        if (n <= 60) return { level: "중간", score: String(n) };
+        return { level: "높음", score: String(n) };
+      }
       return { level: "낮음", score: "25" };
     }
 
@@ -723,12 +967,66 @@
       return "danger";
     }
 
+    function loadFavorites() {
+      try {
+        const raw = localStorage.getItem(LS_KEYS.FAVORITES);
+        if (!raw) return [];
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveFavorites(list) {
+      try {
+        localStorage.setItem(LS_KEYS.FAVORITES, JSON.stringify(list));
+      } catch (e) {}
+    }
+
+    function addFavorite(item) {
+      const list = loadFavorites();
+      list.unshift(item);
+      if (list.length > 100) list.pop();
+      saveFavorites(list);
+    }
+
+    function renderFavorites() {
+      const list = loadFavorites();
+      favoritesList.innerHTML = "";
+      if (list.length === 0) {
+        favoritesList.innerHTML = `<div class="favorites-empty">아직 저장된 즐겨찾기 답장이 없어요.</div>`;
+        return;
+      }
+      list.forEach(f => {
+        const div = document.createElement("div");
+        div.className = "fav-item";
+        div.innerHTML = `
+          <div>${f.text}</div>
+          <div class="fav-meta">${f.tone || "톤 미지정"} · ${f.date || ""}</div>
+        `;
+        favoritesList.appendChild(div);
+      });
+    }
+
+    toggleFavBtn.addEventListener("click", () => {
+      const isOpen = favoritesList.style.display === "block";
+      if (isOpen) {
+        favoritesList.style.display = "none";
+      } else {
+        renderFavorites();
+        favoritesList.style.display = "block";
+      }
+    });
+
     async function generateReplies(text, tone) {
       try {
+        const styleExamples = getStyleExamples();
+
         const res = await fetch("/reply", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, tone })
+          body: JSON.stringify({ text, tone, styleExamples })
         });
 
         let data = {};
@@ -760,6 +1058,9 @@
         resultStatus.textContent = "AI 추천 답장이 준비됐어요!";
         answersEl.innerHTML = "";
 
+        const now = new Date();
+        const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`;
+
         lines.forEach((line, idx) => {
           const { text: rawText, risk, sense, comment } = parseLine(line);
           const answerText = rawText.replace(/^\d+\.\s*/, "");
@@ -773,6 +1074,9 @@
           item.innerHTML = `
             <div class="answer-top-row">
               <div class="answer-text">${idx + 1}. ${answerText}</div>
+              <button class="fav-btn" type="button">
+                <span>★</span><span>즐겨찾기</span>
+              </button>
               <button class="copy-btn" type="button">복사</button>
             </div>
             <div class="chips">
@@ -783,6 +1087,8 @@
           `;
 
           const copyBtn = item.querySelector(".copy-btn");
+          const favBtn  = item.querySelector(".fav-btn");
+
           copyBtn.addEventListener("click", () => {
             navigator.clipboard.writeText(answerText).then(() => {
               copyBtn.textContent = "복사됨";
@@ -790,14 +1096,22 @@
             });
           });
 
+          favBtn.addEventListener("click", () => {
+            favBtn.classList.add("active");
+            favBtn.querySelector("span:last-child").textContent = "저장됨";
+            addFavorite({ text: answerText, tone, date: dateStr });
+          });
+
           answersEl.appendChild(item);
         });
+
+        // 사용 1회 차감
+        consumeUsage();
       } catch (err) {
         console.error(err);
         resultStatus.textContent = "서버와 통신 중 오류가 발생했습니다.";
         answersEl.innerHTML = "";
       } finally {
-        // 2페이지 설명 문구 원래대로 복구
         inputSubtitle.textContent = "지금 대화에 딱 맞는 답장을 3가지로 추천해드려요";
         generateBtn.disabled = false;
       }
@@ -810,10 +1124,16 @@
         return;
       }
 
+      const usage = getUsageInfo();
+      if (usage.remaining <= 0) {
+        statusReply.textContent = "오늘 무료 사용 횟수를 모두 사용하셨어요. 광고를 보거나 내일 다시 이용해 주세요.";
+        return;
+      }
+
       statusReply.textContent = "";
       generateBtn.disabled = true;
 
-      // 2페이지 문구를 "생성 중"으로 변경
+      // 2페이지 문구 변경
       inputSubtitle.textContent = "AI 추천 답장을 생성 중이에요…";
 
       // 3페이지 초기 세팅
@@ -832,6 +1152,10 @@
 
     generateBtn.addEventListener("click", startGenerateFlow);
     regenerateBtn.addEventListener("click", startGenerateFlow);
+
+    // 초기 로드 시
+    loadStyleFromStorage();
+    updateUsageText();
   </script>
 </body>
 </html>
