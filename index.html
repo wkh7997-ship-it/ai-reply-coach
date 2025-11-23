@@ -4,18 +4,19 @@
   <meta charset="UTF-8" />
   <title>AI 대화 코치</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <link rel="manifest" href="/manifest.json" />
-
   <style>
     :root {
       --primary: #6366f1;
       --primary-dark: #4f46e5;
-      --bg-card: rgba(8, 12, 32, 0.96);
+      --bg1: #050816;
+      --bg2: #3b1d6a;
+      --card-bg: rgba(8, 12, 32, 0.96);
       --text-main: #f9fafb;
       --text-sub: #a5b4fc;
-      --border-soft: rgba(148, 163, 184, 0.4);
-      --danger: #ef4444;
+      --border: rgba(148, 163, 184, 0.35);
       --safe: #22c55e;
+      --warn: #eab308;
+      --danger: #ef4444;
     }
 
     * {
@@ -30,13 +31,13 @@
     body {
       min-height: 100vh;
       background:
-        radial-gradient(circle at top, #4c1d95 0, rgba(76,29,149,0.28) 18%, transparent 40%),
-        radial-gradient(circle at bottom, #020617 0, #000 70%);
+        radial-gradient(circle at top, #4c1d95 0, rgba(76, 29, 149, 0.25) 18%, transparent 35%),
+        radial-gradient(circle at bottom, #0b1120 0, #020617 55%, #000 100%);
       color: var(--text-main);
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: calc(32px + env(safe-area-inset-top, 0px)) 16px 40px;
+      padding: calc(18px + env(safe-area-inset-top, 0px)) 12px calc(18px + env(safe-area-inset-bottom, 0px));
       -webkit-text-size-adjust: 100%;
     }
 
@@ -46,44 +47,55 @@
       position: relative;
     }
 
-    .card {
-      background: var(--bg-card);
-      border-radius: 28px;
-      border: 1px solid var(--border-soft);
-      padding: 22px 18px 72px; /* 아래는 탭바 공간 */
+    .shell {
+      background: radial-gradient(circle at top, #111827 0, #020617 60%, #000 100%);
+      border-radius: 32px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
       box-shadow:
-        0 26px 60px rgba(15, 23, 42, 0.95),
+        0 26px 60px rgba(15, 23, 42, 0.9),
         0 0 0 1px rgba(15, 23, 42, 0.9);
-      backdrop-filter: blur(18px);
+      padding: 18px 16px 82px;
+      overflow: hidden;
+      position: relative;
     }
 
-    .header {
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* 공통 헤더 */
+    .app-header {
       display: flex;
       align-items: center;
       gap: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 18px;
     }
 
     .header-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 20px;
-      padding: 2px;
-      background: radial-gradient(circle at 30% 20%, #a78bfa 0, #4c1d95 45%, #020617 100%);
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      padding: 3px;
+      background: radial-gradient(circle at 30% 20%, #9f8cff 0, #4c1d95 45%, #111827 100%);
       box-shadow:
-        0 10px 22px rgba(79, 70, 229, 0.9),
-        0 0 0 1px rgba(30, 64, 175, 0.5);
+        0 8px 20px rgba(79, 70, 229, 0.9),
+        0 0 0 1px rgba(30, 64, 175, 0.55);
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
     }
 
-    .header-icon img {
+    .header-icon-inner {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      border-radius: 16px;
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 30% 20%, #fef9c3 0, #f97316 36%, #4c1d95 70%, #020617 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: 800;
     }
 
     .header-title {
@@ -93,39 +105,35 @@
     }
 
     .header-sub {
-      margin-top: 2px;
+      margin-top: 3px;
       font-size: 13px;
       color: var(--text-sub);
     }
 
-    /* 공통 화면 */
-
-    .screen { display: none; }
-    .screen.active { display: block; }
-
+    /* 공통 타이틀/텍스트 */
     .section-title {
       font-size: 18px;
       font-weight: 700;
-      margin-top: 8px;
+      margin-bottom: 4px;
     }
 
     .section-sub {
       font-size: 14px;
-      margin-top: 6px;
       color: #e5e7ff;
+      margin-bottom: 6px;
     }
 
     .section-desc {
-      font-size: 13px;
-      margin-top: 4px;
+      font-size: 12px;
       color: var(--text-sub);
+      margin-bottom: 12px;
     }
 
     .pill-row {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin-top: 10px;
+      margin-top: 4px;
     }
 
     .pill {
@@ -138,9 +146,8 @@
     }
 
     /* 홈 카드 리스트 */
-
     .home-list {
-      margin-top: 18px;
+      margin-top: 14px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -154,12 +161,12 @@
         rgba(79,70,229,0.28) 0,
         rgba(15,23,42,0.98) 52%);
       cursor: pointer;
-      transition: transform 0.08s ease, box-shadow 0.08s ease;
+      transition: transform 0.06s ease, box-shadow 0.06s ease;
     }
 
     .home-item:active {
       transform: translateY(1px);
-      box-shadow: 0 8px 18px rgba(15,23,42,0.9);
+      box-shadow: 0 10px 20px rgba(15,23,42,0.9);
     }
 
     .home-item-title-row {
@@ -184,12 +191,11 @@
       color: #e5e7ff;
     }
 
-    /* 톤 선택 + 메시지 입력 */
-
+    /* 톤 선택 + 입력 */
     .tone-grid {
-      margin-top: 14px;
+      margin-top: 10px;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
     }
 
@@ -214,7 +220,7 @@
 
     .field-label {
       font-size: 14px;
-      margin-top: 16px;
+      margin-top: 14px;
       margin-bottom: 4px;
       color: #c7d2fe;
     }
@@ -222,7 +228,7 @@
     textarea {
       width: 100%;
       border-radius: 18px;
-      border: 1px solid var(--border-soft);
+      border: 1px solid var(--border);
       background: rgba(15,23,42,0.98);
       color: var(--text-main);
       font-size: 15px;
@@ -231,7 +237,7 @@
       min-height: 80px;
       resize: vertical;
       outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     }
 
     textarea:focus {
@@ -251,7 +257,7 @@
       border-radius: 20px;
       border: none;
       padding: 14px 16px;
-      margin-top: 18px;
+      margin-top: 16px;
       font-size: 15px;
       font-weight: 700;
       color: white;
@@ -281,12 +287,11 @@
     }
 
     /* 결과 화면 */
-
     .top-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .back-btn {
@@ -325,7 +330,7 @@
     .subtitle-sub {
       font-size: 13px;
       color: var(--text-sub);
-      margin-top: 4px;
+      margin-top: 3px;
       margin-bottom: 10px;
     }
 
@@ -488,7 +493,6 @@
     }
 
     /* 스켈레톤 */
-
     .skeleton-item {
       border-radius: 18px;
       border: 1px solid rgba(51,65,85,0.85);
@@ -521,8 +525,7 @@
       100% { background-position: 150% 0; }
     }
 
-    /* 내 말투 / 즐겨찾기 리스트 */
-
+    /* 내 말투 / 즐겨찾기 */
     .list-empty {
       margin-top: 16px;
       font-size: 13px;
@@ -540,9 +543,7 @@
     }
 
     .my-style-main,
-    .fav-main {
-      font-size: 14px;
-    }
+    .fav-main { font-size: 14px; }
 
     .my-style-sub,
     .fav-meta {
@@ -567,10 +568,9 @@
       cursor: pointer;
     }
 
-    /* 캡쳐 화면 */
-
+    /* 캡처 화면 */
     .capture-box {
-      margin-top: 16px;
+      margin-top: 12px;
       border-radius: 18px;
       border: 1px dashed rgba(148,163,184,0.8);
       background: rgba(15,23,42,0.9);
@@ -598,8 +598,7 @@
       display: block;
     }
 
-    /* 하단 탭 바 */
-
+    /* 하단 탭바 (글자 크고, 눈에 잘 띄게) */
     .tabbar {
       position: absolute;
       left: 0;
@@ -620,7 +619,7 @@
     .tabbar-bg {
       background: rgba(15,23,42,0.98);
       border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.7);
+      border: 1px solid rgba(148,163,184,0.9);
       box-shadow:
         0 18px 34px rgba(15,23,42,0.95),
         0 0 0 1px rgba(15,23,42,1);
@@ -633,41 +632,55 @@
     .tab-btn {
       flex: 1;
       padding: 8px 4px 10px;
-      font-size: 11px;
       border: none;
       background: transparent;
-      color: #9ca3af;
       cursor: pointer;
+      color: #9ca3af;
+      font-size: 13px;
+      font-weight: 600;
+      position: relative;
     }
 
-    .tab-btn span.label {
+    .tab-btn .label {
       display: block;
-      margin-top: 2px;
     }
 
     .tab-btn.active {
       background: radial-gradient(circle at top,
-        rgba(79,70,229,0.7) 0,
-        rgba(15,23,42,0.98) 55%);
-      color: #e5e7ff;
+        rgba(79,70,229,0.8) 0,
+        rgba(15,23,42,0.98) 60%);
+      color: #f9fafb;
+      box-shadow: inset 0 0 0 1px rgba(129,140,248,0.9);
+    }
+
+    .tab-btn.active::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translate(-50%, -40%);
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #fde047;
+      box-shadow: 0 0 12px rgba(250, 250, 133, 0.9);
     }
 
     @media (max-height: 700px) {
       body {
         align-items: flex-start;
-        padding-top: 18px;
+        padding-top: 16px;
       }
     }
   </style>
 </head>
 <body>
   <main class="app">
-    <section class="card">
-
-      <!-- ===== 공통 헤더 ===== -->
-      <header class="header">
+    <section class="shell">
+      <!-- 공통 헤더 -->
+      <header class="app-header">
         <div class="header-icon">
-          <img src="/icon-192.png" alt="AI 대화 코치 아이콘" />
+          <div class="header-icon-inner">💬</div>
         </div>
         <div>
           <div class="header-title">AI 대화 코치</div>
@@ -675,16 +688,14 @@
         </div>
       </header>
 
-      <!-- ===== 화면: 홈 ===== -->
+      <!-- ===== 홈 화면 ===== -->
       <section class="screen active" id="screen-home">
-        <h2 class="section-title">오늘은 무엇을 도와드릴까요?</h2>
-        <p class="section-sub">상황에 맞는 답장, 내 말투 반영, 자주 쓰는 답장 저장까지 한 번에.</p>
-
+        <div class="section-title">오늘은 어디부터 도와드릴까요?</div>
+        <div class="section-sub">상황에 맞는 답장 · 내 말투 · 캡처 분석까지 한 번에.</div>
         <div class="pill-row">
-          <span class="pill">카톡 답장</span>
           <span class="pill">연애 / 친구 / 직장</span>
-          <span class="pill">내 말투 학습</span>
-          <span class="pill">캡쳐 이미지 분석</span>
+          <span class="pill">위험도 · 센스 점수</span>
+          <span class="pill">즐겨찾기 보관</span>
         </div>
 
         <div class="home-list">
@@ -693,39 +704,40 @@
               <div class="home-item-title">1. AI가 카톡 답장 만들어주기</div>
               <div class="home-item-tag">답장 3개 추천</div>
             </div>
-            <div class="home-item-desc">상황 선택 → 메시지 입력 → 위험도·센스 점수와 함께 답장을 3개 추천해 드려요.</div>
-          </div>
-
-          <div class="home-item" data-go="mystyle">
-            <div class="home-item-title-row">
-              <div class="home-item-title">2. 내 말투 학습시키기</div>
-              <div class="home-item-tag">내 표현 저장</div>
-            </div>
-            <div class="home-item-desc">자주 쓰는 표현, 내 말투 예시를 저장해 두고 나중에 답장에 참고할 수 있어요.</div>
-          </div>
-
-          <div class="home-item" data-go="favorites">
-            <div class="home-item-title-row">
-              <div class="home-item-title">3. 즐겨찾기 답장 모아보기</div>
-              <div class="home-item-tag">★ 모아보기</div>
-            </div>
-            <div class="home-item-desc">마음에 들었던 답장을 별표해 두고, 다음에 바로 꺼내 쓸 수 있어요.</div>
+            <div class="home-item-desc">상황 선택 → 메시지 입력 → 위험도·센스 점수와 함께 답장 3개를 추천해 드려요.</div>
           </div>
 
           <div class="home-item" data-go="capture">
             <div class="home-item-title-row">
-              <div class="home-item-title">4. 캡쳐로 답장 만들기</div>
-              <div class="home-item-tag">베타 · 이미지 인식</div>
+              <div class="home-item-title">2. 캡처로 답장 만들기</div>
+              <div class="home-item-tag">이미지 인식</div>
             </div>
-            <div class="home-item-desc">카톡 대화 캡쳐 이미지를 업로드하면, 상황을 읽고 어울리는 답장을 추천해 드립니다.</div>
+            <div class="home-item-desc">카톡 대화 캡처 이미지를 올리면, 대화를 읽고 어울리는 답장을 추천합니다.</div>
+          </div>
+
+          <div class="home-item" data-go="mystyle">
+            <div class="home-item-title-row">
+              <div class="home-item-title">3. 내 말투 학습시키기</div>
+              <div class="home-item-tag">내 표현 저장</div>
+            </div>
+            <div class="home-item-desc">자주 쓰는 표현과 말투를 저장해 두고, 나중에 답장 만들 때 참고할 수 있어요.</div>
+          </div>
+
+          <div class="home-item" data-go="favorites">
+            <div class="home-item-title-row">
+              <div class="home-item-title">4. 즐겨찾기 답장 모아보기</div>
+              <div class="home-item-tag">★ 모아보기</div>
+            </div>
+            <div class="home-item-desc">마음에 들었던 답장을 모아보고, 바로 복사해 쓸 수 있습니다.</div>
           </div>
         </div>
       </section>
 
-      <!-- ===== 화면: 텍스트 답장 만들기 ===== -->
+      <!-- ===== 텍스트 답장 만들기 ===== -->
       <section class="screen" id="screen-reply">
         <div class="section-title">어떤 상황의 답장을 도와드릴까요?</div>
-        <p class="section-sub">상황에 따라 말투와 분위기를 다르게 추천해 드려요.</p>
+        <div class="section-sub">상황에 따라 말투와 분위기를 다르게 추천해 드립니다.</div>
+        <div class="section-desc">가장 비슷한 상황을 골라 주세요.</div>
 
         <div class="tone-grid" id="toneGridText">
           <button type="button" class="tone-btn" data-tone="연애">연애</button>
@@ -736,11 +748,9 @@
           <button type="button" class="tone-btn" data-tone="기타">기타</button>
         </div>
 
-        <p class="hint">가장 가까운 상황을 선택하면 톤을 더 잘 맞춰줄 수 있어요.</p>
-
         <div class="field-label">상대방 메시지</div>
         <textarea id="messageText" placeholder="예) 내일 숙제 같이 할까?"></textarea>
-        <p class="hint">카톡 내용을 그대로 붙여 넣어주세요.</p>
+        <p class="hint">카톡 내용을 그대로 붙여 넣어 주세요.</p>
 
         <button class="btn-primary" id="generateTextBtn" type="button">
           AI 추천 답장 생성
@@ -748,26 +758,24 @@
         <div class="status-text" id="statusText"></div>
       </section>
 
-      <!-- ===== 화면: 결과 ===== -->
+      <!-- ===== 결과 화면 (텍스트/캡처 공용) ===== -->
       <section class="screen" id="screen-result">
         <div class="top-row">
           <button class="back-btn" id="backFromResult" type="button">
-            <span class="arrow">←</span><span>답장 수정하기</span>
+            <span class="arrow">←</span><span>이전 단계로</span>
           </button>
           <div class="tone-chip-current" id="toneChipCurrent">친구 톤</div>
         </div>
 
-        <p class="section-title" id="resultTitle">AI 추천 답장</p>
-        <p class="subtitle-main" id="resultTopText">AI 추천 답장이 준비되고 있어요...</p>
-        <p class="subtitle-sub" id="resultStatusText">잠시만 기다려 주세요. 지금 대화에 딱 맞는 답장을 만들고 있어요.</p>
+        <div class="section-title" id="resultTitle">AI 추천 답장</div>
+        <div class="subtitle-main" id="resultTopText">AI 추천 답장이 준비되는 중이에요...</div>
+        <div class="subtitle-sub" id="resultStatusText">잠시만 기다려 주세요. 지금 대화에 딱 맞는 답장을 만들고 있어요.</div>
 
         <section class="result-wrapper">
           <div class="result-header-row">
             <div>
               <div class="result-header-title">추천 결과</div>
-              <div class="result-header-sub">
-                위험도·센스 점수는 가볍게 참고만 해주세요
-              </div>
+              <div class="result-header-sub">위험도·센스 점수는 가볍게 참고만 해 주세요.</div>
             </div>
             <div class="result-header-right">
               최대 3개까지 추천<br />
@@ -776,7 +784,7 @@
           </div>
 
           <div class="original-box">
-            <div class="original-label">상대방 메시지 / 분석 기준</div>
+            <div class="original-label">분석 기준</div>
             <div class="original-text" id="resultOriginalText">-</div>
           </div>
 
@@ -789,39 +797,39 @@
         </section>
       </section>
 
-      <!-- ===== 화면: 내 말투 학습 ===== -->
+      <!-- ===== 내 말투 화면 ===== -->
       <section class="screen" id="screen-mystyle">
         <div class="section-title">내 말투 학습시키기</div>
-        <p class="section-sub">자주 쓰는 표현, 말투 예시를 저장해 두면 나중에 참고할 수 있어요.</p>
+        <div class="section-sub">내가 자주 쓰는 표현을 저장해 두고, 나중에 참고할 수 있어요.</div>
 
         <div class="field-label">내가 자주 쓰는 표현</div>
         <textarea id="myStyleMain" placeholder="예) ㅋㅋ 나 그거 완전 좋아해"></textarea>
 
-        <div class="field-label">설명 (선택)</div>
-        <textarea id="myStyleDesc" placeholder="언제 쓰는 표현인지, 어떤 톤인지 간단히 적어두면 좋아요."></textarea>
+        <div class="field-label">설명 (언제 쓰는 말인지)</div>
+        <textarea id="myStyleDesc" placeholder="예) 친한 친구랑 가볍게 농담할 때 쓰는 말"></textarea>
 
         <button class="btn-primary" id="saveMyStyleBtn" type="button">내 말투 저장하기</button>
         <div class="status-text" id="myStyleStatus"></div>
 
         <div class="field-label" style="margin-top:14px;">저장된 내 말투</div>
         <div id="myStyleList"></div>
-        <p class="list-empty" id="myStyleEmpty" style="display:none;">아직 저장된 표현이 없어요.</p>
+        <p class="list-empty" id="myStyleEmpty" style="display:none;">아직 저장된 표현이 없습니다.</p>
       </section>
 
-      <!-- ===== 화면: 즐겨찾기 ===== -->
+      <!-- ===== 즐겨찾기 화면 ===== -->
       <section class="screen" id="screen-favorites">
         <div class="section-title">즐겨찾기 답장 모아보기</div>
-        <p class="section-sub">마음에 들었던 답장을 다시 꺼내서 바로 복사해 쓸 수 있어요.</p>
+        <div class="section-sub">마음에 들었던 답장을 다시 꺼내서 바로 복사해 쓸 수 있어요.</div>
 
         <div id="favList"></div>
-        <p class="list-empty" id="favEmpty" style="display:none;">아직 즐겨찾기한 답장이 없습니다. 답장을 생성한 후 ★ 버튼을 눌러보세요.</p>
+        <p class="list-empty" id="favEmpty" style="display:none;">아직 즐겨찾기한 답장이 없습니다.</p>
       </section>
 
-      <!-- ===== 화면: 캡쳐로 답장 만들기 ===== -->
+      <!-- ===== 캡처 화면 ===== -->
       <section class="screen" id="screen-capture">
-        <div class="section-title">캡쳐로 답장 만들기</div>
-        <p class="section-sub">카톡 대화 캡쳐 이미지를 올리면, 상황을 읽고 어울리는 답장을 추천해 드립니다.</p>
-        <p class="section-desc">베타 기능으로, 인식이 부정확할 수 있어요.</p>
+        <div class="section-title">캡처로 답장 만들기</div>
+        <div class="section-sub">카톡 대화 캡처 이미지를 올리면, 상황을 읽고 어울리는 답장을 추천합니다.</div>
+        <div class="section-desc">이미지 인식 특성상, 인식이 완벽하지 않을 수 있어요.</div>
 
         <div class="field-label">상황 선택</div>
         <div class="tone-grid" id="toneGridCapture">
@@ -834,21 +842,21 @@
         </div>
 
         <div class="capture-box">
-          <div>카톡 대화가 보이는 캡쳐 이미지를 올려주세요.</div>
+          <div>카톡 대화가 잘 보이도록 캡처 이미지를 선택해 주세요.</div>
           <input class="capture-input" id="captureInput" type="file" accept="image/*" />
           <div class="capture-preview" id="capturePreview" style="display:none;">
-            <img id="capturePreviewImg" alt="캡쳐 미리보기" />
+            <img id="capturePreviewImg" alt="캡처 미리보기" />
           </div>
         </div>
 
         <button class="btn-primary" id="generateFromCaptureBtn" type="button">
-          캡쳐로 AI 답장 만들기
+          캡처로 AI 답장 만들기
         </button>
         <div class="status-text" id="captureStatus"></div>
       </section>
     </section>
 
-    <!-- ===== 하단 탭바 ===== -->
+    <!-- 하단 탭바 -->
     <div class="tabbar">
       <div class="tabbar-inner">
         <div class="tabbar-bg">
@@ -858,14 +866,14 @@
           <button class="tab-btn" data-tab="reply" type="button">
             <span class="label">답장 만들기</span>
           </button>
+          <button class="tab-btn" data-tab="capture" type="button">
+            <span class="label">캡처</span>
+          </button>
           <button class="tab-btn" data-tab="mystyle" type="button">
             <span class="label">내 말투</span>
           </button>
           <button class="tab-btn" data-tab="favorites" type="button">
             <span class="label">즐겨찾기</span>
-          </button>
-          <button class="tab-btn" data-tab="capture" type="button">
-            <span class="label">캡쳐</span>
           </button>
         </div>
       </div>
@@ -873,7 +881,7 @@
   </main>
 
   <script>
-    // ===== 공통 화면 전환 =====
+    // ===== 화면 관리 & 히스토리 (폰 뒤로가기 지원) =====
     const screens = {
       home: document.getElementById("screen-home"),
       reply: document.getElementById("screen-reply"),
@@ -883,46 +891,77 @@
       capture: document.getElementById("screen-capture"),
     };
 
-    function showScreen(name) {
+    let currentScreen = "home";
+    let lastResultSource = "text"; // "text" | "capture"
+
+    function setScreen(name) {
       Object.entries(screens).forEach(([key, el]) => {
         if (!el) return;
         el.classList.toggle("active", key === name);
       });
-      // 탭바 표시 상태
       document.querySelectorAll(".tab-btn").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.tab === name);
       });
+      currentScreen = name;
     }
 
-    // 탭바 클릭
+    function showScreen(name, push = true) {
+      if (!screens[name]) return;
+      setScreen(name);
+      if (push) {
+        history.pushState({ screen: name }, "", "");
+      }
+    }
+
+    // 초기 히스토리 세팅
+    window.addEventListener("load", () => {
+      if (!history.state || !history.state.screen) {
+        history.replaceState({ screen: "home" }, "", "");
+      } else {
+        const scr = history.state.screen;
+        if (screens[scr]) setScreen(scr);
+        else setScreen("home");
+      }
+    });
+
+    // 폰 뒤로가기(popstate)
+    window.addEventListener("popstate", (event) => {
+      const state = event.state;
+      if (state && state.screen && screens[state.screen]) {
+        setScreen(state.screen);
+      } else {
+        // home에서 한 번 더 뒤로 → 브라우저 기본 동작(종료)
+        setScreen("home");
+      }
+    });
+
+    // 탭바
     document.querySelectorAll(".tab-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         const tab = btn.dataset.tab;
         if (tab === "result") return;
+        // 이미 그 화면이면 히스토리 안 쌓도록
+        if (tab === currentScreen) return;
         showScreen(tab);
       });
     });
 
-    // 홈 카드 클릭 -> 각 기능 화면으로
+    // 홈 카드 클릭
     document.querySelectorAll(".home-item").forEach(item => {
       item.addEventListener("click", () => {
         const go = item.dataset.go;
-        if (go === "reply") showScreen("reply");
-        else if (go === "mystyle") showScreen("mystyle");
-        else if (go === "favorites") {
-          refreshFavorites();
-          showScreen("favorites");
-        } else if (go === "capture") showScreen("capture");
+        if (!go) return;
+        if (go === currentScreen) return;
+        if (go === "favorites") refreshFavorites();
+        showScreen(go);
       });
     });
 
-    // ===== 공통 상태 =====
+    // ===== 텍스트 답장 생성 =====
     let selectedToneText = "친구";
     let selectedToneCapture = "친구";
     let lastMessageText = "";
-    let lastResultSource = "text"; // text | capture
 
-    // ===== 톤 선택 (텍스트) =====
     const toneGridText = document.getElementById("toneGridText");
     const toneBtnsText = Array.from(toneGridText.querySelectorAll(".tone-btn"));
     toneBtnsText.forEach(btn => {
@@ -933,10 +972,8 @@
         statusText.textContent = "";
       });
     });
-    // 기본 선택
     (toneBtnsText.find(b => b.dataset.tone === "친구") || toneBtnsText[0])?.classList.add("selected");
 
-    // ===== 톤 선택 (캡쳐) =====
     const toneGridCapture = document.getElementById("toneGridCapture");
     const toneBtnsCapture = Array.from(toneGridCapture.querySelectorAll(".tone-btn"));
     toneBtnsCapture.forEach(btn => {
@@ -949,10 +986,10 @@
     });
     (toneBtnsCapture.find(b => b.dataset.tone === "친구") || toneBtnsCapture[0])?.classList.add("selected");
 
-    // ===== 텍스트 답장 생성 =====
     const messageText = document.getElementById("messageText");
     const generateTextBtn = document.getElementById("generateTextBtn");
     const statusText = document.getElementById("statusText");
+
     const toneChipCurrent = document.getElementById("toneChipCurrent");
     const resultTitle = document.getElementById("resultTitle");
     const resultTopText = document.getElementById("resultTopText");
@@ -1040,6 +1077,7 @@
           wrapper.dataset.risk = riskLabel;
           wrapper.dataset.sense = senseLabel;
           wrapper.dataset.comment = comment || "";
+          wrapper.dataset.tone = toneChipCurrent.textContent || "";
 
           wrapper.innerHTML = `
             <div class="answer-top-row">
@@ -1088,7 +1126,7 @@
       toneChipCurrent.textContent = `${selectedToneText} 톤`;
       resultTitle.textContent = "AI 추천 답장";
       resultTopText.textContent = "AI 추천 답장이 준비되는 중이에요...";
-      resultStatusText.textContent = "AI가 답장을 만드는 중이에요. 보통 몇 초 정도 걸립니다.";
+      resultStatusText.textContent = "AI가 답장을 만드는 중입니다. 잠시만 기다려 주세요.";
       resultOriginalText.textContent = text;
 
       showScreen("result");
@@ -1098,7 +1136,7 @@
 
     generateTextBtn.addEventListener("click", startTextFlow);
 
-    // ===== 캡쳐 답장 생성 =====
+    // ===== 캡처 답장 생성 =====
     const captureInput = document.getElementById("captureInput");
     const capturePreview = document.getElementById("capturePreview");
     const capturePreviewImg = document.getElementById("capturePreviewImg");
@@ -1134,7 +1172,7 @@
         try { data = await res.json(); } catch (e) {}
 
         if (!res.ok) {
-          resultStatusText.textContent = data.error || "캡쳐 분석 중 오류가 발생했습니다.";
+          resultStatusText.textContent = data.error || "캡처 분석 중 오류가 발생했습니다.";
           answersEl.innerHTML = "";
           return;
         }
@@ -1150,12 +1188,12 @@
 
         if (lines.length === 0) {
           resultTopText.textContent = "생성된 답장이 없습니다.";
-          resultStatusText.textContent = "캡쳐 이미지가 잘 보이도록 다시 올려보세요.";
+          resultStatusText.textContent = "캡처 이미지가 잘 보이게 다시 올려 보세요.";
           return;
         }
 
         resultTopText.textContent = "AI 추천 답장이 준비됐어요!";
-        resultStatusText.textContent = "캡쳐 내용을 바탕으로 어울리는 답장을 골라보세요.";
+        resultStatusText.textContent = "캡처 내용을 바탕으로 어울리는 답장을 골라 보세요.";
 
         lines.forEach((line, idx) => {
           const { text: rawText, risk, sense, comment } = parseLine(line);
@@ -1170,6 +1208,7 @@
           wrapper.dataset.risk = riskLabel;
           wrapper.dataset.sense = senseLabel;
           wrapper.dataset.comment = comment || "";
+          wrapper.dataset.tone = toneChipCurrent.textContent || "";
 
           wrapper.innerHTML = `
             <div class="answer-top-row">
@@ -1207,7 +1246,7 @@
     function startCaptureFlow() {
       const file = captureInput.files && captureInput.files[0];
       if (!file) {
-        captureStatus.textContent = "먼저 캡쳐 이미지를 선택해 주세요.";
+        captureStatus.textContent = "먼저 캡처 이미지를 선택해 주세요.";
         return;
       }
       captureStatus.textContent = "";
@@ -1216,10 +1255,10 @@
       lastResultSource = "capture";
 
       toneChipCurrent.textContent = `${selectedToneCapture} 톤`;
-      resultTitle.textContent = "캡쳐 기반 AI 추천 답장";
-      resultTopText.textContent = "캡쳐를 분석해서 답장을 만드는 중입니다...";
-      resultStatusText.textContent = "이미지에서 대화를 읽는 중이에요. 보통 몇 초 정도 걸립니다.";
-      resultOriginalText.textContent = "올려주신 캡쳐 이미지의 대화를 기준으로 답장을 추천합니다.";
+      resultTitle.textContent = "캡처 기반 AI 추천 답장";
+      resultTopText.textContent = "캡처를 분석해서 답장을 만드는 중입니다...";
+      resultStatusText.textContent = "이미지에서 대화를 읽는 중이에요. 잠시만 기다려 주세요.";
+      resultOriginalText.textContent = "올려주신 캡처 이미지의 대화를 기준으로 답장을 추천합니다.";
 
       showScreen("result");
       showSkeleton();
@@ -1228,13 +1267,10 @@
 
     generateFromCaptureBtn.addEventListener("click", startCaptureFlow);
 
-    // ===== 결과 화면 버튼 =====
+    // 결과 화면 버튼
     document.getElementById("backFromResult").addEventListener("click", () => {
-      if (lastResultSource === "capture") {
-        showScreen("capture");
-      } else {
-        showScreen("reply");
-      }
+      // 내부 뒤로가기 → 브라우저 히스토리 한 단계 뒤로
+      history.back();
     });
 
     document.getElementById("goHomeFromResult").addEventListener("click", () => {
@@ -1245,7 +1281,7 @@
       if (lastResultSource === "capture") {
         const file = captureInput.files && captureInput.files[0];
         if (!file) return;
-        resultTopText.textContent = "캡쳐를 다시 분석하는 중입니다...";
+        resultTopText.textContent = "캡처를 다시 분석하는 중입니다...";
         resultStatusText.textContent = "잠시만 기다려 주세요.";
         showSkeleton();
         callCaptureAPI(file, selectedToneCapture);
@@ -1358,7 +1394,7 @@
       const risk = card.dataset.risk || "";
       const sense = card.dataset.sense || "";
       const comment = card.dataset.comment || "";
-      const tone = toneChipCurrent.textContent || "";
+      const tone = card.dataset.tone || "";
 
       let favs = loadFavorites();
       const idx = favs.findIndex(f => f.text === text && f.tone === tone);
@@ -1409,15 +1445,13 @@
         row.addEventListener("click", e => {
           const btn = e.target.closest(".small-btn");
           if (!btn) return;
-          const idx = parseInt(btn.dataset.idx, 10);
+          const i = parseInt(btn.dataset.idx, 10);
           const action = btn.dataset.action;
           const current = loadFavorites();
           if (action === "copy") {
-            navigator.clipboard.writeText(current[idx].text || "").then(() => {
-              // 아무 메시지 안 띄워도 됨. 필요하면 alert 추가 가능.
-            });
+            navigator.clipboard.writeText(current[i].text || "");
           } else if (action === "delete") {
-            current.splice(idx, 1);
+            current.splice(i, 1);
             saveFavorites(current);
             refreshFavorites();
           }
@@ -1426,7 +1460,7 @@
       });
     }
 
-    // 처음 진입 시 내 말투/즐겨찾기 렌더링
+    // 초기 렌더
     renderMyStyles();
     refreshFavorites();
   </script>
