@@ -1,75 +1,83 @@
-from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
+# app.py
 import os
-import requests
-import json
+from flask import Flask, request, jsonify
+from openai import OpenAI
 
-app = Flask(__name__, static_folder=".", static_url_path="")
-CORS(app)
+app = Flask(__name__)
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_URL = "https://api.openai.com/v1/chat/completions"
+SYSTEM_PROMPT = """
+당신은 '피부 관리 코치'입니다.
+- 피부과 전문의가 아니며, 의료적 진단/치료/질환명 확정은 하지 않습니다.
+- 사진이나 설명을 기반으로, 사용자의 피부 '경향'과 '관리 방향'을 설명합니다.
+- 특정 질환명(예: 한관종, 지방종, 암, 종양 등)을 단정적으로 말하지 마세요.
+- 대신 '작은 돌기', '양성으로 보이는 패턴', '피지/각질/모공 막힘'처럼 완화된 표현을 사용하세요.
+- 항상 마지막에 '정확한 진단은 피부과 전문의에게 받으세요.'라는 문장을 포함하세요.
+"""
 
+@app.route("/api/analyze", methods=["POST"])
+def analyze_skin():
+    data = request.json or {}
 
-@app.route("/")
-def index():
-    return send_from_directory(app.static_folder, "index.html")
+    skin_type = data.get("skin_type", "정보 없음")
+    concerns = data.get("concerns", [])  # 리스트 기대
+    area = data.get("problem_area", "정보 없음")
+    notes = data.get("notes", "")
 
+    concerns_text = ", ".join(concerns) if isinstance(concerns, list) else str(concerns)
 
-@app.route("/<path:path>")
-def static_file(path):
-    return send_from_directory(app.static_folder, path)
+    user_prompt = f"""
+사용자의 피부 고민 정보는 다음과 같습니다:
 
+- 피부 타입: {skin_type}
+- 주 고민: {concerns_text}
+- 특히 신경 쓰이는 부위: {area}
+- 사용자의 추가 설명: {notes}
 
-@app.route("/analyze", methods=["POST"])
-def analyze():
-    try:
-        data = request.get_json()
-        image_base64 = data.get("image")
+다음 구조로 한국어로 자연스럽게 설명해 주세요.
 
-        if not image_base64:
-            return jsonify({"error": "이미지가 전달되지 않았습니다."}), 400
+1. 전체 평가 (2~3문장)
+   - 지금 피부 패턴이 어떤 경향인지 정리
+   - 너무 겁주지 말고, 관리하면 좋아질 수 있다는 톤
 
-        headers = {
-            "Authorization": f"Bearer {OPENAI_API_KEY}",
-            "Content-Type": "application/json"
-        }
+2. 부위별 관찰
+   - 눈가 / 볼·광대 / 턱·입 주변 / 피부결·민감도 정도로 나누어 설명
+   - '작은 돌기', '요철', '붉음기', '번들거림', '건조함' 등으로 표현
+   - 질환을 확정하지 말고 '이런 패턴에서 자주 보이는 모습' 정도로만 설명
 
-        payload = {
-            "model": "gpt-4o",
-            "messages": [
-                {
-                    "role": "system",
-                    "content": (
-                        "너는 전문 피부과 AI다. 사진을 보고 "
-                        "1) 전체 요약 2) 문제 부위 3) 관리 팁 "
-                        "을 한국어로 간결하게 정리해라."
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": "피부 분석해줘."},
-                        {"type": "image_url", "image_url": {"url": image_base64}}
-                    ]
-                }
-            ]
-        }
+3. 집에서 체크해볼 수 있는 셀프 확인 포인트
+   - 촉감(단단/말랑/매끈), 크기(1~2mm, 3~5mm 등), 색(피부색, 노르스름, 흰색 등) 기준으로
+   - 대략적으로 구분하는 팁을 알려주되, 진단이 아님을 강조
 
-        resp = requests.post(OPENAI_URL, headers=headers, data=json.dumps(payload))
-        result_data = resp.json()
+4. 관리 방향
+   - 클렌저(약산성 추천 등)
+   - 각질/피지 관리(유리아, PHA 등 자극 낮은 옵션 위주)
+   - 진정/수분 크림 사용법
+   - 레티놀/강한 각질제는 어떻게 조심해야 하는지
 
-        if resp.status_code != 200:
-            return jsonify({
-                "error": result_data.get("error", {}).get("message", "OpenAI 오류 발생")
-            }), 500
+5. 안전 문구
+   - 이 내용은 일반적인 경향 안내이며, 정확한 진단이나 치료는 피부과 전문의에게 받아야 한다는 문장 포함
 
-        result_text = result_data["choices"][0]["message"]["content"]
-        return jsonify({"result": result_text})
+말투는:
+- 실제 사람이 설명해주는 것처럼 부드럽게
+- 너무 의학 논문처럼 딱딱하지 않게
+- 그러나 감정과장(공포심 유발)은 피하고 차분하게.
+"""
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    completion = client.responses.create(
+        model="gpt-4.1-mini",
+        input=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt},
+        ],
+    )
+
+    # 최신 responses API 기준 파싱
+    analysis_text = completion.output[0].content[0].text
+
+    return jsonify({"analysis": analysis_text})
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    # 로컬 테스트용
+    app.run(host="0.0.0.0", port=5000, debug=True)
