@@ -319,7 +319,7 @@
       const reader = new FileReader();
       reader.onload = function(e) {
         const imageData = encodeURIComponent(e.target.result);
-        window.location.href = `2page.html?img=${imageData}`;
+        window.location.href = `confirm.html?img=${imageData}`;
       };
       reader.readAsDataURL(file);
     }
@@ -327,4 +327,5 @@
 
 </body>
 </html>
+
 
