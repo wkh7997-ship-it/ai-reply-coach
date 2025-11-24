@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>AI 대화 코치</title>
+  <title>AI 피부 코치</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <link rel="manifest" href="/manifest.json" />
   <style>
@@ -11,1302 +11,1230 @@
       --primary-dark: #4f46e5;
       --bg1: #050816;
       --bg2: #3b1d6a;
-      --card-bg: rgba(8, 12, 32, 0.96);
       --text-main: #f9fafb;
       --text-sub: #a5b4fc;
-      --border: rgba(148, 163, 184, 0.35);
+      --border: rgba(255, 255, 255, 0.16);
+      --card-bg: rgba(8, 12, 32, 0.94);
       --safe: #22c55e;
       --warn: #eab308;
       --danger: #ef4444;
+      --surface: rgba(15, 23, 42, 0.9);
+      --shadow-soft: 0 22px 45px rgba(15, 23, 42, 0.78);
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --radius-pill: 999px;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     html, body {
       height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", sans-serif;
+      color: var(--text-main);
+      background: radial-gradient(circle at top, #1d2238 0, #050816 45%, #020617 100%);
     }
 
     body {
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top, #4c1d95 0, rgba(76, 29, 149, 0.25) 20%, transparent 40%),
-        radial-gradient(circle at bottom, #020617 0, #000 60%);
-      color: var(--text-main);
       display: flex;
-      justify-content: center;
       align-items: stretch;
-      padding: calc(28px + env(safe-area-inset-top, 0px)) 12px 72px;
-      -webkit-text-size-adjust: 100%;
+      justify-content: center;
+      padding: 16px;
     }
 
-    .app {
+    .app-shell {
       width: 100%;
-      max-width: 480px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      max-width: 1120px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+      gap: 20px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(17, 24, 39, 0.95));
+      border-radius: 32px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+      position: relative;
     }
 
-    .screen { display: none; }
-    .screen.active { display: block; }
+    .app-shell::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(129, 140, 248, 0.18) 0, transparent 50%),
+        radial-gradient(circle at 100% 0%, rgba(236, 72, 153, 0.16) 0, transparent 55%),
+        radial-gradient(circle at 50% 100%, rgba(56, 189, 248, 0.15) 0, transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+      z-index: -1;
+    }
 
-    .card {
-      background: var(--card-bg);
-      border-radius: 30px;
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      padding: 22px 18px 20px;
-      box-shadow:
-        0 26px 60px rgba(15, 23, 42, 0.95),
-        0 0 0 1px rgba(15, 23, 42, 0.9);
+    .sidebar {
+      padding: 24px 24px 24px 24px;
+      border-right: 1px solid rgba(148, 163, 184, 0.3);
       backdrop-filter: blur(18px);
+      background: radial-gradient(circle at top left, rgba(30, 64, 175, 0.45) 0, rgba(15, 23, 42, 0.9) 40%, rgba(15, 23, 42, 0.98) 100%);
     }
 
-    .header-row {
+    .main {
+      padding: 24px;
+      backdrop-filter: blur(18px);
+      background: radial-gradient(circle at top right, rgba(236, 72, 153, 0.32) 0, rgba(15, 23, 42, 0.96) 42%, rgba(15, 23, 42, 1) 100%);
+    }
+
+    .logo-row {
       display: flex;
-      gap: 14px;
       align-items: center;
-      margin-bottom: 18px;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
     }
 
-    .header-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 20px;
-      padding: 3px;
-      background: radial-gradient(circle at 30% 20%, #a5b4fc 0, #4c1d95 50%, #020617 100%);
-      box-shadow:
-        0 10px 20px rgba(79, 70, 229, 0.9),
-        0 0 0 1px rgba(30, 64, 175, 0.55);
+    .logo-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 18px;
+      background: radial-gradient(circle at 30% 0, #e0f2fe 0, #a5b4fc 18%, #4f46e5 45%, #020617 100%);
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 12px 30px rgba(79, 70, 229, 0.8);
+      font-size: 20px;
     }
 
-    .header-icon img {
-      width: 100%;
-      height: 100%;
-      border-radius: 17px;
-      object-fit: cover;
-    }
-
-    .header-title {
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-    }
-
-    .header-sub {
-      margin-top: 4px;
-      font-size: 14px;
-      color: var(--text-sub);
-    }
-
-    .section-title {
-      font-size: 22px;
-      font-weight: 800;
-      margin-bottom: 8px;
-      letter-spacing: -0.03em;
-    }
-
-    .section-sub {
-      font-size: 14px;
-      color: #c7d2fe;
-      margin-bottom: 18px;
-      line-height: 1.45;
-    }
-
-    .feature-list {
+    .logo-text-main {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 8px;
     }
 
-    .feature-card {
-      border-radius: 22px;
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      background: radial-gradient(circle at top left,
-        rgba(79, 70, 229, 0.21) 0,
-        rgba(17, 24, 39, 0.96) 40%,
-        rgba(15, 23, 42, 0.98) 100%);
-      padding: 14px 14px 14px;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      cursor: pointer;
+    .logo-badge {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: rgba(191, 219, 254, 0.9);
     }
 
-    .feature-main { flex: 1; }
-
-    .feature-title {
-      font-size: 17px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .feature-desc {
-      font-size: 13px;
-      color: #cbd5f5;
-      line-height: 1.5;
-    }
-
-    .feature-badge {
-      align-self: center;
-      padding: 6px 10px;
+    .pill-beta {
+      padding: 6px 12px;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      font-size: 12px;
-      color: #e5e7ff;
-      background: rgba(15, 23, 42, 0.9);
-      white-space: nowrap;
-    }
-
-    .feature-badge.primary {
-      border-color: #a855f7;
-      background: radial-gradient(circle at top,
-        rgba(129, 140, 248, 0.45) 0,
-        rgba(79, 70, 229, 0.7) 45%,
-        rgba(15, 23, 42, 0.98) 100%);
-    }
-
-    .field-label {
-      font-size: 13px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      border: 1px solid rgba(129, 140, 248, 0.6);
+      background: rgba(15, 23, 42, 0.82);
       color: #c7d2fe;
-      margin-bottom: 6px;
-    }
-
-    textarea {
-      width: 100%;
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      background: rgba(15, 23, 42, 0.98);
-      color: var(--text-main);
-      font-size: 15px;
-      padding: 12px 14px;
-      outline: none;
-      resize: vertical;
-      min-height: 120px;
-      line-height: 1.5;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-    }
-
-    textarea:focus {
-      border-color: #818cf8;
-      box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.75);
-      background: rgba(15, 23, 42, 1);
-    }
-
-    .hint {
-      font-size: 12px;
-      color: #94a3b8;
-      margin-top: 6px;
-      margin-bottom: 16px;
-    }
-
-    .btn-primary {
-      width: 100%;
-      border: none;
-      border-radius: 20px;
-      padding: 13px 16px;
-      font-size: 16px;
-      font-weight: 700;
-      color: white;
-      background: linear-gradient(90deg, var(--primary), var(--primary-dark));
-      box-shadow:
-        0 16px 36px rgba(79, 70, 229, 0.75),
-        0 0 0 1px rgba(129, 140, 248, 0.7);
-      cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 6px;
     }
 
-    .btn-primary:active {
-      transform: translateY(1px);
-      box-shadow:
-        0 10px 26px rgba(79, 70, 229, 0.7),
-        0 0 0 1px rgba(129, 140, 248, 0.7);
+    .pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: radial-gradient(circle, #4ade80, #16a34a);
+      box-shadow: 0 0 10px rgba(74, 222, 128, 0.8);
     }
 
-    .status-text {
-      margin-top: 8px;
-      font-size: 12px;
-      color: #a5b4fc;
-      min-height: 16px;
+    .hero-title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.3;
+      margin-bottom: 10px;
     }
 
-    .back-btn {
-      border: none;
-      background: none;
-      color: #e5e7ff;
+    .hero-title span.accent {
+      background: linear-gradient(135deg, #c4b5fd, #a5b4fc, #38bdf8);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-sub {
       font-size: 13px;
+      color: rgba(226, 232, 240, 0.82);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+
+    .tag-chip {
+      font-size: 11px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      background: radial-gradient(circle at top left, rgba(51, 65, 85, 0.9), rgba(15, 23, 42, 0.9));
+      color: rgba(226, 232, 240, 0.88);
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      margin-bottom: 8px;
-      cursor: pointer;
+      gap: 5px;
     }
 
-    .back-btn .arrow { font-size: 15px; }
+    .tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: radial-gradient(circle, #a5b4fc, #4f46e5);
+    }
 
-    .top-row {
+    .hero-metric-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .metric-card {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 18px;
+      background: radial-gradient(circle at top, rgba(30, 64, 175, 0.5), rgba(15, 23, 42, 0.96));
+      border: 1px solid rgba(129, 140, 248, 0.8);
+      box-shadow: 0 14px 30px rgba(30, 64, 175, 0.55);
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: rgba(199, 210, 254, 0.95);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 4px;
+    }
+
+    .metric-value {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .metric-sub {
+      font-size: 11px;
+      color: rgba(191, 219, 254, 0.85);
+      margin-top: 1px;
+    }
+
+    .divider {
+      height: 1px;
+      border-radius: 999px;
+      margin: 12px 0;
+      background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.5), transparent);
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(148, 163, 184, 0.95);
+      margin-bottom: 8px;
+    }
+
+    .tip-list {
+      list-style: none;
+      font-size: 12px;
+      color: rgba(226, 232, 240, 0.9);
+      display: grid;
+      gap: 6px;
+    }
+
+    .tip-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .tip-dot {
+      margin-top: 5px;
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: radial-gradient(circle, #f97316, #c2410c);
+    }
+
+    .form-card {
+      border-radius: var(--radius-xl);
+      background: radial-gradient(circle at top, rgba(17, 24, 39, 0.96), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 16px 16px 14px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 0 0, rgba(129, 140, 248, 0.18) 0, transparent 40%);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .form-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 4px;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
     }
 
-    .tone-chip { font-size: 12px; color: #cbd5f5; }
-
-    .chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .tone-btn {
-      padding: 6px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
+    .form-title {
       font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-title-badge {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(22, 163, 74, 0.12);
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.6);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field-label {
+      font-size: 11px;
+      color: rgba(203, 213, 225, 0.96);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .field-label span.sub {
+      font-size: 10px;
+      color: rgba(148, 163, 184, 0.95);
+    }
+
+    select, input[type="text"], textarea {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 1));
+      padding: 8px 11px;
+      font-size: 12px;
+      color: var(--text-main);
+      outline: none;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.9);
+    }
+
+    select:focus,
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.8), 0 18px 36px rgba(30, 64, 175, 0.9);
+    }
+
+    textarea {
+      border-radius: 16px;
+      resize: vertical;
+      min-height: 70px;
+      max-height: 180px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .field-inline {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .btn-primary {
+      margin-top: 10px;
+      width: 100%;
+      border-radius: 999px;
+      padding: 9px 14px;
+      border: none;
+      outline: none;
       cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #e5e7eb;
+      background: linear-gradient(135deg, #4f46e5, #6366f1, #0ea5e9);
+      box-shadow: 0 16px 30px rgba(79, 70, 229, 0.95);
+      position: relative;
+      z-index: 1;
     }
 
-    .tone-btn.selected {
-      background: rgba(99, 102, 241, 0.25);
-      border-color: #818cf8;
-      color: #e0e7ff;
-      box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.6);
+    .btn-primary:disabled {
+      opacity: 0.7;
+      cursor: default;
+      box-shadow: none;
     }
 
-    /* 결과 화면 */
-    .result-header-main {
-      font-size: 22px;
-      font-weight: 800;
-      margin-bottom: 4px;
+    .btn-glow-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: radial-gradient(circle, #bbf7d0, #22c55e);
+      box-shadow: 0 0 12px rgba(74, 222, 128, 1);
     }
 
-    .result-header-sub {
-      font-size: 14px;
-      color: #c7d2fe;
-      margin-bottom: 16px;
+    .loading-spinner {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 2px solid rgba(226, 232, 240, 0.6);
+      border-top-color: transparent;
+      animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .result-card {
       border-radius: 24px;
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      background: radial-gradient(circle at top left,
-          rgba(79, 70, 229, 0.22) 0,
-          rgba(17, 24, 39, 0.97) 42%,
-          rgba(15, 23, 42, 0.98) 100%);
-      padding: 16px 14px 14px;
+      background: radial-gradient(circle at top right, rgba(129, 140, 248, 0.32), rgba(15, 23, 42, 0.98));
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      padding: 14px 14px 14px;
+      margin-top: 12px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.95);
+      min-height: 210px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .result-title-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 12px;
-      font-size: 14px;
-      font-weight: 700;
+    .result-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(129, 140, 248, 0.32) 0, transparent 50%),
+        radial-gradient(circle at 100% 0%, rgba(236, 72, 153, 0.24) 0, transparent 50%);
+      mix-blend-mode: screen;
+      opacity: 0.7;
+      pointer-events: none;
     }
 
-    .result-caption {
+    .result-content {
+      position: relative;
+      z-index: 1;
       font-size: 12px;
-      color: #cbd5f5;
-      margin-bottom: 10px;
+      color: rgba(226, 232, 240, 0.96);
+      display: grid;
+      gap: 10px;
     }
 
-    .original-box {
-      border-radius: 18px;
+    .result-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: rgba(199, 210, 254, 0.96);
+      margin-bottom: 3px;
+    }
+
+    .result-block {
+      padding: 8px 9px;
+      border-radius: 14px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.98));
       border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.98);
-      padding: 10px 12px;
-      margin-bottom: 14px;
-      font-size: 14px;
     }
 
-    .original-label {
-      font-size: 12px;
-      color: #cbd5f5;
-      margin-bottom: 4px;
-    }
-
-    .original-text { font-size: 14px; }
-
-    .answer-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .answer-item {
-      border-radius: 18px;
-      border: 1px solid rgba(51, 65, 85, 0.9);
-      background: rgba(15, 23, 42, 0.97);
-      padding: 10px 11px 9px;
-    }
-
-    .answer-top-row {
-      display: flex;
+    .badge-soft {
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .answer-text {
-      flex: 1;
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.5;
-    }
-
-    .favorite-btn,
-    .copy-btn {
+      gap: 5px;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.95);
-      color: #e5e7ff;
-      font-size: 11px;
-      padding: 4px 10px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .favorite-btn.active {
-      border-color: #facc15;
-      background: radial-gradient(circle at top,
-        rgba(250, 204, 21, 0.3) 0,
-        rgba(31, 41, 55, 0.98) 60%);
-      color: #fef9c3;
-    }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 4px;
-    }
-
-    .chip {
-      padding: 2px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      font-size: 11px;
-      color: #e5e7eb;
-      background: rgba(15, 23, 42, 0.98);
-    }
-
-    .chip-risk {
-      border-color: var(--safe);
-      color: var(--safe);
-    }
-
-    .chip-sense {
-      border-color: #e5e7eb;
-      color: #e5e7eb;
-    }
-
-    .comment-text {
-      font-size: 12px;
-      color: #cbd5f5;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.96);
-      padding: 5px 10px;
-      margin-top: 2px;
-    }
-
-    .result-footer {
-      display: flex;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .btn-secondary,
-    .btn-outline {
-      flex: 1;
-      border-radius: 18px;
-      padding: 11px 12px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-    }
-
-    .btn-secondary {
-      border: none;
-      background: rgba(79, 70, 229, 0.16);
-      color: #e0e7ff;
-      box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.7);
-    }
-
-    .btn-outline {
-      border: 1px solid rgba(148, 163, 184, 0.8);
-      background: rgba(15, 23, 42, 0.97);
-      color: #e5e7eb;
-    }
-
-    /* 스켈레톤 */
-    .skeleton-item {
-      border-radius: 18px;
-      border: 1px solid rgba(30, 64, 175, 0.5);
-      background: rgba(15, 23, 42, 0.98);
-      padding: 10px 11px 9px;
-      overflow: hidden;
-    }
-
-    .skeleton-line {
-      height: 10px;
-      border-radius: 999px;
-      background: linear-gradient(90deg,
-        rgba(30, 64, 175, 0.35),
-        rgba(15, 23, 42, 0.9),
-        rgba(30, 64, 175, 0.35));
-      background-size: 200% 100%;
-      animation: shimmer 1.3s infinite;
-      margin-bottom: 6px;
-    }
-
-    .skeleton-line.long  { width: 80%; }
-    .skeleton-line.mid   { width: 60%; }
-    .skeleton-line.short { width: 50%; }
-
-    @keyframes shimmer {
-      0% { background-position: -100% 0; }
-      100% { background-position: 100% 0; }
-    }
-
-    /* 내 말투 화면 */
-    .tone-sample-list {
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-height: 180px;
-      overflow-y: auto;
-    }
-
-    .tone-sample-item {
-      font-size: 13px;
-      padding: 6px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.95);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tone-sample-text { flex: 1; }
-
-    .tone-sample-del {
-      border: none;
-      background: none;
-      color: #f97373;
-      font-size: 11px;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    /* 즐겨찾기 화면 */
-    .fav-empty {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-top: 6px;
-    }
-
-    .fav-item {
-      border-radius: 18px;
-      border: 1px solid rgba(51, 65, 85, 0.9);
-      background: rgba(15, 23, 42, 0.97);
-      padding: 10px 11px 9px;
-      margin-bottom: 8px;
-    }
-
-    .fav-top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 4px;
-    }
-
-    .fav-text { font-size: 14px; flex: 1; }
-
-    .fav-meta {
-      font-size: 11px;
-      color: #9ca3af;
-      margin-bottom: 4px;
-    }
-
-    .fav-actions { display: flex; gap: 6px; }
-
-    .btn-mini {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.95);
-      color: #e5e7eb;
-      font-size: 11px;
       padding: 3px 8px;
+      font-size: 10px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(129, 140, 248, 0.7);
+      color: rgba(199, 210, 254, 0.98);
+    }
+
+    .badge-soft-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: radial-gradient(circle, #a5b4fc, #4f46e5);
+    }
+
+    .routine-list {
+      list-style: none;
+      margin-top: 4px;
+      display: grid;
+      gap: 3px;
+      padding-left: 0;
+    }
+
+    .routine-list li {
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+    }
+
+    .routine-bullet {
+      margin-top: 4px;
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: radial-gradient(circle, #38bdf8, #0369a1);
+    }
+
+    .product-grid {
+      margin-top: 6px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .product-card {
+      padding: 7px 8px;
+      border-radius: 12px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 1), rgba(15, 23, 42, 1));
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .product-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 11px;
+    }
+
+    .product-name {
+      font-weight: 600;
+      color: rgba(226, 232, 240, 0.98);
+    }
+
+    .product-desc {
+      color: rgba(148, 163, 184, 0.95);
+    }
+
+    .product-meta {
+      font-size: 10px;
+      color: rgba(129, 140, 248, 0.96);
+    }
+
+    .product-action {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .product-tag {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(129, 140, 248, 0.85);
+      color: rgba(199, 210, 254, 1);
+      background: rgba(15, 23, 42, 0.96);
+    }
+
+    .product-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: #eef2ff;
+      font-size: 10px;
+      font-weight: 600;
       cursor: pointer;
+      text-decoration: none;
       white-space: nowrap;
     }
 
-    /* 캡쳐 화면 */
-    #screen-capture input[type="file"] { font-size: 13px; }
-
-    /* 바텀 내비게이션 */
-    .nav-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 8px 18px calc(10px + env(safe-area-inset-bottom, 0px));
-      display: flex;
-      justify-content: center;
-      background: radial-gradient(circle at top,
-        rgba(15, 23, 42, 0.98) 0,
-        rgba(3, 7, 18, 0.98) 40%);
-      border-top: 1px solid rgba(15, 23, 42, 0.95);
+    .product-link-btn span.icon {
+      font-size: 11px;
     }
 
-    .nav-inner {
-      width: 100%;
-      max-width: 480px;
-      background: rgba(15, 23, 42, 0.98);
-      border-radius: 999px;
-      border: 1px solid rgba(30, 64, 175, 0.85);
-      display: flex;
-      overflow: hidden;
-    }
-
-    .nav-btn {
-      flex: 1;
-      border: none;
-      background: transparent;
-      color: #9ca3af;
+    .result-empty {
       font-size: 12px;
-      padding: 10px 4px;
-      cursor: pointer;
+      color: rgba(148, 163, 184, 0.95);
+      text-align: center;
+      margin-top: 40px;
     }
 
-    .nav-btn.active {
-      background: radial-gradient(circle at top,
-        rgba(129, 140, 248, 0.4) 0,
-        rgba(15, 23, 42, 0.98) 70%);
-      color: #f9fafb;
-      font-weight: 600;
+    .footnote {
+      margin-top: 6px;
+      font-size: 10px;
+      color: rgba(148, 163, 184, 0.95);
     }
 
-    @media (max-height: 680px) {
+    @media (max-width: 880px) {
+      .app-shell {
+        grid-template-columns: minmax(0, 1fr);
+        border-radius: 24px;
+      }
+
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.32);
+      }
+
+      .hero-title {
+        font-size: 22px;
+      }
+    }
+
+    @media (max-width: 640px) {
       body {
-        align-items: flex-start;
-        padding-top: 14px;
+        padding: 10px;
+      }
+
+      .app-shell {
+        border-radius: 20px;
+      }
+
+      .sidebar, .main {
+        padding: 16px;
+      }
+
+      .form-grid {
+        grid-template-columns: minmax(0, 1fr);
       }
     }
   </style>
 </head>
 <body>
-  <main class="app">
-    <!-- ===== 화면 1 : 홈 ===== -->
-    <section class="card screen active" id="screen-home">
-      <div class="header-row">
-        <div class="header-icon">
-          <img src="/icon-192.png" alt="AI 대화 코치 아이콘" />
+  <div class="app-shell">
+    <!-- 왼쪽: 소개 / 설명 영역 -->
+    <aside class="sidebar">
+      <div class="logo-row">
+        <div class="logo-main">
+          <div class="logo-icon">💧</div>
+          <div class="logo-text-main">
+            <span>AI 피부 코치</span>
+            <span class="logo-badge">Skin Routine &amp; Product Recommender</span>
+          </div>
         </div>
-        <div>
-          <div class="header-title">AI 대화 코치</div>
-          <div class="header-sub">카톡 답장, 같이 생각해주는 파트너</div>
+        <div class="pill-beta">
+          <span class="pill-dot"></span>
+          LIVE BETA
         </div>
       </div>
 
-      <div class="section-title">오늘은 무엇을 도와드릴까요?</div>
-      <div class="section-sub">
-        상황에 맞는 답장, 내 말투 반영, 자주 쓰는 답장 저장까지 한 번에.
+      <h1 class="hero-title">
+        내 피부에 맞는 <span class="accent">루틴 &amp; 제품 추천</span><br>
+        5초 만에 받아보기
+      </h1>
+      <p class="hero-sub">
+        피부 타입, 현재 고민, 사용하는 제품만 적어주면<br>
+        AI가 <strong>피부 상태 설명 → 아침·저녁 루틴 → 쿠팡 추천 링크</strong>까지 한 번에 만들어줘요.
+      </p>
+
+      <div class="hero-tags">
+        <div class="tag-chip">
+          <span class="tag-dot"></span>
+          건성 · 지성 · 민감성 · 복합성
+        </div>
+        <div class="tag-chip">
+          <span class="tag-dot"></span>
+          여드름 · 모공 · 홍조 · 잡티
+        </div>
+        <div class="tag-chip">
+          <span class="tag-dot"></span>
+          쿠팡 파트너스 연동
+        </div>
       </div>
 
-      <div class="feature-list">
-        <button class="feature-card" id="feature-reply" type="button">
-          <div class="feature-main">
-            <div class="feature-title">1. AI가 카톡 답장 만들어주기</div>
-            <div class="feature-desc">
-              상대가 보낸 메시지를 붙여 넣으면, 딱 맞는 답장 3개를 추천해 드려요.
+      <div class="hero-metric-row">
+        <div class="metric-card">
+          <div class="metric-label">Daily Routine</div>
+          <div class="metric-value">맞춤 루틴 자동 생성</div>
+          <div class="metric-sub">아침 / 저녁 / 주 1~2회 스페셜케어</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div>
+        <div class="section-title">사용 방법</div>
+        <ul class="tip-list">
+          <li>
+            <span class="tip-dot"></span>
+            <span>피부 타입과 현재 고민(예: “턱 여드름”, “코 모공”)을 선택해 주세요.</span>
+          </li>
+          <li>
+            <span class="tip-dot"></span>
+            <span>지금 쓰는 제품이나 예산대를 간단히 적어주면 더 정확해져요.</span>
+          </li>
+          <li>
+            <span class="tip-dot"></span>
+            <span>“맞춤 루틴 분석하기” 버튼을 누르면 루틴과 쿠팡 추천이 생성됩니다.</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- 오른쪽: 입력 / 결과 영역 -->
+    <main class="main">
+      <!-- 입력 카드 -->
+      <section class="form-card">
+        <div class="form-header">
+          <div class="form-title">
+            오늘 피부 상태 입력하기
+            <span class="form-title-badge">1분이면 충분해요</span>
+          </div>
+        </div>
+
+        <form id="skin-form">
+          <div class="form-grid">
+            <div class="field">
+              <label class="field-label">
+                피부 타입
+                <span class="sub">잘 모르겠으면 “모르겠음”</span>
+              </label>
+              <select id="skin-type" required>
+                <option value="모르겠음">모르겠음 / 처음이에요</option>
+                <option value="건성">건성</option>
+                <option value="지성">지성</option>
+                <option value="복합성">복합성</option>
+                <option value="민감성">민감성</option>
+                <option value="중성">중성</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field-label">
+                주요 고민
+                <span class="sub">복수 선택 시 메모에 적기</span>
+              </label>
+              <select id="main-concern" required>
+                <option value="여드름">여드름 / 트러블</option>
+                <option value="모공피부결">모공 / 피부결 / 블랙헤드</option>
+                <option value="홍조민감">홍조 / 민감 / 붉음</option>
+                <option value="잡티색소">잡티 / 색소침착 / 기미</option>
+                <option value="주름탄력">주름 / 탄력 / 노화</option>
+                <option value="건조각질">건조 / 각질 / 당김</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field-label">
+                나이대
+                <span class="sub">추천 성분이 달라져요</span>
+              </label>
+              <select id="age-range">
+                <option value="10대">10대</option>
+                <option value="20대" selected>20대</option>
+                <option value="30대">30대</option>
+                <option value="40대 이상">40대 이상</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field-label">
+                예산감
+                <span class="sub">대략적인 느낌만</span>
+              </label>
+              <select id="budget-range">
+                <option value="가성비">가성비 위주</option>
+                <option value="중간가격">중간 가격대</option>
+                <option value="프리미엄">프리미엄도 괜찮아요</option>
+              </select>
+            </div>
+
+            <div class="field" style="grid-column: 1 / -1;">
+              <label class="field-label">
+                현재 루틴 / 사용 제품 / 추가 고민
+                <span class="sub">예: “아침엔 물세안만, 밤엔 폼클+수분크림”</span>
+              </label>
+              <textarea id="extra-notes" placeholder="지금 쓰는 제품, 피부 상태, 계절(겨울/여름), 알레르기, 하고 싶은 케어 등을 자유롭게 적어주세요."></textarea>
             </div>
           </div>
-          <div class="feature-badge primary">바로 시작</div>
-        </button>
 
-        <button class="feature-card" id="feature-my-tone" type="button">
-          <div class="feature-main">
-            <div class="feature-title">2. 내 말투 학습시키기</div>
-            <div class="feature-desc">
-              내가 자주 쓰는 말들을 저장해 두면, 답장이 점점 나와 더 비슷해져요.
-            </div>
-          </div>
-          <div class="feature-badge">말투 저장</div>
-        </button>
-
-        <button class="feature-card" id="feature-favorites" type="button">
-          <div class="feature-main">
-            <div class="feature-title">3. 즐겨찾기 답장 모아보기</div>
-            <div class="feature-desc">
-              마음에 들었던 답장을 즐겨찾기 해두고, 나중에 한 번에 모아볼 수 있어요.
-            </div>
-          </div>
-          <div class="feature-badge">모아보기</div>
-        </button>
-
-        <button class="feature-card" id="feature-capture" type="button">
-          <div class="feature-main">
-            <div class="feature-title">4. 캡쳐로 답장 만들기</div>
-            <div class="feature-desc">
-              대화 캡쳐 이미지를 업로드하면, 어울리는 답장을 추천해 드려요.
-            </div>
-          </div>
-          <div class="feature-badge">캡쳐 모드</div>
-        </button>
-      </div>
-    </section>
-
-    <!-- ===== 화면 2 : 텍스트로 답장 만들기 ===== -->
-    <section class="card screen" id="screen-make">
-      <button class="back-btn" id="backToHome" type="button">
-        <span class="arrow">←</span><span>홈으로</span>
-      </button>
-
-      <div class="header-row" style="margin-bottom:14px;">
-        <div class="header-icon">
-          <img src="/icon-192.png" alt="아이콘" />
-        </div>
-        <div>
-          <div class="header-title" style="font-size:23px;">AI가 카톡 답장 만들어주기</div>
-          <div class="header-sub">상황에 맞는 톤을 고르고, 상대방 메시지를 붙여 넣어 주세요.</div>
-        </div>
-      </div>
-
-      <div class="top-row">
-        <div class="field-label" style="margin-bottom:0;">대화 상황 선택</div>
-        <div class="tone-chip" id="toneChip">친구 톤</div>
-      </div>
-      <div class="chip-row" style="margin-top:6px;">
-        <button class="tone-btn" data-tone="연애">연애</button>
-        <button class="tone-btn" data-tone="썸">썸</button>
-        <button class="tone-btn" data-tone="친구">친구</button>
-        <button class="tone-btn" data-tone="직장">직장</button>
-        <button class="tone-btn" data-tone="가족">가족</button>
-        <button class="tone-btn" data-tone="기본">기본</button>
-      </div>
-
-      <div style="margin-top:12px;">
-        <div class="field-label">상대방 메시지</div>
-        <textarea id="message" placeholder="상대가 보낸 카톡 내용을 그대로 붙여 넣어 주세요."></textarea>
-      </div>
-
-      <p class="hint">예) “내일 뭐해?” 처럼 실제 대화 내용을 넣을수록 더 자연스러운 답장이 나와요.</p>
-
-      <button class="btn-primary" id="generateBtn" type="button">
-        AI 추천 답장 생성
-      </button>
-      <div class="status-text" id="statusMake"></div>
-    </section>
-
-    <!-- ===== 화면 3 : 결과 ===== -->
-    <section class="card screen" id="screen-result">
-      <button class="back-btn" id="backToMake" type="button">
-        <span class="arrow">←</span><span>답장 수정하기</span>
-      </button>
-
-      <div class="result-header-main">AI 추천 답장</div>
-      <div class="result-header-sub" id="resultTopText">
-        AI 추천 답장이 준비되고 있어요…
-      </div>
-
-      <section class="result-card">
-        <div class="result-title-row">
-          <div>추천 결과</div>
-          <div style="font-size:12px;font-weight:500;">최대 3개까지 추천</div>
-        </div>
-        <div class="result-caption" id="resultStatusText">
-          위험도·센스 점수는 가볍게 참고만 해주세요.
-        </div>
-
-        <div class="original-box">
-          <div class="original-label">상대방 메시지</div>
-          <div class="original-text" id="resultOriginalMsg">-</div>
-        </div>
-
-        <div class="answer-list" id="answers"></div>
+          <button type="submit" class="btn-primary" id="analyze-btn">
+            <span class="btn-glow-dot" id="btn-dot"></span>
+            <span id="btn-text">맞춤 루틴 분석하기</span>
+          </button>
+        </form>
       </section>
 
-      <div class="result-footer">
-        <button class="btn-secondary" id="regenerateBtn" type="button">다시 생성하기</button>
-        <button class="btn-outline" id="homeBtn" type="button">홈으로</button>
-      </div>
-    </section>
-
-    <!-- ===== 화면 4 : 캡쳐로 답장 만들기 ===== -->
-    <section class="card screen" id="screen-capture">
-      <button class="back-btn" id="backToHomeFromCap" type="button">
-        <span class="arrow">←</span><span>홈으로</span>
-      </button>
-
-      <div class="header-row" style="margin-bottom:14px;">
-        <div class="header-icon">
-          <img src="/icon-192.png" alt="아이콘" />
+      <!-- 결과 카드 -->
+      <section class="result-card" id="result-card">
+        <div class="result-content" id="result-content">
+          <p class="result-empty">
+            오른쪽에 오늘 피부 상태를 입력하고<br>
+            <strong>“맞춤 루틴 분석하기”</strong> 버튼을 눌러주세요.<br>
+            AI가 <strong>피부 설명 · 루틴 · 제품 추천</strong>을 만들어 드립니다.
+          </p>
         </div>
-        <div>
-          <div class="header-title" style="font-size:23px;">캡쳐로 답장 만들기</div>
-          <div class="header-sub">대화 캡쳐 이미지를 읽고, 어울리는 답장을 추천해 드려요.</div>
-        </div>
-      </div>
-
-      <div class="field-label">대화 캡쳐 이미지</div>
-      <input id="captureInput" type="file" accept="image/*"
-             style="width:100%;margin-top:4px;margin-bottom:8px;color:#e5e7eb;" />
-
-      <div id="capturePreview"
-           style="margin-top:2px;margin-bottom:10px;font-size:13px;color:#94a3b8;">
-        이미지를 선택하면 이미지 안의 텍스트를 읽어 답장을 만들어 드립니다.
-      </div>
-
-      <p class="hint">※ 현재는 하나의 이미지만 지원합니다. 화면 캡쳐를 그대로 올려 주세요.</p>
-
-      <button class="btn-primary" id="captureBtn" type="button">
-        캡쳐로 AI 답장 생성
-      </button>
-      <div class="status-text" id="statusCapture"></div>
-    </section>
-
-    <!-- ===== 화면 5 : 내 말투 학습 ===== -->
-    <section class="card screen" id="screen-myTone">
-      <button class="back-btn" id="backToHomeFromTone" type="button">
-        <span class="arrow">←</span><span>홈으로</span>
-      </button>
-
-      <div class="header-row" style="margin-bottom:14px;">
-        <div class="header-icon">
-          <img src="/icon-192.png" alt="아이콘" />
-        </div>
-        <div>
-          <div class="header-title" style="font-size:23px;">내 말투 학습시키기</div>
-          <div class="header-sub">
-            내가 실제로 쓰는 말들을 저장해 두면, 답장을 만들 때 참고해서 더 비슷하게 만들어 드려요.
-          </div>
-        </div>
-      </div>
-
-      <div class="field-label">내가 실제로 자주 쓰는 말</div>
-      <textarea id="myToneInput" placeholder="예) ㅋㅋ 그니까 완전 공감이야&#10;예) 오케이~ 내일 보자 :)"></textarea>
-      <p class="hint">한 번에 여러 줄을 적어도 되고, 생각날 때마다 조금씩 추가해도 괜찮아요.</p>
-
-      <button class="btn-primary" id="saveToneBtn" type="button">
-        말투 예시 저장
-      </button>
-      <div class="status-text" id="statusTone"></div>
-
-      <div class="field-label" style="margin-top:14px;">지금까지 저장된 말투 예시</div>
-      <div id="myToneList" class="tone-sample-list"></div>
-    </section>
-
-    <!-- ===== 화면 6 : 즐겨찾기 ===== -->
-    <section class="card screen" id="screen-fav">
-      <button class="back-btn" id="backToHomeFromFav" type="button">
-        <span class="arrow">←</span><span>홈으로</span>
-      </button>
-
-      <div class="header-row" style="margin-bottom:10px;">
-        <div class="header-icon">
-          <img src="/icon-192.png" alt="아이콘" />
-        </div>
-        <div>
-          <div class="header-title" style="font-size:23px;">즐겨찾기 답장 모아보기</div>
-          <div class="header-sub">
-            마음에 들었던 답장을 ★ 즐겨찾기 해두면, 여기에서 한 번에 모아볼 수 있어요.
-          </div>
-        </div>
-      </div>
-
-      <div class="field-label">저장된 즐겨찾기 답장</div>
-      <div id="favList"></div>
-    </section>
-  </main>
-
-  <!-- 공통 바텀 내비 -->
-  <nav class="nav-bar">
-    <div class="nav-inner">
-      <button class="nav-btn active" id="nav-home" type="button">홈</button>
-      <button class="nav-btn" id="nav-reply" type="button">답장 만들기</button>
-      <button class="nav-btn" id="nav-my" type="button">내 말투</button>
-      <button class="nav-btn" id="nav-fav" type="button">즐겨찾기</button>
-    </div>
-  </nav>
+        <p class="footnote">
+          ※ 이 서비스는 의학적 진단이 아닌 <strong>일상 관리용 가이드</strong>입니다. 심한 통증·염증은 반드시 피부과 전문의와 상담하세요.
+        </p>
+      </section>
+    </main>
+  </div>
 
   <script>
-    const scrHome    = document.getElementById("screen-home");
-    const scrMake    = document.getElementById("screen-make");
-    const scrResult  = document.getElementById("screen-result");
-    const scrCapture = document.getElementById("screen-capture");
-    const scrMyTone  = document.getElementById("screen-myTone");
-    const scrFav     = document.getElementById("screen-fav");
+    // ✅ 쿠팡 파트너스용 링크 생성 함수
+    function createCoupangLink(keyword) {
+      const encodedKeyword = encodeURIComponent(keyword);
+      const searchUrl = `https://www.coupang.com/np/search?q=${encodedKeyword}`;
+      const partnerCode = "YOUR_PARTNERS_CODE"; // 👉 여기 네 쿠팡 파트너스 코드로 교체
 
-    const navHome  = document.getElementById("nav-home");
-    const navReply = document.getElementById("nav-reply");
-    const navMy    = document.getElementById("nav-my");
-    const navFav   = document.getElementById("nav-fav");
-
-    const MY_TONE_KEY = "aiCoach_myToneSamples";
-    const FAV_KEY     = "aiCoach_favorites";
-
-    function showScreen(name) {
-      [scrHome, scrMake, scrResult, scrCapture, scrMyTone, scrFav]
-        .forEach(s => s && s.classList.remove("active"));
-
-      if (name === "home" && scrHome) scrHome.classList.add("active");
-      else if (name === "make" && scrMake) scrMake.classList.add("active");
-      else if (name === "capture" && scrCapture) scrCapture.classList.add("active");
-      else if (name === "myTone" && scrMyTone) scrMyTone.classList.add("active");
-      else if (name === "fav" && scrFav) {
-        scrFav.classList.add("active");
-        renderFavoritesScreen();
-      } else if (scrResult) {
-        scrResult.classList.add("active");
-      }
-
-      [navHome, navReply, navMy, navFav].forEach(b => b && b.classList.remove("active"));
-      if (name === "home") navHome.classList.add("active");
-      else if (name === "make" || name === "capture" || name === "result") navReply.classList.add("active");
-      else if (name === "myTone") navMy.classList.add("active");
-      else if (name === "fav") navFav.classList.add("active");
+      return `https://link.coupang.com/a/${partnerCode}?targetUrl=${encodeURIComponent(searchUrl)}`;
     }
 
-    // 홈 카드
-    document.getElementById("feature-reply")
-      .addEventListener("click", () => showScreen("make"));
-    document.getElementById("feature-my-tone")
-      .addEventListener("click", () => { renderMyToneScreen(); showScreen("myTone"); });
-    document.getElementById("feature-favorites")
-      .addEventListener("click", () => showScreen("fav"));
-    document.getElementById("feature-capture")
-      .addEventListener("click", () => showScreen("capture"));
+    // ✅ 피부 고민에 따라 기본 추천 제품 세트
+    function getProductRecommendations(concern, budget) {
+      const base = [];
 
-    // 상단 뒤로가기
-    document.getElementById("backToHome")
-      .addEventListener("click", () => showScreen("home"));
-    document.getElementById("backToMake")
-      .addEventListener("click", () => showScreen("make"));
-    document.getElementById("backToHomeFromCap")
-      .addEventListener("click", () => showScreen("home"));
-    document.getElementById("backToHomeFromTone")
-      .addEventListener("click", () => showScreen("home"));
-    document.getElementById("backToHomeFromFav")
-      .addEventListener("click", () => showScreen("home"));
+      if (concern === "여드름") {
+        base.push(
+          {
+            name: "BHA 토너 (살리실산)",
+            desc: "모공 속 각질 정리 + 막힌 피지 케어용 토너",
+            tag: "각질·피지 케어"
+          },
+          {
+            name: "논코메도제닉 수분크림",
+            desc: "유분은 적고 수분만 채워주는 가벼운 젤 크림",
+            tag: "여드름 피부용"
+          },
+          {
+            name: "스팟 패치",
+            desc: "짜지 않고 붙여서 진정시키는 국소 패치",
+            tag: "응급 트러블"
+          }
+        );
+      } else if (concern === "모공피부결") {
+        base.push(
+          {
+            name: "AHA 필링 토너",
+            desc: "거친 피부결과 묵은 각질을 부드럽게 정리",
+            tag: "피부결 개선"
+          },
+          {
+            name: "모공 수축 토너 / 에센스",
+            desc: "모공 주변 피지를 정리하고 탄력감 부여",
+            tag: "모공 케어"
+          },
+          {
+            name: "가벼운 젤 크림",
+            desc: "번들거림 적은 데일리 보습용",
+            tag: "지·복합성 추천"
+          }
+        );
+      } else if (concern === "홍조민감") {
+        base.push(
+          {
+            name: "센텔라(시카) 진정 토너",
+            desc: "열감과 붉은기를 진정시키는 토너",
+            tag: "진정 케어"
+          },
+          {
+            name: "무향·저자극 수분크림",
+            desc: "민감 피부용 최소 성분 크림",
+            tag: "민감성 전용"
+          },
+          {
+            name: "물리적 스크럽 제외 클렌저",
+            desc: "자극 최소화 약산성 젤/폼",
+            tag: "약산성 클렌저"
+          }
+        );
+      } else if (concern === "잡티색소") {
+        base.push(
+          {
+            name: "비타민C 세럼",
+            desc: "톤업 + 잡티·기미 완화에 도움",
+            tag: "톤업 케어"
+          },
+          {
+            name: "나이아신아마이드 에센스",
+            desc: "피부톤 균일화 + 피지 조절 서포트",
+            tag: "미백 성분"
+          },
+          {
+            name: "고보습 선크림",
+            desc: "자외선 차단이 색소 관리의 핵심",
+            tag: "자외선 차단"
+          }
+        );
+      } else if (concern === "주름탄력") {
+        base.push(
+          {
+            name: "레티놀 / 레티날 세럼",
+            desc: "주름·탄력 관리에 대표적인 성분 (저농도부터 시작)",
+            tag: "탄력·안티에이징"
+          },
+          {
+            name: "펩타이드 크림",
+            desc: "탄력감과 보습을 동시에 챙기는 크림",
+            tag: "탄력 크림"
+          },
+          {
+            name: "수분 진정 마스크",
+            desc: "주 1~2회 집중 보습 케어",
+            tag: "집중 케어"
+          }
+        );
+      } else if (concern === "건조각질") {
+        base.push(
+          {
+            name: "저자극 수분 토너",
+            desc: "레이어링하기 좋은 워터/에센스 토너",
+            tag: "수분 레이어링"
+          },
+          {
+            name: "세라마이드·시어버터 크림",
+            desc: "보습막을 만들어주는 든든한 크림",
+            tag: "장벽 강화"
+          },
+          {
+            name: "밤 타입 슬리핑팩",
+            desc: "밤 사이 수분 증발을 막아주는 오버나이트 팩",
+            tag: "나이트 케어"
+          }
+        );
+      }
 
-    // 하단 내비
-    navHome.addEventListener("click", () => showScreen("home"));
-    navReply.addEventListener("click", () => showScreen("make"));
-    navMy.addEventListener("click", () => { renderMyToneScreen(); showScreen("myTone"); });
-    navFav.addEventListener("click", () => showScreen("fav"));
+      // 예산에 맞춰 문구만 살짝 다르게 (실제 상품 선택은 쿠팡 검색으로 감당)
+      return base.map(p => ({
+        ...p,
+        meta:
+          budget === "가성비"
+            ? "가성비 괜찮은 제품 위주로 쿠팡에서 골라보세요."
+            : budget === "중간가격"
+            ? "리뷰 좋은 중간 가격대 제품을 위주로 살펴보면 좋아요."
+            : "성분·제형이 마음에 들면 프리미엄 라인도 한두 개 섞어도 괜찮습니다."
+      }));
+    }
 
-    // ===== 톤 선택 및 상태 =====
-    const toneButtons = Array.from(document.querySelectorAll(".tone-btn"));
-    const toneChip    = document.getElementById("toneChip");
-    const msgEl       = document.getElementById("message");
-    const generateBtn = document.getElementById("generateBtn");
-    const statusMake  = document.getElementById("statusMake");
+    // ✅ 피부 타입/고민 → 상태 설명 & 루틴 생성
+    function buildRoutine({ skinType, concern, age, notes }) {
+      const summaryParts = [];
 
-    let selectedTone = "친구";
-    let lastMessage  = "";
-    let currentMode  = "text"; // text | capture
+      // 피부 타입 설명
+      if (skinType === "건성") {
+        summaryParts.push("피부가 전반적으로 땅기거나, 세안 후 바로 건조해지는 경향이 있는 건성 타입으로 보입니다.");
+      } else if (skinType === "지성") {
+        summaryParts.push("T존 번들거림이 두드러지는 지성 타입으로, 피지 관리와 가벼운 보습의 밸런스가 중요합니다.");
+      } else if (skinType === "복합성") {
+        summaryParts.push("부분적으로는 건조, 부분적으로는 번들거리는 복합성 타입으로, 부위별로 다른 케어가 도움이 됩니다.");
+      } else if (skinType === "민감성") {
+        summaryParts.push("자극에 예민하게 반응하는 민감성 피부일 가능성이 있어, 성분 수가 단순하고 저자극인 제품 위주로 루틴을 구성하는 것이 좋습니다.");
+      } else if (skinType === "중성") {
+        summaryParts.push("유수분 밸런스가 비교적 안정적인 중성 피부로, 기본 루틴만 잘 유지해도 컨디션 유지에 유리합니다.");
+      } else {
+        summaryParts.push("입력된 정보를 기준으로 피부 타입을 추정해 기본 루틴을 제안할게요. 실제 피부 반응을 보면서 천천히 조정해 주세요.");
+      }
 
-    toneButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        toneButtons.forEach(b => b.classList.remove("selected"));
-        btn.classList.add("selected");
-        selectedTone = btn.dataset.tone || "친구";
-        if (toneChip) toneChip.textContent = selectedTone + " 톤";
-        statusMake.textContent = "";
-      });
-    });
-    const friendBtn = toneButtons.find(b => b.dataset.tone === "친구");
-    if (friendBtn) friendBtn.classList.add("selected");
+      // 고민 설명
+      let concernText = "";
+      if (concern === "여드름") {
+        concernText = "현재 여드름·트러블이 가장 큰 고민이라면, '자극을 줄이면서 막힌 피지와 염증을 관리하는 것'이 핵심입니다.";
+      } else if (concern === "모공피부결") {
+        concernText = "모공·피부결이 고민이라면, 과한 피지와 각질을 조절하면서 수분은 유지하는 루틴이 중요합니다.";
+      } else if (concern === "홍조민감") {
+        concernText = "홍조·민감이 주 고민이라면, 열감·자극을 유발하는 성분을 줄이고 진정·보습 위주로 단순한 루틴을 가져가는 것이 좋습니다.";
+      } else if (concern === "잡티색소") {
+        concernText = "잡티·색소침착이 걱정된다면, 자외선 차단을 최우선으로 하면서 미백·톤업 성분을 꾸준히 사용하는 것이 핵심입니다.";
+      } else if (concern === "주름탄력") {
+        concernText = "주름·탄력 관리가 목표라면, 레티놀/레티날·펩타이드·보습 성분을 꾸준히 사용하면서 자외선 차단을 병행해야 합니다.";
+      } else if (concern === "건조각질") {
+        concernText = "건조·각질이 심하다면, 세안부터 너무 자극적이지 않게 조절하고, 수분·유분 레이어링으로 장벽을 회복하는 것이 좋습니다.";
+      }
+      summaryParts.push(concernText);
 
-    // ===== 결과 화면 요소 =====
-    const resultTopText    = document.getElementById("resultTopText");
-    const resultStatusText = document.getElementById("resultStatusText");
-    const resultOriginal   = document.getElementById("resultOriginalMsg");
-    const answersEl        = document.getElementById("answers");
-    const regenerateBtn    = document.getElementById("regenerateBtn");
-    const homeBtn          = document.getElementById("homeBtn");
+      // 나이대 설명
+      if (age === "10대") {
+        summaryParts.push("10대라면 과한 성인용 안티에이징 제품보다는, 자극 적은 기본 케어 + 여드름·피지 관리에 집중하는 걸 권장합니다.");
+      } else if (age === "20대") {
+        summaryParts.push("20대에는 피부장벽·수분 관리와 함께, 여드름·모공·초기 색소·미세 주름에 미리 대비해 두면 좋습니다.");
+      } else if (age === "30대") {
+        summaryParts.push("30대부터는 수분·탄력 저하가 서서히 시작되니, 보습·탄력·미백을 함께 관리하는 루틴이 도움이 됩니다.");
+      } else if (age === "40대 이상") {
+        summaryParts.push("40대 이후에는 탄력·주름·색소를 동시에 관리해야 하는 경우가 많아, 밤에는 조금 더 영양감 있는 루틴을 활용해도 좋습니다.");
+      }
 
-    function parseLine(line) {
-      const parts = line.split("||").map(p => p.trim());
+      const morningRoutine = [];
+      const nightRoutine = [];
+      const specialCare = [];
+
+      // 아침 루틴 (기본)
+      morningRoutine.push("(선택) 미온수 세안 또는 약산성 폼클렌저로 가볍게 세안");
+      morningRoutine.push("진정·수분 토너 또는 에센스 1~3회 레이어링");
+      if (concern === "잡티색소" || concern === "주름탄력") {
+        morningRoutine.push("비타민C 또는 나이아신아마이드 세럼 (자극 없으면 매일 사용)");
+      }
+      morningRoutine.push("피부 타입에 맞는 수분크림 또는 젤 크림");
+      morningRoutine.push("SPF 30~50+ 선크림 (외출 20~30분 전 충분한 양 도포)");
+
+      // 밤 루틴 (기본)
+      nightRoutine.push("메이크업·선크림 사용 시: 클렌징 오일/밤 + 약산성 폼으로 2중 세안");
+      nightRoutine.push("진정·수분 토너로 피부 pH·수분 밸런스 정리");
+      if (concern === "여드름") {
+        nightRoutine.push("BHA/AHA 토너 또는 여드름 케어 세럼 (주 2~3회 → 적응되면 횟수 조절)");
+      } else if (concern === "모공피부결") {
+        nightRoutine.push("피부결 개선용 토너/세럼 (AHA·PHA·나이아신아마이드 등, 자극 없는 선에서)");
+      } else if (concern === "홍조민감") {
+        nightRoutine.push("센텔라·알란토인·판테놀 등 진정 성분 위주의 에센스");
+      } else if (concern === "주름탄력") {
+        nightRoutine.push("레티놀/레티날 세럼 (주 2회 정도 소량 → 적응 후 횟수·양 서서히 증가)");
+      } else if (concern === "건조각질") {
+        nightRoutine.push("세라마이드·콜레스테롤·지질 성분이 들어간 장벽 강화 크림 넉넉히 바르기");
+      }
+      nightRoutine.push("피부 상태에 따라 슬리핑팩 또는 오일 한두 방울로 마무리");
+
+      // 스페셜 케어
+      if (concern === "여드름") {
+        specialCare.push("큰 염증성 여드름은 짜지 말고 스팟 패치·연고 위주로 관리");
+        specialCare.push("새로 바르는 성분은 항상 얼굴 전체가 아닌, 턱·볼 등 일부 부위에 먼저 테스트 후 전체 사용");
+      } else if (concern === "모공피부결") {
+        specialCare.push("주 1회 정도, 각질 제거 제품(AHA/BHA)을 사용하는 날은 다른 강한 세럼은 쉬어주는 것이 좋습니다.");
+      } else if (concern === "홍조민감") {
+        specialCare.push("강한 필링, 스크럽, 뜨거운 물 세안, 사우나는 가능하면 피하는 것이 좋습니다.");
+      } else if (concern === "잡티색소") {
+        specialCare.push("자외선이 강한 날에는 선크림 덧바르기 + 모자·양산 사용까지 함께 해주면 색소 관리에 큰 도움이 됩니다.");
+      } else if (concern === "주름탄력") {
+        specialCare.push("레티놀 사용 날에는 필링·미백·각질 제품 사용을 줄이고, 진정·보습에 집중하세요.");
+      } else if (concern === "건조각질") {
+        specialCare.push("샤워 직후 3분 이내에 얼굴·몸에 보습제를 넉넉하게 바르는 습관을 들이면 도움이 큽니다.");
+      }
+
+      if (notes && notes.trim().length > 0) {
+        summaryParts.push(`추가로 적어주신 내용(“${notes.slice(0, 40)}...”)도 반영해서, 너무 과한 루틴보다는 현실적으로 꾸준히 가능한 방향으로 제안했습니다.`);
+      }
+
       return {
-        text: parts[0] || "",
-        risk: parts[1] || "",
-        sense: parts[2] || "",
-        comment: parts[3] || ""
+        summary: summaryParts.join(" "),
+        morningRoutine,
+        nightRoutine,
+        specialCare
       };
     }
 
-    function showSkeleton() {
-      answersEl.innerHTML = "";
-      for (let i = 0; i < 3; i++) {
-        const sk = document.createElement("div");
-        sk.className = "skeleton-item";
-        sk.innerHTML = `
-          <div class="skeleton-line long"></div>
-          <div class="skeleton-line mid"></div>
-          <div class="skeleton-line short"></div>
-        `;
-        answersEl.appendChild(sk);
+    // ✅ DOM 연결 & 이벤트
+    const form = document.getElementById("skin-form");
+    const analyzeBtn = document.getElementById("analyze-btn");
+    const btnText = document.getElementById("btn-text");
+    const btnDot = document.getElementById("btn-dot");
+    const resultContent = document.getElementById("result-content");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      runAnalysis();
+    });
+
+    function setLoading(isLoading) {
+      if (isLoading) {
+        analyzeBtn.disabled = true;
+        btnText.textContent = "분석 중...";
+        btnDot.classList.add("hidden");
+
+        // 로딩 스피너 표시
+        if (!analyzeBtn.querySelector(".loading-spinner")) {
+          const spinner = document.createElement("div");
+          spinner.className = "loading-spinner";
+          spinner.id = "loading-spinner";
+          analyzeBtn.insertBefore(spinner, analyzeBtn.firstChild);
+        }
+      } else {
+        analyzeBtn.disabled = false;
+        btnText.textContent = "맞춤 루틴 분석하기";
+        const spinner = document.getElementById("loading-spinner");
+        if (spinner) spinner.remove();
       }
     }
 
-    // ===== localStorage: 말투 / 즐겨찾기 =====
-    function loadMyToneSamples() {
-      try {
-        const raw = localStorage.getItem(MY_TONE_KEY);
-        if (!raw) return [];
-        const arr = JSON.parse(raw);
-        return Array.isArray(arr) ? arr : [];
-      } catch {
-        return [];
-      }
-    }
+    function runAnalysis() {
+      const skinType = document.getElementById("skin-type").value;
+      const mainConcern = document.getElementById("main-concern").value;
+      const ageRange = document.getElementById("age-range").value;
+      const budgetRange = document.getElementById("budget-range").value;
+      const extraNotes = document.getElementById("extra-notes").value.trim();
 
-    function saveMyToneSamples(list) {
-      localStorage.setItem(MY_TONE_KEY, JSON.stringify(list));
-    }
+      setLoading(true);
 
-    function loadFavorites() {
-      try {
-        const raw = localStorage.getItem(FAV_KEY);
-        if (!raw) return [];
-        const arr = JSON.parse(raw);
-        return Array.isArray(arr) ? arr : [];
-      } catch {
-        return [];
-      }
-    }
-
-    function saveFavorites(list) {
-      localStorage.setItem(FAV_KEY, JSON.stringify(list));
-    }
-
-    function renderMyToneScreen() {
-      const myToneListEl = document.getElementById("myToneList");
-      const samples = loadMyToneSamples();
-      myToneListEl.innerHTML = "";
-      if (samples.length === 0) {
-        myToneListEl.innerHTML = '<div class="fav-empty">아직 저장된 말투 예시가 없습니다.</div>';
-        return;
-      }
-      samples.forEach((text, idx) => {
-        const item = document.createElement("div");
-        item.className = "tone-sample-item";
-        item.innerHTML = `
-          <div class="tone-sample-text">${text}</div>
-          <button class="tone-sample-del" data-idx="${idx}" type="button">삭제</button>
-        `;
-        const delBtn = item.querySelector(".tone-sample-del");
-        delBtn.addEventListener("click", () => {
-          const list = loadMyToneSamples();
-          list.splice(idx, 1);
-          saveMyToneSamples(list);
-          renderMyToneScreen();
+      // 로컬에서 바로 분석하는 버전 (백엔드 없이도 동작하는 MVP)
+      setTimeout(() => {
+        const routine = buildRoutine({
+          skinType,
+          concern: mainConcern,
+          age: ageRange,
+          notes: extraNotes
         });
-        myToneListEl.appendChild(item);
-      });
+
+        const products = getProductRecommendations(mainConcern, budgetRange);
+
+        renderResult({ routine, products, budget: budgetRange });
+        setLoading(false);
+      }, 350);
     }
 
-    function renderFavoritesScreen() {
-      const favListEl = document.getElementById("favList");
-      const favs = loadFavorites();
-      favListEl.innerHTML = "";
-      if (favs.length === 0) {
-        favListEl.innerHTML = '<div class="fav-empty">아직 즐겨찾기한 답장이 없습니다. 답장 결과 화면에서 "즐겨찾기" 버튼을 눌러보세요.</div>';
-        return;
-      }
-      favs.forEach((f, idx) => {
-        const item = document.createElement("div");
-          item.className = "fav-item";
-          item.innerHTML = `
-            <div class="fav-top-row">
-              <div class="fav-text">${f.text}</div>
-              <div class="fav-meta">${f.tone || "톤 정보 없음"} · ${f.source === "capture" ? "캡쳐" : "텍스트"}</div>
-            </div>
-            <div class="chips">
-              ${f.risk ? `<span class="chip chip-risk">${f.risk}</span>` : ""}
-              ${f.sense ? `<span class="chip chip-sense">${f.sense}</span>` : ""}
-            </div>
-            ${f.comment ? `<div class="comment-text">${f.comment}</div>` : ""}
-            <div class="fav-actions">
-              <button class="btn-mini btn-fav-copy" type="button">복사</button>
-              <button class="btn-mini btn-fav-del" data-idx="${idx}" type="button">삭제</button>
+    function renderResult({ routine, products, budget }) {
+      resultContent.innerHTML = "";
+
+      const wrap = document.createElement("div");
+      wrap.className = "result-inner";
+
+      // 1) 피부 상태 요약
+      const summaryBlock = document.createElement("div");
+      summaryBlock.className = "result-block";
+      summaryBlock.innerHTML = `
+        <div class="result-section-title">피부 상태 요약</div>
+        <div style="font-size:12px; line-height:1.6; color:rgba(226,232,240,0.96);">
+          ${routine.summary}
+        </div>
+      `;
+
+      // 2) 루틴
+      const routineBlock = document.createElement("div");
+      routineBlock.className = "result-block";
+      const morningList = routine.morningRoutine
+        .map(item => `
+          <li>
+            <span class="routine-bullet"></span>
+            <span>${item}</span>
+          </li>
+        `)
+        .join("");
+      const nightList = routine.nightRoutine
+        .map(item => `
+          <li>
+            <span class="routine-bullet"></span>
+            <span>${item}</span>
+          </li>
+        `)
+        .join("");
+
+      const specialList = routine.specialCare
+        .map(item => `
+          <li>
+            <span class="routine-bullet"></span>
+            <span>${item}</span>
+          </li>
+        `)
+        .join("");
+
+      routineBlock.innerHTML = `
+        <div class="result-section-title">추천 루틴</div>
+        <div style="display:grid; gap:8px; font-size:12px;">
+          <div>
+            <span class="badge-soft">
+              <span class="badge-soft-dot"></span>
+              아침 루틴
+            </span>
+            <ul class="routine-list">${morningList}</ul>
+          </div>
+          <div>
+            <span class="badge-soft">
+              <span class="badge-soft-dot"></span>
+              저녁 루틴
+            </span>
+            <ul class="routine-list">${nightList}</ul>
+          </div>
+          ${
+            specialList
+              ? `<div>
+                  <span class="badge-soft">
+                    <span class="badge-soft-dot"></span>
+                    주 1~2회 스페셜 케어 팁
+                  </span>
+                  <ul class="routine-list">${specialList}</ul>
+                </div>`
+              : ""
+          }
+        </div>
+      `;
+
+      // 3) 제품 추천 + 쿠팡 링크
+      const productBlock = document.createElement("div");
+      productBlock.className = "result-block";
+
+      const productCards = products
+        .map((p) => {
+          const link = createCoupangLink(p.name);
+          return `
+            <div class="product-card">
+              <div class="product-main">
+                <div class="product-name">${p.name}</div>
+                <div class="product-desc">${p.desc}</div>
+                <div class="product-meta">${p.meta}</div>
+              </div>
+              <div class="product-action">
+                <div class="product-tag">${p.tag}</div>
+                <a href="${link}" target="_blank" rel="noopener noreferrer" class="product-link-btn">
+                  <span class="icon">🛒</span>
+                  <span>쿠팡에서 보기</span>
+                </a>
+              </div>
             </div>
           `;
-        const copyBtn = item.querySelector(".btn-fav-copy");
-        const delBtn  = item.querySelector(".btn-fav-del");
-        copyBtn.addEventListener("click", () => {
-          navigator.clipboard.writeText(f.text).then(() => {
-            copyBtn.textContent = "복사됨";
-            setTimeout(() => (copyBtn.textContent = "복사"), 1200);
-          });
-        });
-        delBtn.addEventListener("click", () => {
-          const list = loadFavorites();
-          list.splice(idx, 1);
-          saveFavorites(list);
-          renderFavoritesScreen();
-        });
-        favListEl.appendChild(item);
-      });
+        })
+        .join("");
+
+      const budgetText =
+        budget === "가성비"
+          ? "가성비 좋은 제품 위주로 쿠팡 검색 링크를 연결해 두었어요."
+          : budget === "중간가격"
+          ? "리뷰·성분·가격을 함께 고려해서 중간 가격대 제품을 골라보세요."
+          : "성분·리뷰를 잘 살펴보고, 필요하다면 프리미엄 라인도 테스트해 보세요.";
+
+      productBlock.innerHTML = `
+        <div class="result-section-title">추천 성분 &amp; 제품 (쿠팡 연동)</div>
+        <div style="font-size:12px; color:rgba(226,232,240,0.96); margin-bottom:4px;">
+          각 카드의 버튼을 누르면 해당 키워드로 쿠팡 검색이 열립니다. 본인 예산과 선호 브랜드에 맞춰 골라 사용해 주세요.
+        </div>
+        <div class="product-grid">
+          ${productCards}
+        </div>
+        <div style="margin-top:4px; font-size:11px; color:rgba(148,163,184,0.95);">
+          ▸ ${budgetText}
+        </div>
+      `;
+
+      wrap.appendChild(summaryBlock);
+      wrap.appendChild(routineBlock);
+      wrap.appendChild(productBlock);
+
+      resultContent.appendChild(wrap);
     }
-
-    function addFavorite(entry) {
-      const favs = loadFavorites();
-      if (!favs.some(f => f.text === entry.text)) {
-        favs.unshift(entry);
-        saveFavorites(favs);
-      }
-    }
-
-    function removeFavoriteText(text) {
-      const favs = loadFavorites();
-      const next = favs.filter(f => f.text !== text);
-      saveFavorites(next);
-    }
-
-    // ===== 결과 렌더링 =====
-    function renderReplies(replyText) {
-      const lines = replyText
-        .split("\n")
-        .map(l => l.trim())
-        .filter(Boolean)
-        .slice(0, 3);
-
-      answersEl.innerHTML = "";
-
-      if (lines.length === 0) {
-        resultStatusText.textContent = "생성된 답장이 없습니다. 내용을 조금 바꿔보세요.";
-        return;
-      }
-
-      resultTopText.textContent    = "AI 추천 답장이 준비됐어요!";
-      resultStatusText.textContent = "마음에 드는 답장을 골라서 복사해 사용해 보세요.";
-
-      const currentFavs = loadFavorites();
-
-      lines.forEach((line, idx) => {
-        const { text: rawText, risk, sense, comment } = parseLine(line);
-        const answerText = rawText.replace(/^\d+\.\s*/, "");
-
-        const wrapper = document.createElement("div");
-        wrapper.className = "answer-item";
-        wrapper.innerHTML = `
-          <div class="answer-top-row">
-            <div class="answer-text">${idx + 1}. ${answerText}</div>
-            <button class="favorite-btn" type="button">즐겨찾기</button>
-            <button class="copy-btn" type="button">복사</button>
-          </div>
-          <div class="chips">
-            ${risk  ? `<span class="chip chip-risk">${risk}</span>`   : ""}
-            ${sense ? `<span class="chip chip-sense">${sense}</span>` : ""}
-          </div>
-          ${comment ? `<div class="comment-text">${comment}</div>` : ""}
-        `;
-
-        const favBtn  = wrapper.querySelector(".favorite-btn");
-        const copyBtn = wrapper.querySelector(".copy-btn");
-
-        const alreadyFav = currentFavs.some(f => f.text === answerText);
-        if (alreadyFav) {
-          favBtn.classList.add("active");
-          favBtn.textContent = "즐겨찾기 해제";
-        }
-
-        favBtn.addEventListener("click", () => {
-          const isActive = favBtn.classList.toggle("active");
-          if (isActive) {
-            favBtn.textContent = "즐겨찾기 해제";
-            addFavorite({
-              text: answerText,
-              risk,
-              sense,
-              comment,
-              tone: selectedTone,
-              source: currentMode,
-              createdAt: Date.now()
-            });
-          } else {
-            favBtn.textContent = "즐겨찾기";
-            removeFavoriteText(answerText);
-          }
-        });
-
-        copyBtn.addEventListener("click", () => {
-          navigator.clipboard.writeText(answerText).then(() => {
-            copyBtn.textContent = "복사됨";
-            setTimeout(() => (copyBtn.textContent = "복사"), 1200);
-          });
-        });
-
-        answersEl.appendChild(wrapper);
-      });
-    }
-
-    // ===== /reply 호출 : 단순 JSON 기반 =====
-    async function callReplyAPI(text, tone) {
-      try {
-        const res  = await fetch("/reply", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text, tone })
-        });
-
-        if (!res.ok) {
-          throw new Error("reply 실패");
-        }
-
-        const data = await res.json();
-        const replyText = data.reply || "";
-        renderReplies(replyText);
-      } catch (err) {
-        console.error(err);
-        resultStatusText.textContent = "답장 생성 중 오류가 발생했습니다.";
-        answersEl.innerHTML = "";
-      }
-    }
-
-    // ===== 텍스트 답장 생성 플로우 =====
-    function startGenerateFlow() {
-      const text = msgEl.value.trim();
-      if (!text) {
-        statusMake.textContent = "먼저 상대방 메시지를 입력해 주세요.";
-        return;
-      }
-
-      currentMode = "text";
-      lastMessage = text;
-      if (toneChip) toneChip.textContent = selectedTone + " 톤";
-
-      resultTopText.textContent    = "AI 추천 답장이 준비되는 중이에요...";
-      resultStatusText.textContent = "AI가 답장을 만드는 중이에요.";
-      resultOriginal.textContent   = text;
-
-      showScreen("result");
-      showSkeleton();
-      callReplyAPI(text, selectedTone);
-    }
-
-    generateBtn.addEventListener("click", startGenerateFlow);
-
-    // ===== 캡쳐 → /ocr → /reply =====
-    const captureInput  = document.getElementById("captureInput");
-    const captureBtn    = document.getElementById("captureBtn");
-    const statusCapture = document.getElementById("statusCapture");
-
-    async function startCaptureFlow() {
-      const file = captureInput && captureInput.files && captureInput.files[0];
-      if (!file) {
-        statusCapture.textContent = "먼저 캡쳐 이미지를 선택해 주세요.";
-        return;
-      }
-
-      currentMode = "capture";
-      statusCapture.textContent = "";
-
-      resultTopText.textContent    = "AI가 캡쳐를 분석하고 있어요...";
-      resultStatusText.textContent = "이미지에서 텍스트를 읽어 답장을 만드는 중이에요.";
-      resultOriginal.textContent   = "대화 캡쳐 이미지 기반으로 생성된 답장입니다.";
-
-      showScreen("result");
-      showSkeleton();
-
-      try {
-        const fd = new FormData();
-        fd.append("image", file);
-
-        // 1단계: OCR
-        const ocrRes = await fetch("/ocr", {
-          method: "POST",
-          body: fd
-        });
-        if (!ocrRes.ok) throw new Error("ocr 실패");
-        const ocrData = await ocrRes.json();
-        const ocrText = (ocrData.text || "").trim();
-
-        if (!ocrText) {
-          resultStatusText.textContent = "이미지에서 텍스트를 읽지 못했습니다. 다시 시도해 주세요.";
-          answersEl.innerHTML = "";
-          return;
-        }
-
-        // 2단계: 읽은 텍스트로 답장 생성
-        lastMessage = ocrText;
-        await callReplyAPI(ocrText, selectedTone);
-      } catch (err) {
-        console.error(err);
-        resultStatusText.textContent = "캡쳐 기반 답장 생성 중 오류가 발생했습니다.";
-        answersEl.innerHTML = "";
-      }
-    }
-
-    captureBtn.addEventListener("click", startCaptureFlow);
-
-    // ===== 내 말투 저장 =====
-    const myToneInput = document.getElementById("myToneInput");
-    const saveToneBtn = document.getElementById("saveToneBtn");
-    const statusTone  = document.getElementById("statusTone");
-
-    saveToneBtn.addEventListener("click", () => {
-      const text = (myToneInput.value || "").trim();
-      if (!text) {
-        statusTone.textContent = "먼저 말투 예시를 입력해 주세요.";
-        return;
-      }
-      const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-      if (lines.length === 0) {
-        statusTone.textContent = "저장할 내용이 없습니다.";
-        return;
-      }
-      const current = loadMyToneSamples();
-      lines.forEach(l => {
-        if (!current.includes(l)) current.push(l);
-      });
-      saveMyToneSamples(current);
-      myToneInput.value = "";
-      statusTone.textContent = "말투 예시가 저장되었습니다.";
-      renderMyToneScreen();
-      setTimeout(() => (statusTone.textContent = ""), 1500);
-    });
-
-    // ===== 다시 생성 / 홈 =====
-    regenerateBtn.addEventListener("click", () => {
-      if (!lastMessage) return;
-      resultTopText.textContent    = "AI 추천 답장이 준비되는 중이에요...";
-      resultStatusText.textContent = "AI가 답장을 다시 만드는 중이에요.";
-      showSkeleton();
-      callReplyAPI(lastMessage, selectedTone);
-    });
-
-    homeBtn.addEventListener("click", () => {
-      msgEl.value = "";
-      statusMake.textContent = "";
-      answersEl.innerHTML = "";
-      showScreen("home");
-    });
   </script>
 </body>
 </html>
