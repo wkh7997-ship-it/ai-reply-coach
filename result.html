@@ -3,34 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI 피부 코치 - 진단 결과</title>
+  <title>AI 피부 코치 - 분석 결과</title>
   <style>
     :root {
-      --primary: #c7b3ff;
-      --primary-strong: #8f7bff;
-      --bg-deep: #05040b;
-      --bg-top: #111322;
-      --glass: rgba(8, 10, 24, 0.92);
+      --primary: #9b8bff;
+      --primary-strong: #5c6bff;
+      --bg-deep: #050616;
+      --bg-top: #11152b;
+      --glass: rgba(10, 14, 32, 0.92);
       --text-main: #f9fafb;
       --text-sub: #cbd5f5;
-      --text-muted: #9ca3c9;
-      --border-soft: rgba(148, 163, 255, 0.26);
+      --border-soft: rgba(148, 163, 255, 0.35);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
+      font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
       min-height: 100vh;
       background:
-        radial-gradient(circle at top, rgba(129,140,248,0.32) 0, transparent 52%),
-        radial-gradient(circle at bottom, rgba(15,23,42,0.8) 0, transparent 58%),
+        radial-gradient(circle at top, rgba(88,101,242,0.3) 0, transparent 55%),
+        radial-gradient(circle at bottom, rgba(59,130,246,0.28) 0, transparent 60%),
         linear-gradient(160deg, var(--bg-top), var(--bg-deep));
       color: var(--text-main);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 18px 16px;
+      padding: 20px 16px;
     }
 
     .shell { width: 100%; max-width: 440px; }
@@ -38,274 +37,161 @@
     .card {
       background: var(--glass);
       border-radius: 26px;
-      padding: 20px 16px 20px;
+      padding: 22px 18px;
       border: 1px solid var(--border-soft);
       box-shadow:
-        0 20px 45px rgba(0,0,0,0.75),
+        0 20px 45px rgba(0,0,0,0.85),
         0 0 0 1px rgba(15,23,42,0.7);
-      backdrop-filter: blur(18px);
+      backdrop-filter: blur(16px);
       position: relative;
       overflow: hidden;
     }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 1px;
-      border-radius: 24px;
-      border: 1px solid rgba(248,250,252,0.02);
-      pointer-events: none;
-    }
-
     .top-accent {
       position: absolute;
-      left: 12%;
-      right: 12%;
-      top: 10px;
+      left: 14%; right: 14%; top: 10px;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(244,229,200,0.75), transparent);
+      background: linear-gradient(90deg, transparent, rgba(148,163,255,0.85), transparent);
     }
 
-    .header {
-      margin-top: 18px;
-      margin-bottom: 14px;
+    .header-title {
       text-align: center;
-    }
-
-    .title {
       font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: 0.04em;
-      margin-bottom: 6px;
-    }
-    .subtitle {
-      font-size: 0.86rem;
-      color: var(--text-sub);
-      line-height: 1.4;
-    }
-
-    .preview-wrapper {
-      margin-top: 10px;
-      border-radius: 20px;
-      background:
-        radial-gradient(circle at top left, rgba(148,163,255,0.18), transparent 55%),
-        rgba(10,16,36,0.96);
-      border: 1px solid rgba(148,163,255,0.45);
-      padding: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .preview-inner {
-      width: 100%;
-      max-height: 240px;
-      border-radius: 16px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #020617;
-    }
-
-    .preview-inner img {
-      width: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .badge-line {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .badge {
-      padding: 4px 9px;
-      font-size: 0.72rem;
-      border-radius: 999px;
-      color: #e0e7ff;
-      background: rgba(15,23,42,0.95);
-      border: 1px solid rgba(148,163,255,0.65);
-    }
-
-    .section-box {
+      font-weight: 750;
       margin-top: 16px;
-      padding: 14px 14px 12px;
-      border-radius: 18px;
-      background: rgba(10,16,40,0.92);
-      border: 1px solid rgba(129,140,248,0.55);
+      margin-bottom: 12px;
     }
 
-    .section-title {
+    .loading-text {
+      text-align: center;
       font-size: 1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 8px;
-    }
-
-    .section-body {
-      font-size: 0.9rem;
-      white-space: pre-line;
       color: var(--text-sub);
-      line-height: 1.55;
+      margin-top: 12px;
+      margin-bottom: 16px;
+      line-height: 1.5;
     }
 
-    .btn-wrap { margin-top: 16px; }
+    /* 로딩 스피너 */
+    .spinner {
+      width: 46px;
+      height: 46px;
+      border: 4px solid rgba(255,255,255,0.2);
+      border-top-color: #a78bfa;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 18px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .result-box {
+      margin-top: 18px;
+      background: rgba(15,23,42,0.9);
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,255,0.4);
+      line-height: 1.6;
+      white-space: pre-line;
+      display: none;
+    }
 
     .btn {
       width: 100%;
-      border-radius: 999px;
       padding: 12px 0;
+      margin-top: 12px;
+      border-radius: 999px;
       border: none;
-      font-size: 0.95rem;
-      font-weight: 650;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 6px;
-    }
-
-    .btn-primary {
       background: linear-gradient(135deg, var(--primary-strong), var(--primary));
       color: #fff;
-      box-shadow: 0 14px 28px rgba(55,48,163,0.75);
+      font-weight: 650;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 10px 22px rgba(88,81,233,0.6);
     }
 
     .btn-secondary {
       background: transparent;
-      border: 1px solid rgba(148,163,255,0.6);
-      color: #e5e7eb;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      border: 1px dashed rgba(148,163,255,0.5);
-      color: var(--text-muted);
-    }
-
-    .loading-dot {
-      display: inline-block;
-      width: 4px;
-      height: 4px;
-      background: #e5e7eb;
-      border-radius: 50%;
-      margin-left: 3px;
-      animation: blink 1.2s infinite ease-in-out;
-    }
-    .loading-dot:nth-child(2){ animation-delay:0.15s; }
-    .loading-dot:nth-child(3){ animation-delay:0.3s; }
-
-    @keyframes blink {
-      0%,100%{ opacity:0.22; transform:translateY(0); }
-      50%{ opacity:1; transform:translateY(-2px); }
+      border: 1px solid rgba(148,163,255,0.5);
+      color: var(--text-main);
+      box-shadow: none;
     }
   </style>
 </head>
+
 <body>
-  <div class="shell">
-    <div class="card">
-      <div class="top-accent"></div>
+<div class="shell">
+  <div class="card">
+    <div class="top-accent"></div>
 
-      <div class="header">
-        <div class="title">AI 진단 결과</div>
-        <div class="subtitle">업로드한 사진을 기반으로 분석합니다.</div>
-      </div>
+    <div class="header-title">AI 피부 분석 결과</div>
 
-      <div class="preview-wrapper">
-        <div class="preview-inner">
-          <img id="preview-img" alt="업로드 사진" />
-        </div>
-      </div>
-
-      <div class="badge-line">
-        <span class="badge">피부타입</span>
-        <span class="badge">트러블</span>
-        <span class="badge">보습</span>
-      </div>
-
-      <div class="section-box">
-        <div class="section-title">🔍 AI 분석 내용</div>
-        <div class="section-body" id="ai-result">
-          AI가 분석 중입니다...
-          <span class="loading-dot"></span>
-          <span class="loading-dot"></span>
-          <span class="loading-dot"></span>
-        </div>
-      </div>
-
-      <div class="btn-wrap">
-        <button class="btn btn-primary" onclick="goPage4()">4페이지 (루틴)</button>
-        <button class="btn btn-secondary" onclick="goPage5()">5페이지 (제품 추천)</button>
-        <button class="btn btn-ghost" onclick="restart()">↩ 다시 진단하기</button>
-      </div>
-
+    <!-- 로딩 -->
+    <div class="spinner"></div>
+    <div class="loading-text" id="status-text">
+      AI가 피부 사진을 분석하는 중입니다...<br />
+      약 3~6초 정도 소요됩니다.
     </div>
+
+    <!-- 결과 -->
+    <div id="result-box" class="result-box"></div>
+
+    <button class="btn" onclick="goHome()">첫 화면으로 돌아가기</button>
+    <button class="btn btn-secondary" onclick="retry()">다른 사진으로 다시 진단</button>
   </div>
+</div>
 
-  <script>
-    const API_KEY = "YOUR_OPENAI_API_KEY";
-
-    window.onload = function () {
-      const imgData = sessionStorage.getItem("uploadedImage");
-      if (!imgData) { window.location.href = "index.html"; return; }
-
-      document.getElementById("preview-img").src = imgData;
-
-      analyzeSkin(imgData);
-    };
-
-    async function analyzeSkin(base64Image) {
-      const resultEl = document.getElementById("ai-result");
-
-      try {
-        const res = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${API_KEY}`,
-          },
-          body: JSON.stringify({
-            model: "gpt-4o-mini",
-            messages: [
-              {
-                role: "system",
-                content:
-                  "너는 전문 피부과 수준의 피부 분석 AI다. 간단한 한국어로 분석해라. (요약 → 문제점 → 관리 팁).",
-              },
-              {
-                role: "user",
-                content: [
-                  { type: "text", text: "이 사진으로 피부 상태 분석해줘." },
-                  { type: "image_url", image_url: { url: base64Image } },
-                ],
-              },
-            ],
-          }),
-        });
-
-        const data = await res.json();
-        console.log(data);
-
-        if (!res.ok) {
-          resultEl.innerText = "AI 분석 오류: " + data.error?.message;
-          return;
-        }
-
-        resultEl.innerText = data.choices[0].message.content;
-      } catch (err) {
-        resultEl.innerText = "네트워크 오류 또는 API 호출 실패";
-      }
+<script>
+  async function analyzeImage() {
+    const imgData = sessionStorage.getItem("uploadedImage");
+    if (!imgData) {
+      document.getElementById("status-text").innerText = "이미지가 없습니다. 처음으로 돌아갑니다.";
+      setTimeout(() => window.location.href = "index.html", 1500);
+      return;
     }
 
-    function restart() { window.location.href = "index.html"; }
-    function goPage4() { window.location.href = "page4.html"; }
-    function goPage5() { window.location.href = "page5.html"; }
-  </script>
+    try {
+      const res = await fetch("/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: imgData })
+      });
+
+      const data = await res.json();
+
+      document.querySelector(".spinner").style.display = "none";
+
+      if (data.error) {
+        document.getElementById("status-text").innerText = "분석 오류: " + data.error;
+        return;
+      }
+
+      document.getElementById("status-text").style.display = "none";
+
+      const box = document.getElementById("result-box");
+      box.style.display = "block";
+      box.innerText = data.result;
+
+    } catch (err) {
+      document.querySelector(".spinner").style.display = "none";
+      document.getElementById("status-text").innerText =
+        "서버 접속 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+    }
+  }
+
+  function goHome() {
+    sessionStorage.removeItem("uploadedImage");
+    window.location.href = "index.html";
+  }
+
+  function retry() {
+    sessionStorage.removeItem("uploadedImage");
+    window.location.href = "index.html";
+  }
+
+  analyzeImage();
+</script>
+
 </body>
 </html>
