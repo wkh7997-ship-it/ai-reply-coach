@@ -6,13 +6,15 @@
   <title>AI 피부 코치</title>
   <style>
     :root {
-      --primary: #9b8bff;
-      --primary-strong: #5c6bff;
-      --bg-deep: #050616;
-      --bg-top: #11152b;
-      --glass: rgba(9, 12, 30, 0.9);
+      --primary: #c7b3ff;          /* 실버 퍼플 */
+      --primary-strong: #8f7bff;   /* 포인트 퍼플 */
+      --accent-soft: #f4e5c8;      /* 샴페인 골드 */
+      --bg-deep: #05040b;
+      --bg-top: #111322;
+      --glass: rgba(8, 10, 24, 0.92);
       --text-main: #f9fafb;
       --text-sub: #cbd5f5;
+      --text-muted: #9ca3c9;
     }
 
     * {
@@ -25,8 +27,8 @@
       font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
       min-height: 100vh;
       background:
-        radial-gradient(circle at top, rgba(88, 101, 242, 0.35) 0, transparent 55%),
-        radial-gradient(circle at bottom, rgba(6, 95, 180, 0.3) 0, transparent 60%),
+        radial-gradient(circle at top, rgba(129, 140, 248, 0.32) 0, transparent 52%),
+        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.75) 0, transparent 58%),
         linear-gradient(160deg, var(--bg-top), var(--bg-deep));
       color: var(--text-main);
       display: flex;
@@ -41,136 +43,220 @@
     }
 
     .card {
-      background: var(--glass);
-      border-radius: 24px;
-      padding: 20px 18px;
-      border: 1px solid rgba(148, 163, 255, 0.3);
-      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6);
       position: relative;
+      background: var(--glass);
+      border-radius: 26px;
+      padding: 22px 18px 18px;
+      border: 1px solid rgba(148, 163, 255, 0.22);
+      box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.75),
+        0 0 0 1px rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(18px);
       overflow: hidden;
     }
 
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 24px;
+      border: 1px solid rgba(248, 250, 252, 0.02);
+      pointer-events: none;
+    }
+
+    /* 상단 얇은 포인트 라인 */
+    .top-accent {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      top: 10px;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(244, 229, 200, 0.75),
+        transparent
+      );
+      opacity: 0.9;
+    }
+
+    /* 로고 뱃지 */
+    .logo-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 8px;
+      margin-bottom: 10px;
+    }
+
     .logo-badge {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      margin: 0 auto 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 70px;
+      height: 70px;
+      border-radius: 24px;
       background:
-        radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.5), transparent 55%),
-        linear-gradient(145deg, #222347, #4c5cff);
-      box-shadow: 0 10px 22px rgba(61, 86, 255, 0.5);
-    }
-
-    .logo-badge-inner {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 0%, #ffffff, #bcd7ff);
+        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.7), transparent 55%),
+        radial-gradient(circle at 80% 100%, rgba(139, 92, 246, 0.6), transparent 55%),
+        linear-gradient(135deg, #141628, #303356);
+      box-shadow:
+        0 16px 30px rgba(17, 24, 39, 0.9),
+        0 0 0 1px rgba(148, 163, 255, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
-    .logo-badge svg {
-      width: 26px;
-      height: 26px;
+    .logo-badge::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border-radius: 20px;
+      background: radial-gradient(circle at 30% 0%, #f9fafb, #c7d2fe);
+      opacity: 0.9;
+    }
+
+    .logo-mark {
+      position: relative;
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0%, #eff6ff, #bfdbfe);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
+    }
+
+    .logo-mark svg {
+      width: 20px;
+      height: 20px;
     }
 
     h1 {
-      font-size: 1.9rem;
+      font-size: 2.0rem;
       font-weight: 800;
       text-align: center;
-      margin-bottom: 4px;
-      letter-spacing: 0.02em;
-      background: linear-gradient(120deg, #ffffff, #d4dcff);
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      background: linear-gradient(120deg, #ffffff, #e5e7ff);
       -webkit-background-clip: text;
       color: transparent;
     }
 
-    .subtitle {
+    .brand-subtitle {
       text-align: center;
-      font-size: 0.85rem;
-      letter-spacing: 0.22em;
+      font-size: 0.78rem;
+      letter-spacing: 0.32em;
       text-transform: uppercase;
       color: #a5b4fc;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .description {
-      font-size: 0.98rem;
+      font-size: 0.96rem;
       text-align: center;
-      line-height: 1.5;
+      line-height: 1.6;
       color: var(--text-sub);
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
 
     .highlight {
       font-weight: 600;
-      color: #e0e7ff;
+      color: #fefce8;
     }
 
     .section-box {
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 18px;
-      padding: 14px 12px 12px;
-      border: 1px solid rgba(148, 163, 255, 0.45);
+      background:
+        radial-gradient(circle at top left, rgba(148, 163, 255, 0.18), transparent 55%),
+        rgba(12, 16, 34, 0.96);
+      border-radius: 20px;
+      padding: 14px 14px 12px;
+      border: 1px solid rgba(148, 163, 255, 0.44);
       margin-bottom: 12px;
     }
 
     .section-title {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       font-weight: 600;
       text-align: center;
       margin-bottom: 6px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #e5e7f5;
     }
 
     .section-hint {
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       text-align: center;
-      color: var(--text-sub);
+      color: var(--text-muted);
       line-height: 1.4;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .btn {
       width: 100%;
       border-radius: 999px;
-      padding: 13px 0;
+      padding: 12px 0;
       border: none;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 650;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      transition: all 0.2s ease-out;
+      gap: 8px;
+      transition: all 0.22s ease-out;
+      margin-top: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.16),
+        transparent 45%,
+        rgba(148, 163, 255, 0.2)
+      );
+      opacity: 0;
+      transition: opacity 0.22s ease-out;
+      pointer-events: none;
     }
 
     .btn-primary {
       background: linear-gradient(135deg, var(--primary-strong), var(--primary));
       color: #f9fafb;
-      box-shadow: 0 10px 24px rgba(79, 70, 229, 0.55);
-      margin-bottom: 8px;
+      box-shadow:
+        0 14px 28px rgba(55, 48, 163, 0.75),
+        0 0 0 1px rgba(199, 179, 255, 0.55);
+    }
+
+    .btn-label-icon {
+      font-size: 1.1rem;
     }
 
     .btn:active {
       transform: translateY(1px) scale(0.99);
-      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.5);
+      box-shadow:
+        0 8px 18px rgba(55, 48, 163, 0.7);
+    }
+
+    .btn:hover::before {
+      opacity: 1;
     }
 
     .footer-text {
       margin-top: 10px;
       text-align: center;
-      font-size: 0.82rem;
-      color: var(--text-sub);
+      font-size: 0.8rem;
+      color: var(--text-muted);
       line-height: 1.4;
     }
 
-    /* 숨겨진 파일 input */
     input[type=file] {
       display: none;
     }
@@ -179,50 +265,59 @@
 <body>
   <div class="shell">
     <div class="card">
+      <div class="top-accent"></div>
 
       <!-- 로고 -->
-      <div class="logo-badge">
-        <div class="logo-badge-inner">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="#2563eb" d="M12 2.5C11.4 3.4 7 9.5 7 13a5 5 0 0010 0c0-3.5-4.4-9.6-5-10.5z"/>
-            <path fill="#60a5fa" d="M12 4s-3.5 4.7-3.5 8a3.5 3.5 0 007 0C15.5 8.7 12 4 12 4z"/>
-          </svg>
+      <div class="logo-wrap">
+        <div class="logo-badge">
+          <div class="logo-mark">
+            <!-- 물방울 아이콘 -->
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#2563eb" d="M12 2.5C11.4 3.4 7 9.5 7 13a5 5 0 0010 0c0-3.5-4.4-9.6-5-10.5z"/>
+              <path fill="#60a5fa" d="M12 4s-3.5 4.7-3.5 8a3.5 3.5 0 007 0C15.5 8.7 12 4 12 4z"/>
+            </svg>
+          </div>
         </div>
       </div>
 
+      <!-- 타이틀 -->
       <h1>AI 피부 코치</h1>
-      <div class="subtitle">PHOTO • ANALYSIS • ROUTINE</div>
+      <div class="brand-subtitle">PHOTO • ANALYSIS • ROUTINE</div>
 
+      <!-- 설명 -->
       <div class="description">
-        얼굴이 보이는 사진 <span class="highlight">한 장</span>만 올리면<br />
-        AI가 피부 상태·루틴·추천 제품을 알려드려요.
+        얼굴이 보이는 사진 <span class="highlight">한 장</span>만 올리면,<br />
+        AI가 <span class="highlight">피부 상태 · 루틴 · 추천 제품</span>을<br />
+        간결하게 정리해 드립니다.
       </div>
 
+      <!-- 업로드 영역 -->
       <div class="section-box">
-        <div class="section-title">사진 업로드 / 촬영</div>
+        <div class="section-title">PHOTO UPLOAD</div>
         <div class="section-hint">
-          갤러리에서 고르거나<br />
-          밝은 곳에서 촬영해주세요.
+          갤러리에서 고르거나,<br />
+          밝은 곳에서 정면에 가깝게 촬영해주세요.
         </div>
 
         <!-- 파일 선택 -->
         <label class="btn btn-primary">
-          📁 파일에서 선택하기
-          <input type="file" accept="image/*" onchange="goNextPage(event)">
+          <span class="btn-label-icon">📁</span>
+          <span>파일에서 선택하기</span>
+          <input type="file" accept="image/*" onchange="goNextPage(event)" />
         </label>
 
         <!-- 카메라 촬영 -->
         <label class="btn btn-primary">
-          📷 카메라로 촬영하기
-          <input type="file" accept="image/*" capture="environment" onchange="goNextPage(event)">
+          <span class="btn-label-icon">📷</span>
+          <span>카메라로 촬영하기</span>
+          <input type="file" accept="image/*" capture="environment" onchange="goNextPage(event)" />
         </label>
       </div>
 
       <div class="footer-text">
-        이 화면에서는 사진만 올리면 됩니다.<br />
-        분석은 다음 화면에서 시작됩니다.
+        이 화면에서는 사진만 업로드하면 됩니다.<br />
+        실제 진단과 분석은 다음 화면에서 시작됩니다.
       </div>
-
     </div>
   </div>
 
@@ -239,6 +334,5 @@
       reader.readAsDataURL(file);
     }
   </script>
-
 </body>
 </html>
