@@ -2,257 +2,151 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>AI 피부 코치 - 시작하기</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI 피부 코치</title>
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #7b8cff;
+      --primary-dark: #5560f0;
+      --bg1: #0b0f1e;
+      --bg2: #1a1f33;
+      --card-bg: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.12);
+      --text-main: #ffffff;
+      --text-sub: #cbd5e1;
+    }
+
     body {
-      font-family: system-ui, -apple-system, "Noto Sans KR", sans-serif;
-      background: radial-gradient(circle at top, #1f2937, #020617);
-      color: #e5e7eb;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 18px;
+      font-family: "Pretendard", sans-serif;
+      background: var(--bg1);
+      margin: 0;
+      padding: 20px;
+      color: var(--text-main);
     }
-    .card {
-      width: 100%;
-      max-width: 460px;
-      background: rgba(15,23,42,0.96);
-      border-radius: 20px;
-      border: 1px solid rgba(148,163,184,0.6);
-      box-shadow: 0 22px 50px rgba(15,23,42,0.9);
-      padding: 22px 20px 18px;
+
+    .container {
+      margin-top: 70px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 32px 24px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
     }
-    .header-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
+
+    .icon {
+      width: 70px;
+      height: 70px;
+      margin-bottom: 16px;
     }
-    .logo-mark {
-      width: 40px;
-      height: 40px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0, #e0f2fe 0, #a5b4fc 25%, #4f46e5 55%, #020617 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 12px 30px rgba(79,70,229,0.9);
-      font-size: 22px;
-    }
-    .title-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+
     h1 {
-      font-size: 22px;
+      font-size: 2.1rem;
       font-weight: 700;
-    }
-    .badge {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: #a5b4fc;
-    }
-    .sub {
-      font-size: 14px;
-      color: #d1d5db;
-      margin-bottom: 18px;
-      line-height: 1.6;
-    }
-
-    .upload-area {
-      background: #020617;
-      border-radius: 14px;
-      border: 1px dashed rgba(148,163,184,0.8);
-      padding: 16px 14px;
-      text-align: center;
-      margin-bottom: 14px;
-    }
-    .upload-title {
-      font-size: 14px;
-      font-weight: 600;
+      margin: 0;
       margin-bottom: 6px;
+      text-align: center;
     }
-    .upload-desc {
-      font-size: 12px;
-      color: #9ca3af;
-      margin-bottom: 10px;
-      line-height: 1.4;
+
+    .sub-title {
+      font-size: 0.95rem;
+      text-align: center;
+      letter-spacing: 1.5px;
+      color: var(--primary);
+      margin-bottom: 22px;
     }
-    #photo-name {
-      font-size: 12px;
-      color: #cbd5f5;
-      margin-top: 6px;
-      min-height: 16px;
+
+    p {
+      font-size: 1.05rem;
+      text-align: center;
+      line-height: 1.55;
+      margin-bottom: 28px;
+      color: var(--text-sub);
     }
-    #photo-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(129,140,248,0.9);
-      padding: 9px 14px;
-      font-size: 13px;
+
+    .box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 28px;
+    }
+
+    .box-title {
+      font-size: 1.2rem;
+      margin: 0 0 16px 0;
+      text-align: center;
       font-weight: 600;
-      background: linear-gradient(135deg,#111827,#1f2937);
-      color: #e5e7eb;
-      cursor: pointer;
+      color: #fff;
     }
 
-    .preview-wrap {
-      margin-top: 10px;
+    .hint {
+      font-size: 0.9rem;
+      color: var(--text-sub);
       text-align: center;
-      display: none;
-    }
-    .preview-wrap img {
-      max-width: 100%;
-      max-height: 260px;
-      border-radius: 12px;
-      border: 1px solid rgba(148,163,184,0.9);
-      object-fit: cover;
-      background: #020617;
+      line-height: 1.45;
+      margin-bottom: 18px;
     }
 
-    button[type="submit"] {
+    .button {
       width: 100%;
+      padding: 16px 0;
+      border-radius: 14px;
       border: none;
-      border-radius: 999px;
-      margin-top: 14px;
-      padding: 11px 16px;
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+      font-size: 1.15rem;
+      font-weight: 600;
       cursor: pointer;
-      background: linear-gradient(135deg,#4f46e5,#6366f1,#0ea5e9);
-      color: #eef2ff;
-      box-shadow: 0 16px 32px rgba(79,70,229,0.95);
-    }
-    button[type="submit"]:disabled {
-      opacity: 0.7;
-      box-shadow: none;
-      cursor: default;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 6px 18px rgba(90, 100, 255, 0.35);
+      transition: 0.25s;
     }
 
-    .small {
-      margin-top: 10px;
-      font-size: 11px;
-      color: #9ca3af;
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(90, 100, 255, 0.45);
+    }
+
+    .footer {
+      margin-top: 20px;
       text-align: center;
-      line-height: 1.5;
+      font-size: 0.88rem;
+      color: var(--text-sub);
+      line-height: 1.45;
     }
   </style>
 </head>
+
 <body>
-  <div class="card">
-    <div class="header-row">
-      <div class="logo-mark">💧</div>
-      <div class="title-wrap">
-        <h1>AI 피부 코치</h1>
-        <div class="badge">PHOTO · ANALYSIS · ROUTINE</div>
-      </div>
+  <div class="container">
+
+    <!-- 세련된 아이콘 (물방울 + 라이트) -->
+    <div style="text-align:center;">
+      <img src="https://cdn-icons-png.flaticon.com/512/4149/4149677.png" class="icon"/>
     </div>
 
-    <p class="sub">
+    <h1>AI 피부 코치</h1>
+    <div class="sub-title">PHOTO • ANALYSIS • ROUTINE</div>
+
+    <p>
       얼굴이나 트러블이 보이게 사진 한 장만 올리면<br>
-      다음 페이지에서 <strong>피부 상태 설명 · 루틴 · 제품 추천</strong>을 한 번에 볼 수 있어요.
+      다음 페이지에서 <strong>피부 상태 분석·루틴·제품 추천</strong>을<br>
+      한 번에 확인할 수 있어요.
     </p>
 
-    <form id="skin-form">
-      <!-- 실제 파일 입력은 숨기고 버튼으로만 조작 -->
-      <input
-        type="file"
-        id="photo"
-        accept="image/*"
-        style="display:none"
-      />
+    <div class="box">
+      <div class="box-title">사진 업로드 또는 촬영</div>
+      <div class="hint">갤러리에서 고르거나 카메라로 찍어서 올려주세요.<br>(조명은 밝게, 고민 부위가 잘 보이게)</div>
+      <button class="button" onclick="alert('사진 선택 기능 연결 예정')">사진 선택하기</button>
+    </div>
 
-      <div class="upload-area">
-        <div class="upload-title">사진 업로드 또는 촬영</div>
-        <div class="upload-desc">
-          갤러리에서 고르거나 카메라로 찍어서 올려주세요.<br>
-          (조명은 밝게, 고민 부위가 잘 보이게)
-        </div>
-        <button type="button" id="photo-btn">사진 선택하기</button>
-        <div id="photo-name"></div>
-      </div>
+    <button class="button" onclick="alert('다음 페이지 이동 예정')">AI 진단 시작하기</button>
 
-      <div class="preview-wrap" id="preview-wrap">
-        <img id="preview-img" alt="선택한 사진 미리보기" />
-      </div>
-
-      <button type="submit" id="submit-btn">AI 진단 시작하기</button>
-    </form>
-
-    <p class="small">
+    <div class="footer">
       이 화면에서는 사진만 올리면 되고,<br>
       자세한 설명과 루틴은 다음 페이지에서 확인할 수 있어요.
-    </p>
+    </div>
   </div>
-
-  <script>
-    const fileInput = document.getElementById('photo');
-    const photoBtn = document.getElementById('photo-btn');
-    const photoName = document.getElementById('photo-name');
-    const previewWrap = document.getElementById('preview-wrap');
-    const previewImg = document.getElementById('preview-img');
-    const form = document.getElementById('skin-form');
-    const submitBtn = document.getElementById('submit-btn');
-
-    // 파일 선택 버튼 눌렀을 때: 시스템에서 "카메라 or 갤러리" 선택 뜸
-    photoBtn.addEventListener('click', () => {
-      fileInput.click();
-    });
-
-    // 파일 선택 후 표시 + 미리보기
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files[0];
-      if (!file) {
-        photoName.textContent = '';
-        previewWrap.style.display = 'none';
-        return;
-      }
-      photoName.textContent = `선택된 파일: ${file.name}`;
-      const reader = new FileReader();
-      reader.onload = () => {
-        previewImg.src = reader.result;
-        previewWrap.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    });
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const file = fileInput.files[0];
-
-      if (!file) {
-        alert('먼저 얼굴이나 트러블 사진을 선택해 주세요.');
-        return;
-      }
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = '분석 준비 중...';
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        const payload = {
-          // 👉 아직 두 번째 페이지(result.html)는
-          // 피부타입/고민/나이 등 값을 기대하니까
-          // 첫 화면에서는 UI는 없애고, 기본값만 넣어서 넘겨줌
-          skinType: "모르겠음",
-          mainConcern: "여드름",
-          ageRange: "20대",
-          budgetRange: "가성비",
-          extraNotes: "",
-          imageData: reader.result  // 사진 데이터
-        };
-
-        localStorage.setItem('skinInput', JSON.stringify(payload));
-        window.location.href = 'result.html';
-      };
-      reader.readAsDataURL(file);
-    });
-  </script>
 </body>
 </html>
