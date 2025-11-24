@@ -143,45 +143,30 @@
 </div>
 
 <script>
-  async function analyzeImage() {
-    const imgData = sessionStorage.getItem("uploadedImage");
-    if (!imgData) {
-      document.getElementById("status-text").innerText = "이미지가 없습니다. 처음으로 돌아갑니다.";
-      setTimeout(() => window.location.href = "index.html", 1500);
+  window.onload = function () {
+    const analysis = sessionStorage.getItem("skin_analysis");
+
+    const spinner = document.querySelector(".spinner");
+    const statusText = document.getElementById("status-text");
+    const resultBox = document.getElementById("result-box");
+
+    if (!analysis) {
+      statusText.innerText = "분석 결과를 불러올 수 없습니다.\n다시 시도해주세요.";
+      spinner.style.display = "none";
       return;
     }
 
-    try {
-      const res = await fetch("/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: imgData })
-      });
+    // 로딩 화면 숨기기
+    spinner.style.display = "none";
+    statusText.style.display = "none";
 
-      const data = await res.json();
-
-      document.querySelector(".spinner").style.display = "none";
-
-      if (data.error) {
-        document.getElementById("status-text").innerText = "분석 오류: " + data.error;
-        return;
-      }
-
-      document.getElementById("status-text").style.display = "none";
-
-      const box = document.getElementById("result-box");
-      box.style.display = "block";
-      box.innerText = data.result;
-
-    } catch (err) {
-      document.querySelector(".spinner").style.display = "none";
-      document.getElementById("status-text").innerText =
-        "서버 접속 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
-    }
-  }
+    // 결과 표시
+    resultBox.style.display = "block";
+    resultBox.innerText = analysis;
+  };
 
   function goHome() {
-    sessionStorage.removeItem("uploadedImage");
+    sessionStorage.clear();
     window.location.href = "index.html";
   }
 
@@ -189,8 +174,6 @@
     sessionStorage.removeItem("uploadedImage");
     window.location.href = "index.html";
   }
-
-  analyzeImage();
 </script>
 
 </body>
