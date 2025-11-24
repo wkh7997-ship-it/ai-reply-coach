@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI 피부 코치 - 결과 & 챗봇</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Noto Sans KR", sans-serif;
+      background: radial-gradient(circle at top, #1f2937, #020617);
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+    .layout {
+      width: 100%;
+      max-width: 960px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 800px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    .card {
+      background: rgba(15,23,42,0.96);
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.5);
+      box-shadow: 0 20px 45px rgba(15,23,42,0.9);
+      padding: 16px 14px 14px;
+    }
+    h1 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+    .sub {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 12px;
+    }
+    .img-wrap {
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .img-wrap img {
+      max-width: 100%;
+      max-height: 260px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.8);
+      object-fit: cover;
+      background: #020617;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin: 10px 0 4px;
+    }
+    .box {
+      font-size: 12px;
+      background: #020617;
+      border-radius: 12px;
+      border: 1px solid rgba(75,85,99,0.8);
+      padding: 8px 9px;
+      line-height: 1.6;
+    }
+    ul { margin: 4px 0 0 14px; }
+    li { margin-bottom: 3px; }
+    .product-card {
+      margin-top: 6px;
+      padding: 7px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: #020617;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      font-size: 11px;
+    }
+    .product-main { max-width: 70%; }
+    .product-name { font-weight: 600; }
+    .product-desc { color: #9ca3af; }
+    .product-meta { color: #a5b4fc; margin-top: 2px; }
+    .product-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: linear-gradient(135deg,#4f46e5,#6366f1);
+      color: #eef2ff;
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .back-link {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+    .back-link a { color: #a5b4fc; text-decoration: underline; }
+    .notice {
+      font-size: 10px;
+      color: #9ca3af;
+      margin-top: 6px;
+    }
+
+    /* 챗봇 */
+    .chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .badge {
+      font-size: 10px;
+      border-radius: 999px;
+      padding: 3px 8px;
+      border: 1px solid rgba(129,140,248,0.8);
+      color: #c7d2fe;
+    }
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      height: 420px;
+    }
+    .chat-messages {
+      flex: 1;
+      background: #020617;
+      border-radius: 10px;
+      border: 1px solid rgba(55,65,81,0.9);
+      padding: 8px;
+      overflow-y: auto;
+      font-size: 12px;
+    }
+    .msg {
+      max-width: 88%;
+      padding: 7px 9px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+    .user {
+      margin-left: auto;
+      background: linear-gradient(135deg,#4f46e5,#6366f1);
+    }
+    .bot {
+      margin-right: auto;
+      background: #111827;
+      border: 1px solid rgba(75,85,99,0.9);
+    }
+    .chat-input-wrap {
+      margin-top: 8px;
+      display: flex;
+      gap: 6px;
+    }
+    #chat-input {
+      flex: 1;
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(107,114,128,0.9);
+      background: #020617;
+      color: #e5e7eb;
+      outline: none;
+    }
+    #chat-input:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 1px rgba(99,102,241,0.7);
+    }
+    #chat-send {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      background: linear-gradient(135deg,#22c55e,#16a34a);
+      color: #ecfdf5;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- 왼쪽: 분석 결과 -->
+    <div class="card" id="analysis-card">
+      <div class="back-link">
+        ← 입력을 다시 하고 싶으면 <a href="index.html">여기</a>를 눌러 처음 화면으로 돌아가세요.
+      </div>
+      <h1>AI 피부 분석 결과</h1>
+      <p class="sub">사진과 입력 정보를 기반으로 한 비의료용 가이드입니다. 통증·염증이 심하면 꼭 피부과 전문의와 상담하세요.</p>
+
+      <div class="img-wrap" id="photo-wrapper" style="display:none;">
+        <img id="preview-img" alt="입력한 피부 사진 미리보기" />
+      </div>
+
+      <div class="section-title">1. 피부 상태 요약</div>
+      <div class="box" id="summary-box">불러오는 중...</div>
+
+      <div class="section-title">2. 추천 루틴 (아침 / 저녁 / 스페셜)</div>
+      <div class="box" id="routine-box"></div>
+
+      <div class="section-title">3. 추천 성분 &amp; 제품 (쿠팡 검색 링크)</div>
+      <div class="box" id="product-box"></div>
+
+      <p class="notice">
+        ※ “쿠팡에서 보기” 버튼을 누르면 해당 키워드로 쿠팡 검색 결과가 열립니다.<br>
+        실제 상품의 성분·사용법을 항상 다시 확인해 주세요.
+      </p>
+    </div>
+
+    <!-- 오른쪽: 챗봇 -->
+    <div class="card">
+      <div class="chat-header">
+        <div>
+          <div style="font-size:14px; font-weight:600;">AI 피부 코치 챗봇</div>
+          <div style="font-size:11px; color:#9ca3af;">지금 상태에 맞춰 자유롭게 질문해 보세요.</div>
+        </div>
+        <div class="badge">BETA</div>
+      </div>
+      <div class="chat-box">
+        <div class="chat-messages" id="chat-messages"></div>
+        <form id="chat-form" class="chat-input-wrap">
+          <input
+            id="chat-input"
+            type="text"
+            placeholder="예: 턱 여드름이 심할 때는 어떤 순서로 바르면 좋을까?"
+            autocomplete="off"
+          />
+          <button type="submit" id="chat-send">전송</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- 공통 유틸 ----------
+    function createCoupangLink(keyword) {
+      const encodedKeyword = encodeURIComponent(keyword);
+      const searchUrl = `https://www.coupang.com/np/search?q=${encodedKeyword}`;
+      const partnerCode = "YOUR_PARTNERS_CODE"; // 👉 여기 네 쿠팡 파트너스 코드로 교체
+      return `https://link.coupang.com/a/${partnerCode}?targetUrl=${encodeURIComponent(searchUrl)}`;
+    }
+
+    function getProductRecommendations(concern, budget) {
+      const base = [];
+
+      if (concern === "여드름") {
+        base.push(
+          { name: "BHA 여드름 토너", desc: "막힌 피지·각질을 부드럽게 정리하는 토너", tag: "각질·피지 케어" },
+          { name: "논코메도제닉 수분크림", desc: "기름은 줄이고 수분만 채워주는 젤 크림", tag: "여드름 피부용" },
+          { name: "여드름 스팟 패치", desc: "짜지 말고 붙여서 진정시키는 패치", tag: "응급 트러블" }
+        );
+      } else if (concern === "모공피부결") {
+        base.push(
+          { name: "AHA/BHA 필링 토너", desc: "피부결 개선과 모공 정리에 도움", tag: "피부결·모공 케어" },
+          { name: "모공 세럼", desc: "피지를 정돈하고 모공 주변 탄력에 도움 되는 세럼", tag: "모공 집중" },
+          { name: "가벼운 수분 젤 크림", desc: "지·복합성도 부담 없는 보습", tag: "데일리 보습" }
+        );
+      } else if (concern === "홍조민감") {
+        base.push(
+          { name: "센텔라(시카) 진정 토너", desc: "붉은기와 열감을 진정시키는 토너", tag: "진정 케어" },
+          { name: "무향 저자극 수분크림", desc: "민감 피부용 최소 성분 수분크림", tag: "민감성 전용" },
+          { name: "약산성 저자극 폼클렌저", desc: "장벽을 덜 자극하는 세안제", tag: "약산성 클렌저" }
+        );
+      } else if (concern === "잡티색소") {
+        base.push(
+          { name: "비타민C 세럼", desc: "톤업과 잡티 완화에 도움 되는 세럼", tag: "톤업·미백" },
+          { name: "나이아신아마이드 세럼", desc: "피부톤 균일화에 도움", tag: "톤 보정" },
+          { name: "자외선차단제 SPF50+", desc: "색소 관리의 핵심인 선크림", tag: "UV 차단" }
+        );
+      } else if (concern === "주름탄력") {
+        base.push(
+          { name: "레티놀 / 레티날 세럼", desc: "주름·탄력 관리 대표 성분", tag: "안티에이징" },
+          { name: "펩타이드 크림", desc: "탄력감과 보습을 주는 크림", tag: "탄력 케어" },
+          { name: "집중 수분 마스크팩", desc: "주 1~2회 수분·탄력 보충", tag: "스페셜 케어" }
+        );
+      } else if (concern === "건조각질") {
+        base.push(
+          { name: "저자극 수분 토너", desc: "레이어링하기 좋은 워터/에센스 토너", tag: "수분 레이어링" },
+          { name: "세라마이드 크림", desc: "장벽 강화용 고보습 크림", tag: "장벽 케어" },
+          { name: "슬리핑팩", desc: "밤 사이 수분 증발을 막아주는 오버나이트 케어", tag: "나이트 케어" }
+        );
+      }
+
+      return base.map(p => ({
+        ...p,
+        meta:
+          budget === "가성비"
+            ? "가성비 좋은 제품 위주로 쿠팡에서 골라보세요."
+            : budget === "중간가격"
+            ? "리뷰와 성분을 함께 보고 중간 가격대를 선택해 보세요."
+            : "성분과 사용감이 잘 맞으면 프리미엄 라인도 한두 개 섞어도 괜찮습니다."
+      }));
+    }
+
+    function buildRoutine({ skinType, mainConcern, ageRange, extraNotes }) {
+      const summaryParts = [];
+
+      // 타입 설명
+      if (skinType === "건성") {
+        summaryParts.push("세안 후 바로 건조해지고 당기는 느낌이 있는 건성 타입으로 보입니다. 수분·유분 레이어링이 중요합니다.");
+      } else if (skinType === "지성") {
+        summaryParts.push("T존 번들거림이 두드러지는 지성 타입으로, 과한 유분을 조절하면서 수분은 유지하는 것이 핵심입니다.");
+      } else if (skinType === "복합성") {
+        summaryParts.push("부분적으로는 건조하고 부분적으로는 번들거리는 복합성 타입으로, 부위별로 다른 케어가 도움이 됩니다.");
+      } else if (skinType === "민감성") {
+        summaryParts.push("자극에 예민하게 반응하는 민감성 피부일 수 있어, 성분 수가 적고 저자극인 제품 위주가 좋습니다.");
+      } else if (skinType === "중성") {
+        summaryParts.push("유수분 밸런스가 비교적 안정적인 중성 피부로 보이며, 기본 루틴만 꾸준히 유지해도 좋습니다.");
+      } else {
+        summaryParts.push("입력된 정보만으로 타입을 특정하기 어렵지만, 기본적인 보습·자외선 차단 루틴을 바탕으로 제안해 드릴게요.");
+      }
+
+      if (mainConcern === "여드름") {
+        summaryParts.push("여드름·트러블이 주 고민이라, 자극을 최소화하면서 막힌 피지와 염증을 관리하는 루틴이 필요합니다.");
+      } else if (mainConcern === "모공피부결") {
+        summaryParts.push("모공·피부결 개선을 위해 각질·피지를 조절하면서 건조하지 않게 관리하는 것이 중요합니다.");
+      } else if (mainConcern === "홍조민감") {
+        summaryParts.push("홍조·민감은 열감과 자극을 줄이는 것이 핵심이라, 진정·보습 위주의 단순한 루틴이 좋습니다.");
+      } else if (mainConcern === "잡티색소") {
+        summaryParts.push("잡티·색소는 자외선 차단과 미백 성분을 함께 사용하는 꾸준함이 중요합니다.");
+      } else if (mainConcern === "주름탄력") {
+        summaryParts.push("주름·탄력 관리는 레티놀·펩타이드 등 성분과 자외선 차단을 병행해야 효과적입니다.");
+      } else if (mainConcern === "건조각질") {
+        summaryParts.push("건조·각질은 세안 단계부터 자극을 줄이고, 보습을 여러 겹 쌓는 방식이 도움이 됩니다.");
+      }
+
+      if (ageRange === "10대") {
+        summaryParts.push("10대에는 과한 성인용 안티에이징보다는, 여드름·피지·기본 장벽 관리에 집중하는 것을 권장합니다.");
+      } else if (ageRange === "20대") {
+        summaryParts.push("20대에는 장벽·수분 관리와 함께 모공·색소·초기 주름을 가볍게 관리해 두면 좋습니다.");
+      } else if (ageRange === "30대") {
+        summaryParts.push("30대부터는 수분 저하와 미세 주름이 시작되므로, 보습·탄력·미백을 함께 고려한 루틴이 도움이 됩니다.");
+      } else if (ageRange === "40대 이상") {
+        summaryParts.push("40대 이후에는 탄력·색소·주름을 동시에 관리해야 하는 경우가 많아, 밤에는 조금 더 영양감 있는 루틴도 괜찮습니다.");
+      }
+
+      if (extraNotes && extraNotes.length > 0) {
+        summaryParts.push(`또, 남겨주신 메모(“${extraNotes.slice(0, 40)}...”)도 참고해 너무 복잡하지 않으면서 현실적으로 지속 가능한 루틴을 중심으로 제안했어요.`);
+      }
+
+      const morning = [];
+      const night = [];
+      const special = [];
+
+      // 아침
+      morning.push("① (선택) 미온수 세안 또는 약산성 폼클렌저로 가볍게 세안");
+      morning.push("② 진정·수분 토너 또는 에센스 1~3회 레이어링");
+      if (mainConcern === "잡티색소" || mainConcern === "주름탄력") {
+        morning.push("③ 비타민C 또는 나이아신아마이드 세럼 (자극 없으면 연속 사용)");
+      }
+      morning.push("④ 피부 타입에 맞는 수분크림 / 젤 크림");
+      morning.push("⑤ SPF 30~50+ 선크림 충분한 양 바르기");
+
+      // 저녁
+      night.push("① 메이크업·선크림 사용 시: 클렌징 오일/밤 + 약산성 폼으로 2중 세안");
+      night.push("② 진정·수분 토너로 수분·pH 밸런스 정리");
+      if (mainConcern === "여드름") {
+        night.push("③ BHA 토너 또는 여드름 케어 세럼 (주 2~3회, 적응되면 조절)");
+      } else if (mainConcern === "모공피부결") {
+        night.push("③ AHA/PHA 등 피부결 개선 토너·세럼 (민감하면 사용 간격 넓게)");
+      } else if (mainConcern === "홍조민감") {
+        night.push("③ 센텔라·판테놀·알란토인 등 진정 에센스 위주로 사용");
+      } else if (mainConcern === "주름탄력") {
+        night.push("③ 레티놀 / 레티날 세럼 소량 (주 2회 정도로 시작)");
+      } else if (mainConcern === "건조각질") {
+        night.push("③ 세라마이드·지질 크림 넉넉하게 발라 장벽 케어");
+      }
+      night.push("④ 필요 시 슬리핑팩·페이셜오일 소량으로 마무리");
+
+      // 스페셜
+      if (mainConcern === "여드름") {
+        special.push("주 1회 정도, 필링·각질 제품 사용하는 날에는 다른 강한 세럼은 쉬어주세요.");
+        special.push("큰 염증성 여드름은 손으로 짜지 말고 스팟 패치·연고를 위주로 관리하는 게 좋습니다.");
+      } else if (mainConcern === "모공피부결") {
+        special.push("각질 제거 제품(AHA/BHA)은 피부 상태 봐가면서 주 1~2회만 사용해도 충분한 경우가 많습니다.");
+      } else if (mainConcern === "홍조민감") {
+        special.push("뜨거운 물 세안, 사우나, 강한 스크럽은 홍조를 악화시킬 수 있으니 가능하면 피하는 게 좋습니다.");
+      } else if (mainConcern === "잡티색소") {
+        special.push("자외선 강한 날에는 선크림 덧바르기와 모자·양산까지 함께 사용하면 색소 관리에 큰 도움이 됩니다.");
+      } else if (mainConcern === "주름탄력") {
+        special.push("레티놀 사용 날에는 필링·미백 성분과 함께 쓰기보다 진정·보습 위주로 단순하게 루틴을 구성하는 것이 안전합니다.");
+      } else if (mainConcern === "건조각질") {
+        special.push("샤워 직후 3분 이내에 얼굴과 몸에 보습제를 넉넉하게 바르는 '3분 보습' 습관을 들여보세요.");
+      }
+
+      return { summary: summaryParts.join(" "), morning, night, special };
+    }
+
+    function renderAnalysis() {
+      const raw = localStorage.getItem('skinInput');
+      const summaryBox = document.getElementById('summary-box');
+      const routineBox = document.getElementById('routine-box');
+      const productBox = document.getElementById('product-box');
+      const photoWrapper = document.getElementById('photo-wrapper');
+      const previewImg = document.getElementById('preview-img');
+
+      if (!raw) {
+        summaryBox.textContent = "입력 정보가 없어요. 처음 화면에서 다시 입력해 주세요.";
+        routineBox.textContent = "-";
+        productBox.textContent = "-";
+        photoWrapper.style.display = "none";
+        return;
+      }
+
+      const data = JSON.parse(raw);
+
+      if (data.imageData) {
+        previewImg.src = data.imageData;
+        photoWrapper.style.display = "block";
+      } else {
+        photoWrapper.style.display = "none";
+      }
+
+      const routine = buildRoutine(data);
+      const products = getProductRecommendations(data.mainConcern, data.budgetRange);
+
+      summaryBox.textContent = routine.summary;
+
+      routineBox.innerHTML = `
+        <strong>아침 루틴</strong>
+        <ul>${routine.morning.map(item => `<li>${item}</li>`).join("")}</ul>
+        <br/>
+        <strong>저녁 루틴</strong>
+        <ul>${routine.night.map(item => `<li>${item}</li>`).join("")}</ul>
+        ${routine.special.length ? `<br/><strong>주 1~2회 스페셜 케어</strong><ul>${routine.special.map(item => `<li>${item}</li>`).join("")}</ul>` : ""}
+      `;
+
+      productBox.innerHTML = products
+        .map(p => {
+          const link = createCoupangLink(p.name);
+          return `
+          <div class="product-card">
+            <div class="product-main">
+              <div class="product-name">${p.name}</div>
+              <div class="product-desc">${p.desc}</div>
+              <div class="product-meta">${p.meta}</div>
+            </div>
+            <a class="product-btn" href="${link}" target="_blank" rel="noopener noreferrer">
+              🛒 쿠팡에서 보기
+            </a>
+          </div>
+        `;
+        })
+        .join("");
+    }
+
+    // ---------- 챗봇 ----------
+    const chatMessages = document.getElementById('chat-messages');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+
+    function addMessage(role, text) {
+      const div = document.createElement('div');
+      div.className = `msg ${role}`;
+      div.textContent = text;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function getLocalChatReply(userText, context) {
+      const txt = userText.toLowerCase();
+      const concern = context?.mainConcern || "";
+      const type = context?.skinType || "";
+
+      if (txt.includes("여드름") || concern === "여드름") {
+        return "여드름이 고민이라면, 세안·각질·보습·자외선 차단 네 가지를 꾸준히 유지하는 게 가장 중요해요. 특히 손으로 만지거나 짜지 않는 습관을 들이는 게 진짜 효과가 큽니다.";
+      }
+      if (txt.includes("모공") || txt.includes("블랙헤드") || concern === "모공피부결") {
+        return "모공·블랙헤드 관리에는 '과한 압출'보다는 AHA/BHA 같은 각질 관리와 가벼운 보습, 그리고 선크림이 기본이에요. 주 1~2회 정도로만 각질 케어를 해도 충분한 경우가 많습니다.";
+      }
+      if (txt.includes("건조") || txt.includes("각질") || concern === "건조각질") {
+        return "건조·각질은 세안부터 너무 세게 하지 않는 게 중요해요. 미지근한 물과 약산성 폼으로 짧게 세안하고, 바로 수분 토너와 세라마이드 크림을 겹겹이 발라보세요.";
+      }
+      if (txt.includes("홍조") || txt.includes("민감") || concern === "홍조민감") {
+        return "홍조·민감 피부라면 뜨거운 물, 강한 스크럽, 알코올이 많이 들어간 제품은 피하는 게 좋아요. 센텔라, 판테놀, 알란토인처럼 진정 성분 위주의 루틴을 추천합니다.";
+      }
+      if (txt.includes("잡티") || txt.includes("기미") || concern === "잡티색소") {
+        return "잡티·기미는 자외선 차단이 1순위예요. 비타민C, 나이아신아마이드 같은 성분을 꾸준히 쓰면서, 선크림은 실내라도 가능한 한 매일 발라주는 게 좋습니다.";
+      }
+      if (txt.includes("레티놀") || txt.includes("레티날") || concern === "주름탄력") {
+        return "레티놀·레티날은 처음에는 2~3일에 한 번, 소량만 써보는 게 좋아요. 각질·따가움이 느껴지면 쉬어가고, 그날은 진정·보습 위주로만 케어하는 걸 추천합니다.";
+      }
+      if (type === "민감성") {
+        return "민감성 피부라면 한 번에 여러 신제품을 쓰기보다, 한 가지씩 2주 정도는 반응을 살펴보면서 늘려가는 게 안전합니다.";
+      }
+
+      return "지금 상태에서 너무 복잡하게 바꾸기보다는, 세안–수분–보습–자외선 차단 네 단계를 안정적으로 유지하는 게 제일 중요해요. 조금 더 구체적으로, '언제 / 어디가 / 어떻게' 불편한지 적어주면 거기에 맞춰 루틴을 더 다듬어 줄게요.";
+    }
+
+    chatForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const text = chatInput.value.trim();
+      if (!text) return;
+      chatInput.value = '';
+      addMessage('user', text);
+
+      const raw = localStorage.getItem('skinInput');
+      const context = raw ? JSON.parse(raw) : {};
+
+      const reply = getLocalChatReply(text, context);
+      setTimeout(() => {
+        addMessage('bot', reply);
+      }, 300);
+    });
+
+    // 초기 인사 + 분석 실행
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAnalysis();
+      addMessage('bot', "안녕하세요, AI 피부 코치입니다. 방금 분석된 결과를 바탕으로 궁금한 점을 편하게 물어보세요!");
+    });
+  </script>
+</body>
+</html>
