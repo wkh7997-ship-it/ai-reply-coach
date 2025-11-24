@@ -1,7 +1,7 @@
 {
   "name": "ai-skin-coach-backend",
   "version": "1.0.0",
-  "description": "AI 피부 코치 백엔드",
+  "description": "AI 피부 코치 백엔드 (Express + OpenAI)",
   "main": "server.js",
   "type": "module",
   "scripts": {
