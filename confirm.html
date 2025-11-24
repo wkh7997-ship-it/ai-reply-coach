@@ -257,8 +257,8 @@
       imgEl.src = imgData;
     };
 
-    // AI 분석 시작하기 → 일단 result.html로 이동
-    function startAnalysis() {
+    // 🔍 AI 분석 시작하기
+    async function startAnalysis() {
       const imgData = sessionStorage.getItem("uploadedImage");
       if (!imgData) {
         alert("이미지를 다시 선택해 주세요.");
@@ -266,8 +266,43 @@
         return;
       }
 
-      // 나중에 OpenAI 호출도 여기에서 하면 됨
-      window.location.href = "result.html";
+      try {
+        // app.py의 /api/analyze 엔드포인트 호출
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            // 아직 별도 설문 페이지가 없으니
+            // 일단 테스트용 기본 값들만 전송
+            skin_type: "정보 없음(이미지 업로드 기준)",
+            problem_area: "얼굴 전체",
+            concerns: ["모공", "피지", "잔주름"],
+            // 이미지는 너무 길어서 앞부분만 노트에 같이 넣어줌
+            notes: "사용자가 얼굴 사진을 업로드했습니다. 이미지 데이터 앞부분: " + imgData.slice(0, 200)
+          })
+        });
+
+        if (!res.ok) {
+          console.error("API ERROR", res.status);
+          alert("AI 분석 서버에서 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.");
+          return;
+        }
+
+        const data = await res.json();
+        console.log("API RESULT:", data);
+
+        const text = data.analysis || "분석 결과를 가져오지 못했습니다.";
+        // 결과 페이지에서 사용할 텍스트를 저장
+        sessionStorage.setItem("skin_analysis", text);
+
+        // 결과 페이지로 이동
+        window.location.href = "result.html";
+      } catch (err) {
+        console.error("FETCH ERROR", err);
+        alert("서버 접속 오류가 발생했습니다.\n네트워크 상태를 확인한 뒤 다시 시도해 주세요.");
+      }
     }
 
     function goBack() {
