@@ -243,19 +243,19 @@
   </div>
 
   <script>
-    // 페이지가 열리면 sessionStorage에서 이미지 꺼내서 미리보기로 표시
-    window.onload = function () {
+    // 페이지 로드 시 이미지 미리보기 세팅
+    window.addEventListener("DOMContentLoaded", function () {
       const imgData = sessionStorage.getItem("uploadedImage");
       const imgEl = document.getElementById("preview-img");
 
       if (!imgData) {
-        // 저장된 이미지가 없으면 첫 페이지로 돌려보냄
+        alert("이미지 정보가 없습니다. 처음 화면으로 돌아갑니다.");
         window.location.href = "index.html";
         return;
       }
 
       imgEl.src = imgData;
-    };
+    });
 
     // 🔍 AI 분석 시작하기
     async function startAnalysis() {
@@ -266,20 +266,20 @@
         return;
       }
 
+      // 클릭이 먹는지 먼저 확인용
+      console.log("startAnalysis 클릭됨");
+      // alert("버튼 클릭 됨 (테스트용)");
+
       try {
-        // app.py의 /api/analyze 엔드포인트 호출
         const res = await fetch("/api/analyze", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            // 아직 별도 설문 페이지가 없으니
-            // 일단 테스트용 기본 값들만 전송
             skin_type: "정보 없음(이미지 업로드 기준)",
             problem_area: "얼굴 전체",
             concerns: ["모공", "피지", "잔주름"],
-            // 이미지는 너무 길어서 앞부분만 노트에 같이 넣어줌
             notes: "사용자가 얼굴 사진을 업로드했습니다. 이미지 데이터 앞부분: " + imgData.slice(0, 200)
           })
         });
@@ -294,10 +294,8 @@
         console.log("API RESULT:", data);
 
         const text = data.analysis || "분석 결과를 가져오지 못했습니다.";
-        // 결과 페이지에서 사용할 텍스트를 저장
         sessionStorage.setItem("skin_analysis", text);
 
-        // 결과 페이지로 이동
         window.location.href = "result.html";
       } catch (err) {
         console.error("FETCH ERROR", err);
@@ -306,6 +304,7 @@
     }
 
     function goBack() {
+      console.log("goBack 클릭됨");
       window.location.href = "index.html";
     }
   </script>
