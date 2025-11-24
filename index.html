@@ -311,13 +311,23 @@
     </div>
   </div>
 
- <script>
+<script>
+  // 파일 선택/카메라 촬영 후 호출되는 함수
   function goNextPage(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    // 일단은 사진 데이터는 안 쓰고, 2페이지로만 이동 테스트
-    window.location.href = "confirm.html";
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      const imageData = e.target.result; // base64 데이터URL
+      // 브라우저 임시 저장소에 저장
+      sessionStorage.setItem("uploadedImage", imageData);
+      // 2페이지(컨펌 페이지)로 이동
+      window.location.href = "confirm.html";
+    };
+
+    reader.readAsDataURL(file);
   }
 </script>
 
@@ -325,6 +335,7 @@
 
 </body>
 </html>
+
 
 
 
