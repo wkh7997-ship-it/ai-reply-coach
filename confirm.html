@@ -134,21 +134,12 @@
       text-align: center;
       color: var(--text-sub);
       line-height: 1.5;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
     }
 
     .highlight {
       color: #fefce8;
       font-weight: 600;
-    }
-
-    .status-text {
-      font-size: 0.8rem;
-      text-align: center;
-      color: var(--text-muted);
-      min-height: 18px;
-      margin-top: 4px;
-      margin-bottom: 4px;
     }
 
     .btn {
@@ -169,22 +160,6 @@
       overflow: hidden;
     }
 
-    .btn::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.18),
-        transparent 45%,
-        rgba(148, 163, 255, 0.25)
-      );
-      opacity: 0;
-      transition: opacity 0.22s ease-out;
-      pointer-events: none;
-    }
-
     .btn-primary {
       background: linear-gradient(135deg, var(--primary-strong), var(--primary));
       color: #f9fafb;
@@ -199,24 +174,52 @@
       border: 1px solid rgba(148, 163, 255, 0.6);
     }
 
-    .btn-icon {
-      font-size: 1.1rem;
-    }
-
     .btn:active {
       transform: translateY(1px) scale(0.99);
       box-shadow:
         0 8px 18px rgba(55, 48, 163, 0.7);
     }
 
-    .btn:hover::before {
-      opacity: 1;
+    .btn-icon {
+      font-size: 1.1rem;
     }
 
-    .btn[disabled] {
-      opacity: 0.8;
-      cursor: default;
-      box-shadow: none;
+    /* 로딩 상태 전용 영역 */
+    .loading-area {
+      margin-top: 16px;
+      margin-bottom: 6px;
+      text-align: center;
+      display: none; /* JS에서 토글 */
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 4px solid rgba(255,255,255,0.18);
+      border-top-color: #a78bfa;
+      margin: 0 auto 10px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text-main {
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+
+    .loading-text-sub {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    .dimmed {
+      opacity: 0.35;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -226,114 +229,145 @@
       <div class="top-accent"></div>
 
       <div class="header">
-        <div class="title">이 사진으로 진단할까요?</div>
-        <div class="subtitle">
+        <div class="title" id="title-text">이 사진으로 진단할까요?</div>
+        <div class="subtitle" id="subtitle-text">
           얼굴과 고민 부위가 잘 보이는지<br />
           한 번만 확인해 주세요.
         </div>
       </div>
 
-      <div class="preview-wrapper">
+      <div class="preview-wrapper" id="preview-wrapper">
         <div class="preview-inner">
           <!-- 업로드한 사진이 들어갈 자리 -->
           <img id="preview-img" alt="업로드한 피부 사진 미리보기" />
         </div>
       </div>
 
-      <div class="info-text">
+      <div class="info-text" id="info-text">
         괜찮다면 <span class="highlight">AI 분석 시작하기</span>를 눌러<br />
         피부 상태와 루틴, 추천 제품을 받아보세요.
       </div>
 
-      <div id="status-text" class="status-text"></div>
+      <!-- 로딩 중일 때 표시되는 영역 -->
+      <div id="loading-area" class="loading-area">
+        <div class="spinner"></div>
+        <div class="loading-text-main">AI가 사진을 분석 중입니다...</div>
+        <div class="loading-text-sub">
+          화면을 끄지 말고 잠시만 기다려 주세요.<br />
+          분석이 끝나면 자동으로 결과 화면으로 이동합니다.
+        </div>
+      </div>
 
-      <button id="analyze-btn" class="btn btn-primary" onclick="startAnalysis()">
-        <span class="btn-icon">🔍</span>
-        <span>AI 분석 시작하기</span>
-      </button>
+      <div id="button-area">
+        <button class="btn btn-primary" id="start-btn" onclick="startAnalysis()">
+          <span class="btn-icon">🔍</span>
+          <span>AI 분석 시작하기</span>
+        </button>
 
-      <button class="btn btn-secondary" onclick="goBack()">
-        <span class="btn-icon">↩</span>
-        <span>첫 화면으로 돌아가기</span>
-      </button>
+        <button class="btn btn-secondary" onclick="goBack()">
+          <span class="btn-icon">↩</span>
+          <span>첫 화면으로 돌아가기</span>
+        </button>
+      </div>
     </div>
   </div>
 
   <script>
-    // 페이지 로드 시 업로드한 이미지 미리보기
-    window.addEventListener("DOMContentLoaded", function () {
-      const imgData = sessionStorage.getItem("uploadedImage");
-      const imgEl = document.getElementById("preview-img");
+  // 페이지 로드 시 업로드한 이미지 미리보기
+  window.addEventListener("DOMContentLoaded", function () {
+    const imgData = sessionStorage.getItem("uploadedImage");
+    const imgEl = document.getElementById("preview-img");
 
-      if (!imgData) {
-        alert("이미지 정보가 없습니다. 처음 화면으로 돌아갑니다.");
-        window.location.href = "index.html";
-        return;
-      }
-
-      imgEl.src = imgData;
-    });
-
-    // 🔍 AI 분석 시작하기 → 서버 /api/skin-analyze 호출
-    async function startAnalysis() {
-      const imgData = sessionStorage.getItem("uploadedImage");
-      const statusEl = document.getElementById("status-text");
-      const btn = document.getElementById("analyze-btn");
-
-      if (!imgData) {
-        alert("이미지를 다시 선택해 주세요.");
-        window.location.href = "index.html";
-        return;
-      }
-
-      try {
-        // 버튼/상태 UI 업데이트
-        btn.disabled = true;
-        btn.querySelector("span:nth-child(2)").innerText = "AI가 분석 중...";
-        statusEl.innerText = "약 10초 정도 소요될 수 있어요. 창을 닫지 말고 잠시만 기다려 주세요.";
-
-        const response = await fetch("/api/skin-analyze", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            imageBase64: imgData
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error("서버 오류가 발생했습니다. (" + response.status + ")");
-        }
-
-        const result = await response.json();
-
-        if (!result.success) {
-          throw new Error(result.error || "분석에 실패했습니다. 잠시 후 다시 시도해 주세요.");
-        }
-
-        // 서버에서 받은 분석 결과를 sessionStorage에 저장
-        // result.data 구조: { score, skinType, issues, riskLevel, summary, detailAdvice }
-        sessionStorage.setItem("aiSkinResult", JSON.stringify(result.data));
-
-        // result.html로 이동
-        window.location.href = "result.html";
-      } catch (err) {
-        console.error("분석 중 오류:", err);
-        alert(err.message || "AI 분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-        statusEl.innerText = "오류가 발생했습니다. 네트워크 상태를 확인하고 다시 시도해 주세요.";
-      } finally {
-        // 에러가 난 경우에만 다시 활성화되고,
-        // 성공했다면 이미 result.html로 이동해서 사용자는 못 느낌
-        btn.disabled = false;
-        btn.querySelector("span:nth-child(2)").innerText = "AI 분석 시작하기";
-      }
-    }
-
-    function goBack() {
+    if (!imgData) {
+      alert("이미지 정보가 없습니다. 처음 화면으로 돌아갑니다.");
       window.location.href = "index.html";
+      return;
     }
-  </script>
+
+    imgEl.src = imgData;
+  });
+
+  // 로딩 UI 켜기/끄기
+  function setLoading(isLoading) {
+    const loadingArea = document.getElementById("loading-area");
+    const buttonArea = document.getElementById("button-area");
+    const previewWrapper = document.getElementById("preview-wrapper");
+    const titleText = document.getElementById("title-text");
+    const subtitleText = document.getElementById("subtitle-text");
+    const infoText = document.getElementById("info-text");
+
+    if (isLoading) {
+      loadingArea.style.display = "block";
+      buttonArea.classList.add("dimmed");
+      previewWrapper.classList.add("dimmed");
+
+      titleText.innerText = "AI가 피부를 분석하고 있어요";
+      subtitleText.innerText = "잠시만 기다려 주세요. 곧 결과 화면으로 이동합니다.";
+      infoText.style.display = "none";
+    } else {
+      loadingArea.style.display = "none";
+      buttonArea.classList.remove("dimmed");
+      previewWrapper.classList.remove("dimmed");
+
+      titleText.innerText = "이 사진으로 진단할까요?";
+      subtitleText.innerHTML = "얼굴과 고민 부위가 잘 보이는지<br />한 번만 확인해 주세요.";
+      infoText.style.display = "block";
+    }
+  }
+
+  // 🔍 AI 분석 시작하기 → 서버 호출 + 결과 저장 + result.html로 이동
+  async function startAnalysis() {
+    const imgData = sessionStorage.getItem("uploadedImage");
+    if (!imgData) {
+      alert("이미지를 다시 선택해 주세요.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch("/api/skin-analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          imageBase64: imgData
+        })
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        console.error("API ERROR", res.status, text);
+        alert("서버에서 분석에 실패했습니다.\n잠시 후 다시 시도해 주세요.");
+        setLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      console.log("API RESULT:", data);
+
+      if (!data || !data.success || !data.data) {
+        alert("AI 분석 결과를 가져오지 못했습니다.\n다시 시도해 주세요.");
+        setLoading(false);
+        return;
+      }
+
+      // 결과를 세션에 저장 → result.html에서 화면만 그리게 함
+      sessionStorage.setItem("aiSkinResult", JSON.stringify(data.data));
+
+      // 결과 페이지로 이동
+      window.location.href = "result.html";
+    } catch (err) {
+      console.error("FETCH ERROR", err);
+      alert("네트워크 오류가 발생했습니다.\n인터넷 연결을 확인한 뒤 다시 시도해 주세요.");
+      setLoading(false);
+    }
+  }
+
+  function goBack() {
+    window.location.href = "index.html";
+  }
+</script>
 
 </body>
 </html>
