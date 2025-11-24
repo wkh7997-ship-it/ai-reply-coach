@@ -415,8 +415,25 @@
     </div>
 
     <div class="btn-wrap">
-      <button class="btn" onclick="goHome()">첫 화면으로 돌아가기</button>
-      <button class="btn btn-secondary" onclick="retry()">다른 사진으로 다시 진단</button>
+      <!-- 1: 추천 제품 보러가기 -->
+      <button class="btn btn-secondary" onclick="goProducts()">
+        최근 진단 기반 추천 제품 보기
+      </button>
+
+      <!-- 2: AI 피부 상담 챗봇 -->
+      <button class="btn btn-secondary" onclick="goChat()">
+        AI 피부 상담 챗봇으로 이동
+      </button>
+
+      <!-- 3: 첫 화면으로 돌아가기 -->
+      <button class="btn" onclick="goHome()">
+        첫 화면으로 돌아가기
+      </button>
+
+      <!-- 4: 다른 사진으로 다시 진단 -->
+      <button class="btn btn-secondary" onclick="retry()">
+        다른 사진으로 다시 진단
+      </button>
     </div>
   </div>
 </div>
@@ -566,6 +583,24 @@
     sessionStorage.removeItem("uploadedImage");
     sessionStorage.removeItem("aiSkinResult");
     window.location.href = "index.html";
+  }
+
+  function goProducts() {
+    const raw = localStorage.getItem("diagnosisHistory");
+    if (!raw) {
+      alert("먼저 AI 진단을 진행해주세요!");
+      return;
+    }
+    window.location.href = "products.html";
+  }
+
+  function goChat() {
+    const raw = localStorage.getItem("diagnosisHistory");
+    if (!raw) {
+      alert("먼저 AI 진단을 진행해주세요!");
+      return;
+    }
+    window.location.href = "chat.html";
   }
 
   window.addEventListener("DOMContentLoaded", () => {
