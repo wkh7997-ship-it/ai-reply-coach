@@ -1,10 +1,243 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>테스트</title>
-  </head>
-  <body style="background:#111; color:#fff;">
-    <h1>confirm.html 테스트 페이지</h1>
-  </body>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI 피부 코치 - 사진 확인</title>
+  <style>
+    :root {
+      --primary: #c7b3ff;
+      --primary-strong: #8f7bff;
+      --bg-deep: #05040b;
+      --bg-top: #111322;
+      --glass: rgba(8, 10, 24, 0.92);
+      --text-main: #f9fafb;
+      --text-sub: #cbd5f5;
+      --text-muted: #9ca3c9;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(129, 140, 248, 0.32) 0, transparent 52%),
+        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.75) 0, transparent 58%),
+        linear-gradient(160deg, var(--bg-top), var(--bg-deep));
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 16px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .card {
+      position: relative;
+      background: var(--glass);
+      border-radius: 26px;
+      padding: 20px 16px 18px;
+      border: 1px solid rgba(148, 163, 255, 0.24);
+      box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.75),
+        0 0 0 1px rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 24px;
+      border: 1px solid rgba(248, 250, 252, 0.02);
+      pointer-events: none;
+    }
+
+    .top-accent {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      top: 10px;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(244, 229, 200, 0.75),
+        transparent
+      );
+      opacity: 0.9;
+    }
+
+    .header {
+      text-align: center;
+      margin-top: 14px;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      font-size: 1.4rem;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .preview-wrapper {
+      margin-top: 14px;
+      margin-bottom: 12px;
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at top left, rgba(148, 163, 255, 0.18), transparent 55%),
+        rgba(10, 16, 36, 0.96);
+      border: 1px solid rgba(148, 163, 255, 0.45);
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-inner {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 160px;
+    }
+
+    .preview-inner span {
+      font-size: 0.9rem;
+      color: #e5e7eb;
+      opacity: 0.9;
+    }
+
+    .info-text {
+      font-size: 0.88rem;
+      text-align: center;
+      color: var(--text-sub);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .highlight {
+      color: #fefce8;
+      font-weight: 600;
+    }
+
+    .btn {
+      width: 100%;
+      border-radius: 999px;
+      padding: 12px 0;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 650;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.22s ease-out;
+      margin-top: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.18),
+        transparent 45%,
+        rgba(148, 163, 255, 0.25)
+      );
+      opacity: 0;
+      transition: opacity 0.22s ease-out;
+      pointer-events: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
+      color: #f9fafb;
+      box-shadow:
+        0 14px 28px rgba(55, 48, 163, 0.75),
+        0 0 0 1px rgba(199, 179, 255, 0.55);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 255, 0.6);
+    }
+
+    .btn-icon {
+      font-size: 1.1rem;
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow:
+        0 8px 18px rgba(55, 48, 163, 0.7);
+    }
+
+    .btn:hover::before {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="card">
+      <div class="top-accent"></div>
+
+      <div class="header">
+        <div class="title">이 사진으로 진단할까요?</div>
+        <div class="subtitle">
+          2페이지 화면이 잘 뜨는지<br />
+          우선 레이아웃만 테스트하는 단계입니다.
+        </div>
+      </div>
+
+      <div class="preview-wrapper">
+        <div class="preview-inner">
+          <span>여기에 나중에 업로드한 사진이 들어갈 자리입니다.</span>
+        </div>
+      </div>
+
+      <div class="info-text">
+        괜찮다면 <span class="highlight">AI 분석 시작하기</span>를 눌러<br />
+        다음 단계 화면으로 이동하도록 만들 예정입니다.
+      </div>
+
+      <button class="btn btn-primary" onclick="alert('여기서 result.html로 이동시키면 됩니다. (지금은 테스트 버튼)')">
+        <span class="btn-icon">🔍</span>
+        <span>AI 분석 시작하기 (테스트)</span>
+      </button>
+
+      <button class="btn btn-secondary" onclick="window.location.href='index.html'">
+        <span class="btn-icon">↩</span>
+        <span>첫 화면으로 돌아가기</span>
+      </button>
+    </div>
+  </div>
+</body>
 </html>
