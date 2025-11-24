@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI 피부 코치 - 사진 확인</title>
+  <style>
+    :root {
+      --primary: #c7b3ff;
+      --primary-strong: #8f7bff;
+      --accent-soft: #f4e5c8;
+      --bg-deep: #05040b;
+      --bg-top: #111322;
+      --glass: rgba(8, 10, 24, 0.92);
+      --text-main: #f9fafb;
+      --text-sub: #cbd5f5;
+      --text-muted: #9ca3c9;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(129, 140, 248, 0.32) 0, transparent 52%),
+        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.75) 0, transparent 58%),
+        linear-gradient(160deg, var(--bg-top), var(--bg-deep));
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 16px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .card {
+      position: relative;
+      background: var(--glass);
+      border-radius: 26px;
+      padding: 20px 16px 18px;
+      border: 1px solid rgba(148, 163, 255, 0.24);
+      box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.75),
+        0 0 0 1px rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 24px;
+      border: 1px solid rgba(248, 250, 252, 0.02);
+      pointer-events: none;
+    }
+
+    .top-accent {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      top: 10px;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(244, 229, 200, 0.75),
+        transparent
+      );
+      opacity: 0.9;
+    }
+
+    .header {
+      text-align: center;
+      margin-top: 14px;
+      margin-bottom: 10px;
+    }
+
+    .title {
+      font-size: 1.4rem;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .preview-wrapper {
+      margin-top: 14px;
+      margin-bottom: 12px;
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at top left, rgba(148, 163, 255, 0.18), transparent 55%),
+        rgba(10, 16, 36, 0.96);
+      border: 1px solid rgba(148, 163, 255, 0.45);
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-inner {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #020617;
+    }
+
+    .preview-inner img {
+      width: 100%;
+      max-height: 260px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .info-text {
+      font-size: 0.88rem;
+      text-align: center;
+      color: var(--text-sub);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .highlight {
+      color: #fefce8;
+      font-weight: 600;
+    }
+
+    .btn {
+      width: 100%;
+      border-radius: 999px;
+      padding: 12px 0;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 650;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.22s ease-out;
+      margin-top: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.18),
+        transparent 45%,
+        rgba(148, 163, 255, 0.25)
+      );
+      opacity: 0;
+      transition: opacity 0.22s ease-out;
+      pointer-events: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
+      color: #f9fafb;
+      box-shadow:
+        0 14px 28px rgba(55, 48, 163, 0.75),
+        0 0 0 1px rgba(199, 179, 255, 0.55);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 255, 0.6);
+    }
+
+    .btn-icon {
+      font-size: 1.1rem;
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow:
+        0 8px 18px rgba(55, 48, 163, 0.7);
+    }
+
+    .btn:hover::before {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="card">
+      <div class="top-accent"></div>
+
+      <div class="header">
+        <div class="title">이 사진으로 진단할까요?</div>
+        <div class="subtitle">
+          얼굴과 고민 부위가 잘 보이는지<br />
+          한 번만 확인해 주세요.
+        </div>
+      </div>
+
+      <div class="preview-wrapper">
+        <div class="preview-inner">
+          <img id="preview-img" alt="업로드한 피부 사진 미리보기" />
+        </div>
+      </div>
+
+      <div class="info-text">
+        괜찮다면 <span class="highlight">AI 분석 시작하기</span>를 눌러<br />
+        피부 상태와 루틴, 추천 제품을 받아보세요.
+      </div>
+
+      <button class="btn btn-primary" onclick="startAnalysis()">
+        <span class="btn-icon">🔍</span>
+        <span>AI 분석 시작하기</span>
+      </button>
+
+      <button class="btn btn-secondary" onclick="goBack()">
+        <span class="btn-icon">↩</span>
+        <span>다른 사진 선택하기</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // URL 파라미터에서 이미지 데이터 가져오기
+    function getImageFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const imgData = params.get("img");
+      return imgData;
+    }
+
+    // 페이지 로드 시 미리보기 세팅
+    window.onload = function () {
+      const imgData = getImageFromQuery();
+      const imgEl = document.getElementById("preview-img");
+
+      if (!imgData) {
+        // 이미지가 없으면 첫 페이지로 돌려보내기
+        window.location.href = "index.html";
+        return;
+      }
+
+      imgEl.src = decodeURIComponent(imgData);
+    };
+
+    // AI 분석 시작 → result.html로 이미지 데이터 전달
+    function startAnalysis() {
+      const params = new URLSearchParams(window.location.search);
+      const imgData = params.get("img");
+
+      if (!imgData) {
+        alert("이미지를 다시 선택해 주세요.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      // 나중에 loading.html을 끼우고 싶으면 여기서 한 번 더 거치면 됨
+      window.location.href = `result.html?img=${encodeURIComponent(imgData)}`;
+    }
+
+    // 첫 페이지로 돌아가기
+    function goBack() {
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
