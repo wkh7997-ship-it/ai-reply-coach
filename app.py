@@ -1,17 +1,40 @@
-# app.py
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, send_from_directory, request, jsonify
 from openai import OpenAI
 
-app = Flask(__name__)
+# Flask 앱 설정 (현재 폴더를 static 폴더처럼 씀)
+app = Flask(__name__, static_folder=".", static_url_path="")
+
+# OpenAI 클라이언트 (환경변수에서 키 읽기)
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+# ------------------------------
+# 1) 정적 페이지 라우트
+# ------------------------------
+
+@app.route("/")
+def index():
+    # / 로 들어오면 index.html 보여주기
+    return send_from_directory(".", "index.html")
+
+@app.route("/<path:path>")
+def static_files(path: str):
+    """
+    /confirm.html, /result.html, css, js, 이미지 등
+    파일 이름으로 들어오는 요청은 전부 현재 폴더에서 찾아서 서빙
+    """
+    return send_from_directory(".", path)
+
+# ------------------------------
+# 2) AI 피부 분석 API
+# ------------------------------
 
 SYSTEM_PROMPT = """
 당신은 '피부 관리 코치'입니다.
 - 피부과 전문의가 아니며, 의료적 진단/치료/질환명 확정은 하지 않습니다.
 - 사진이나 설명을 기반으로, 사용자의 피부 '경향'과 '관리 방향'을 설명합니다.
 - 특정 질환명(예: 한관종, 지방종, 암, 종양 등)을 단정적으로 말하지 마세요.
-- 대신 '작은 돌기', '양성으로 보이는 패턴', '피지/각질/모공 막힘'처럼 완화된 표현을 사용하세요.
+- 대신 '작은 돌기', '피지/각질/모공 막힘', '양성으로 보이는 패턴'처럼 완화된 표현을 사용하세요.
 - 항상 마지막에 '정확한 진단은 피부과 전문의에게 받으세요.'라는 문장을 포함하세요.
 """
 
@@ -20,11 +43,14 @@ def analyze_skin():
     data = request.json or {}
 
     skin_type = data.get("skin_type", "정보 없음")
-    concerns = data.get("concerns", [])  # 리스트 기대
+    concerns = data.get("concerns", [])
     area = data.get("problem_area", "정보 없음")
     notes = data.get("notes", "")
 
-    concerns_text = ", ".join(concerns) if isinstance(concerns, list) else str(concerns)
+    if isinstance(concerns, list):
+        concerns_text = ", ".join(concerns)
+    else:
+        concerns_text = str(concerns)
 
     user_prompt = f"""
 사용자의 피부 고민 정보는 다음과 같습니다:
@@ -61,9 +87,10 @@ def analyze_skin():
 말투는:
 - 실제 사람이 설명해주는 것처럼 부드럽게
 - 너무 의학 논문처럼 딱딱하지 않게
-- 그러나 감정과장(공포심 유발)은 피하고 차분하게.
+- 그러나 공포심 유발은 피하고 차분하게.
 """
 
+    # OpenAI Responses API 호출
     completion = client.responses.create(
         model="gpt-4.1-mini",
         input=[
@@ -72,12 +99,14 @@ def analyze_skin():
         ],
     )
 
-    # 최신 responses API 기준 파싱
+    # 텍스트만 추출
     analysis_text = completion.output[0].content[0].text
 
     return jsonify({"analysis": analysis_text})
 
-
+# ------------------------------
+# 3) 로컬 테스트용
+# ------------------------------
 if __name__ == "__main__":
-    # 로컬 테스트용
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
