@@ -8,7 +8,6 @@
     :root {
       --primary: #c7b3ff;
       --primary-strong: #8f7bff;
-      --accent-soft: #f4e5c8;
       --bg-deep: #05040b;
       --bg-top: #111322;
       --glass: rgba(8, 10, 24, 0.92);
@@ -239,7 +238,6 @@
   </div>
 
   <script>
-    // URL 파라미터에서 이미지 데이터 가져오기
     function getImageFromQuery() {
       const params = new URLSearchParams(window.location.search);
       const imgData = params.get("img");
@@ -260,7 +258,6 @@
       imgEl.src = decodeURIComponent(imgData);
     };
 
-    // AI 분석 시작 → result.html로 이미지 데이터 전달
     function startAnalysis() {
       const params = new URLSearchParams(window.location.search);
       const imgData = params.get("img");
@@ -271,11 +268,9 @@
         return;
       }
 
-      // 나중에 loading.html을 끼우고 싶으면 여기서 한 번 더 거치면 됨
-      window.location.href = `result.html?img=${encodeURIComponent(imgData)}`;
+      window.location.href = "result.html?img=" + encodeURIComponent(imgData);
     }
 
-    // 첫 페이지로 돌아가기
     function goBack() {
       window.location.href = "index.html";
     }
