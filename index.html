@@ -106,15 +106,13 @@
       margin-bottom: 16px;
     }
 
- .description {
-  font-size: 0.98rem;
-  text-align: center;
-  line-height: 1.45;
-  color: var(--text-sub);
-
-  margin-bottom: 26px;   /* ← PHOTO UPLOAD과 간격 확보: 기존보다 더 여유있게 조절됨 */
-}
-
+    .description {
+      font-size: 0.98rem;
+      text-align: center;
+      line-height: 1.45;
+      color: var(--text-sub);
+      margin-bottom: 26px; /* PHOTO UPLOAD과 간격 확보 */
+    }
 
     .section-box {
       background:
@@ -161,7 +159,7 @@
       overflow: hidden;
     }
 
-    /* 중요한 부분: label 안 input 터치 가능하게 */
+    /* label 안 input 터치 가능하게 */
     input[type=file] {
       position: absolute;
       inset: 0;
@@ -238,12 +236,11 @@
     <h1>AI 피부 코치</h1>
     <div class="subtitle">PHOTO • ANALYSIS • ROUTINE</div>
 
-  <div class="description">
-  얼굴이 보이는 사진 한 장만 올리면,<br />
-  AI가 피부 분석·루틴·추천 제품을<br />
-  안내해드립니다.
-</div>
-
+    <div class="description">
+      얼굴이 보이는 사진 한 장만 올리면,<br />
+      AI가 피부 분석·루틴·추천 제품을<br />
+      안내해드립니다.
+    </div>
 
     <!-- 업로드 박스 -->
     <div class="section-box">
@@ -284,13 +281,19 @@
 </div>
 
 <script>
+  // 사진 선택/촬영 후 → base64 변환 → sessionStorage → confirm.html 이동
   function goNextPage(event) {
-    const file = event.target.files[0];
+    const file = event.target.files && event.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = function (e) {
-      sessionStorage.setItem("uploadedImage", e.target.result);
+      const base64 = e.target.result;
+      if (!base64) {
+        alert("이미지를 불러오는 중 문제가 발생했습니다. 다시 시도해주세요.");
+        return;
+      }
+      sessionStorage.setItem("uploadedImage", base64);
       window.location.href = "confirm.html";
     };
     reader.readAsDataURL(file);
@@ -302,9 +305,13 @@
     let text = "📅 오늘 기록 없음";
 
     if (raw) {
-      const history = JSON.parse(raw);
-      if (history.some(h => h.date === today)) {
-        text = "📅 오늘 기록 있음 → 바로 보기";
+      try {
+        const history = JSON.parse(raw);
+        if (Array.isArray(history) && history.some(h => h.date === today)) {
+          text = "📅 오늘 기록 있음 → 바로 보기";
+        }
+      } catch (_) {
+        // JSON 파싱 실패 시 그냥 기본 문구 유지
       }
     }
     document.getElementById("today-status").innerText = text;
@@ -327,6 +334,3 @@
 
 </body>
 </html>
-
-
-
