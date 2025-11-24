@@ -22,7 +22,7 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 미들웨어 설정
+// ===== 미들웨어 설정 =====
 app.use(cors());
 app.use(
   bodyParser.json({
@@ -37,11 +37,31 @@ app.use(
   })
 );
 
-// 정적 파일 서빙 (index.html, confirm.html, result.html 등)
-// → HTML 파일들은 /public 폴더에 위치한다고 가정
+// ===== 정적 파일 서빙 설정 =====
+// 1) /public 폴더가 있다면 거기서도 파일 서빙
 app.use(express.static(path.join(__dirname, "public")));
 
-// OpenAI 클라이언트
+// 2) HTML 파일이 server.js와 같은 폴더에 있어도 동작하도록 루트도 정적 경로로 추가
+app.use(express.static(__dirname));
+
+// 3) 루트("/") 접속 시 index.html 반환
+app.get("/", (req, res) => {
+  const publicIndex = path.join(__dirname, "public", "index.html");
+  const rootIndex = path.join(__dirname, "index.html");
+
+  res.sendFile(publicIndex, (err) => {
+    if (err) {
+      res.sendFile(rootIndex, (err2) => {
+        if (err2) {
+          console.error("❌ index.html을 찾을 수 없습니다.");
+          res.status(404).send("index.html 파일을 찾을 수 없습니다.");
+        }
+      });
+    }
+  });
+});
+
+// ===== OpenAI 클라이언트 =====
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -180,7 +200,7 @@ app.post("/api/skin-analyze", async (req, res) => {
   }
 });
 
-// 포트 설정 (Render에서 PORT 환경변수 사용)
+// ===== 서버 실행 =====
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
