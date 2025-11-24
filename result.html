@@ -313,6 +313,7 @@
       border-top: 1px solid rgba(15,23,42,0.9);
     }
 
+    /* 기존 버튼 스타일 (혹시 다른 곳에서 쓸 수도 있으니 유지) */
     .btn {
       width: 100%;
       padding: 11px 0;
@@ -332,6 +333,45 @@
       border: 1px solid rgba(148,163,255,0.5);
       color: var(--text-main);
       box-shadow: none;
+    }
+
+    /* ▶ 하단 4개 버튼을 위한 새 스타일 */
+    .action-btn {
+      width: 100%;
+      padding: 13px 14px;
+      margin-top: 9px;
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,255,0.45);
+      background:
+        radial-gradient(circle at top left, rgba(148,163,255,0.18), transparent 60%),
+        rgba(12,16,40,0.95);
+      color: #e5e7ff;
+      font-size: 0.95rem;
+      font-weight: 620;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow:
+        0 6px 18px rgba(0,0,0,0.45),
+        0 0 0 1px rgba(15,23,42,0.8);
+      transition: all 0.18s ease-out;
+    }
+
+    .action-btn:hover {
+      background:
+        radial-gradient(circle at top left, rgba(191,219,254,0.22), transparent 60%),
+        rgba(16,22,54,0.98);
+      transform: translateY(-2px);
+      box-shadow:
+        0 10px 26px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(129,140,248,0.9);
+    }
+
+    .action-icon {
+      font-size: 1.25rem;
+      opacity: 0.92;
     }
   </style>
 </head>
@@ -428,25 +468,30 @@
       </div>
     </div>
 
+    <!-- 하단 버튼 4개 -->
     <div class="btn-wrap">
       <!-- 1: 추천 제품 보러가기 -->
-      <button class="btn btn-secondary" onclick="goProducts()">
-        최근 진단 기반 추천 제품 보기
+      <button class="action-btn" onclick="goProducts()">
+        <span class="action-icon">🧴</span>
+        <span>최근 진단 기반 추천 제품 보기</span>
       </button>
 
       <!-- 2: AI 피부 상담 챗봇 -->
-      <button class="btn btn-secondary" onclick="goChat()">
-        AI 피부 상담 챗봇으로 이동
+      <button class="action-btn" onclick="goChat()">
+        <span class="action-icon">💬</span>
+        <span>AI 피부 상담 챗봇으로 이동</span>
       </button>
 
-      <!-- 3: 첫 화면으로 돌아가기 (색 통일: secondary로 변경) -->
-      <button class="btn btn-secondary" onclick="goHome()">
-        첫 화면으로 돌아가기
+      <!-- 3: 첫 화면으로 돌아가기 -->
+      <button class="action-btn" onclick="goHome()">
+        <span class="action-icon">🏠</span>
+        <span>첫 화면으로 돌아가기</span>
       </button>
 
       <!-- 4: 다른 사진으로 다시 진단 -->
-      <button class="btn btn-secondary" onclick="retry()">
-        다른 사진으로 다시 진단
+      <button class="action-btn" onclick="retry()">
+        <span class="action-icon">📸</span>
+        <span>다른 사진으로 다시 진단</span>
       </button>
     </div>
   </div>
