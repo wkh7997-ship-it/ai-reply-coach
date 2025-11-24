@@ -311,26 +311,21 @@
     </div>
   </div>
 
-  <script>
+ <script>
   function goNextPage(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const imageData = e.target.result; // dataURL 그대로
-      // 브라우저 임시 저장소에 보관
-      sessionStorage.setItem("uploadedImage", imageData);
-      // 2페이지로 이동 (쿼리스트링 없이)
-      window.location.href = "confirm.html";
-    };
-    reader.readAsDataURL(file);
+    // 일단은 사진 데이터는 안 쓰고, 2페이지로만 이동 테스트
+    window.location.href = "confirm.html";
   }
 </script>
 
 
+
 </body>
 </html>
+
 
 
 
