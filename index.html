@@ -154,13 +154,7 @@
       background: linear-gradient(135deg, var(--primary-strong), var(--primary));
       color: #f9fafb;
       box-shadow: 0 10px 24px rgba(79, 70, 229, 0.55);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: #e5e7eb;
-      border: 1px solid rgba(148, 163, 255, 0.6);
-      margin-top: 6px;
+      margin-bottom: 8px;
     }
 
     .btn:active {
@@ -174,6 +168,11 @@
       font-size: 0.82rem;
       color: var(--text-sub);
       line-height: 1.4;
+    }
+
+    /* 숨겨진 파일 input */
+    input[type=file] {
+      display: none;
     }
   </style>
 </head>
@@ -191,42 +190,55 @@
         </div>
       </div>
 
-      <!-- 타이틀 -->
       <h1>AI 피부 코치</h1>
       <div class="subtitle">PHOTO • ANALYSIS • ROUTINE</div>
 
-      <!-- 짧은 설명 -->
       <div class="description">
         얼굴이 보이는 사진 <span class="highlight">한 장</span>만 올리면<br />
-        AI가 <span class="highlight">피부 상태·루틴·추천 제품</span>을<br />
-        간단하게 정리해 드려요.
+        AI가 피부 상태·루틴·추천 제품을 알려드려요.
       </div>
 
-      <!-- 업로드 영역 -->
       <div class="section-box">
         <div class="section-title">사진 업로드 / 촬영</div>
         <div class="section-hint">
           갤러리에서 고르거나<br />
-          밝은 곳에서 고민 부위가 보이게 찍어주세요.
+          밝은 곳에서 촬영해주세요.
         </div>
-        <!-- TODO: 실제 업로드 함수 연결 -->
-        <button class="btn btn-primary" onclick="alert('사진 선택 기능 연결 예정')">
-          📷 사진 선택하기
-        </button>
+
+        <!-- 파일 선택 -->
+        <label class="btn btn-primary">
+          📁 파일에서 선택하기
+          <input type="file" accept="image/*" onchange="goNextPage(event)">
+        </label>
+
+        <!-- 카메라 촬영 -->
+        <label class="btn btn-primary">
+          📷 카메라로 촬영하기
+          <input type="file" accept="image/*" capture="environment" onchange="goNextPage(event)">
+        </label>
       </div>
 
-      <!-- 메인 액션 -->
-      <!-- TODO: 결과 페이지 이동 연결 -->
-      <button class="btn btn-ghost" onclick="alert('AI 진단 페이지로 이동 예정')">
-        AI 진단 시작하기
-      </button>
-
-      <!-- 하단 안내 -->
       <div class="footer-text">
-        이 화면에서는 사진만 올리면 되고,<br />
-        자세한 결과와 설명은 다음 페이지에서 보여드려요.
+        이 화면에서는 사진만 올리면 됩니다.<br />
+        분석은 다음 화면에서 시작됩니다.
       </div>
+
     </div>
   </div>
+
+  <script>
+    function goNextPage(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imageData = encodeURIComponent(e.target.result);
+        window.location.href = `confirm.html?img=${imageData}`;
+      };
+      reader.readAsDataURL(file);
+    }
+  </script>
+
 </body>
 </html>
