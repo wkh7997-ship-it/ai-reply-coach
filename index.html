@@ -312,20 +312,22 @@
   </div>
 
   <script>
-    function goNextPage(event) {
-      const file = event.target.files[0];
-      if (!file) return;
+  function goNextPage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const imageData = encodeURIComponent(e.target.result);
-        window.location.href = `confirm.html?img=${imageData}`;
-      };
-      reader.readAsDataURL(file);
-    }
-  </script>
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const imageData = e.target.result; // 그 자체를 씀
+      // 2페이지: confirm.html 로 이동
+      window.location.href = "confirm.html?img=" + encodeURIComponent(imageData);
+    };
+    reader.readAsDataURL(file);
+  }
+</script>
 
 </body>
 </html>
+
 
 
