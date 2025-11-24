@@ -1,122 +1,188 @@
 // server.js
+// 메인 서버 파일: Render에서 실행되는 실제 서버
+
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import dotenv from "dotenv";
-import OpenAI from "openai";
 import path from "path";
 import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import OpenAI from "openai";
 
+// .env 로드 (OPENAI_API_KEY 포함)
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+if (!process.env.OPENAI_API_KEY) {
+  console.error("❌ OPENAI_API_KEY가 설정되어 있지 않습니다. .env 파일을 확인하세요.");
+}
 
-// ES 모듈에서 __dirname 구현
+const app = express();
+
+// __dirname 대체 (ES Module 방식)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 미들웨어
+// 미들웨어 설정
 app.use(cors());
-app.use(bodyParser.json({ limit: "10mb" })); // 이미지 base64 때문에 용량 늘림
+app.use(
+  bodyParser.json({
+    // base64 이미지 때문에 넉넉하게
+    limit: "50mb",
+  })
+);
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+    limit: "50mb",
+  })
+);
 
 // 정적 파일 서빙 (index.html, confirm.html, result.html 등)
-app.use(express.static(__dirname));
+// → HTML 파일들은 /public 폴더에 위치한다고 가정
+app.use(express.static(path.join(__dirname, "public")));
 
-// OpenAI 클라이언트 설정 (API 키는 코드에 직접 쓰지 말고 환경변수에서만!)
+// OpenAI 클라이언트
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// 피부 분석 API
-// 프론트에서: POST /api/skin-analyze  { imageData: "data:image/jpeg;base64,..." }
+// 헬스 체크용
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
+/**
+ * 피부 분석 API
+ * POST /api/skin-analyze
+ *
+ * body 예시:
+ * {
+ *   "imageBase64": "data:image/jpeg;base64,...."
+ * }
+ */
 app.post("/api/skin-analyze", async (req, res) => {
   try {
-    const { imageData } = req.body;
+    // 혹시 다른 키 이름으로 들어와도 대응하도록 안전하게 처리
+    const {
+      imageBase64: rawImageBase64,
+      uploadedImage,
+      image,
+      dataUrl,
+    } = req.body || {};
 
-    if (!imageData) {
-      return res.status(400).json({ ok: false, error: "imageData가 필요합니다." });
+    const imageBase64 =
+      rawImageBase64 || uploadedImage || image || dataUrl;
+
+    // 디버깅용: 어떤 키가 들어왔는지 로그
+    console.log("📩 /api/skin-analyze body keys:", Object.keys(req.body || {}));
+
+    if (!imageBase64 || typeof imageBase64 !== "string") {
+      return res.status(400).json({
+        success: false,
+        error:
+          "imageBase64(또는 uploadedImage) 필드가 필요합니다. 프론트에서 전송 필드를 확인하세요.",
+      });
     }
 
-    // OpenAI Responses API 호출
-    const response = await openai.responses.create({
+    if (!process.env.OPENAI_API_KEY) {
+      return res.status(500).json({
+        success: false,
+        error: "서버에 OPENAI_API_KEY가 설정되어 있지 않습니다.",
+      });
+    }
+
+    const systemPrompt = `
+당신은 전문 피부과 전문의입니다.
+사용자가 보낸 얼굴 사진을 분석해서 피부 상태를 평가합니다.
+
+반드시 다음 JSON 형식으로만 대답하세요. 추가 설명 문장은 절대 넣지 마세요.
+
+{
+  "score": number,           // 0~100, 점수가 높을수록 전반적으로 건강한 피부
+  "skinType": "건성" | "지성" | "복합성" | "중성",
+  "issues": string[],        // 주요 고민: 예) ["모공", "트러블", "색소침착", "주름", "피지", "홍조"]
+  "riskLevel": "low" | "mid" | "high",
+  "summary": string,         // 한 줄 요약 (한국어, 1~2문장)
+  "detailAdvice": string     // 사용자의 상태를 바탕으로 한 4~7줄 정도의 구체적인 피부 관리 팁 (한국어)
+}
+    `.trim();
+
+    const completion = await openai.chat.completions.create({
       model: "gpt-4.1-mini",
-      input: [
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
         {
           role: "user",
           content: [
             {
-              type: "input_text",
-              text: `
-너는 뷰티 카운셀러야. 아래 얼굴 사진을 보고 피부 상태의 "경향"만 설명해 줘.
-의학적 진단이나 병명은 절대 말하지 마.
-항상 JSON 하나로만 답하고, 한국어를 사용해.
-
-반드시 이 구조를 지켜:
-{
-  "t_zone_oil": 0~5 정수,
-  "u_zone_dry": 0~5 정수,
-  "redness": 0~5 정수,
-  "texture_bumps": 0~5 정수,
-  "note": "한 줄~두 줄 정도의 요약 코멘트",
-  "trend_text": "사람이 읽기 좋은 자연스러운 피부 경향 설명 4~7문장",
-  "care_text": "관리 방향과 루틴을 설명하는 4~7문장",
-  "warning_text": "피부과 상담이 필요할 수 있는 경우를 안내하는 안전 문장 2~4문장"
-}
-
-중요 규칙:
-- 병명(예: 한관종, 지루성피부염, 두드러기, 암, 종양 등)을 절대 쓰지 마.
-- "악성/양성" 같은 의학적 판정 단어를 쓰지 마.
-- 대신 '오돌토돌한 돌기, 피지, 각질, 붉음기, 민감한 경향, 건조함' 같은 표현만 사용해.
-- warning_text에는 항상 "정확한 진단은 피부과 전문의에게"라는 뉘앙스의 문장을 포함해.
-              `,
+              type: "text",
+              text: "다음 얼굴 사진을 보고 위 JSON 형식에 맞춰서 피부 상태를 분석해 주세요.",
             },
             {
               type: "input_image",
-              // 프론트에서 보낸 data URL 그대로 사용
-              image_url: imageData,
+              image_url: {
+                // 클라이언트에서 "data:image/jpeg;base64,..." 형식으로 보내주면 그대로 사용
+                url: imageBase64,
+              },
             },
           ],
         },
       ],
     });
 
-    // Responses API에서 텍스트 꺼내기
-    let jsonText;
-    try {
-      // 보통 이 구조로 내려옴 (안전하게 try/catch)
-      jsonText = response.output[0].content[0].text;
-    } catch (e) {
-      console.error("응답 파싱 실패:", e);
-      return res.status(500).json({
-        ok: false,
-        error: "AI 응답을 파싱하는 중 문제가 발생했습니다.",
-      });
+    const messageContent = completion.choices?.[0]?.message?.content;
+    if (!messageContent) {
+      throw new Error("OpenAI 응답에서 content를 찾을 수 없습니다.");
     }
 
-    let data;
+    let parsed;
     try {
-      data = JSON.parse(jsonText);
+      parsed = JSON.parse(messageContent);
     } catch (e) {
-      console.error("JSON 변환 실패. 원본 텍스트:", jsonText);
-      return res.status(500).json({
-        ok: false,
-        error: "AI 응답이 JSON 형식이 아닙니다.",
-        raw: jsonText,
-      });
+      console.error("🔴 JSON 파싱 오류, 원본 content:", messageContent);
+      throw new Error("AI 응답을 파싱하는 중 오류가 발생했습니다.");
     }
 
-    return res.json({ ok: true, data });
-  } catch (err) {
-    console.error("OpenAI 호출 중 오류:", err);
+    const safeResult = {
+      score:
+        typeof parsed.score === "number"
+          ? Math.min(Math.max(parsed.score, 0), 100)
+          : 70,
+      skinType: parsed.skinType || "복합성",
+      issues: Array.isArray(parsed.issues) ? parsed.issues : [],
+      riskLevel:
+        parsed.riskLevel === "low" ||
+        parsed.riskLevel === "mid" ||
+        parsed.riskLevel === "high"
+          ? parsed.riskLevel
+          : "mid",
+      summary: parsed.summary || "전반적으로 무난한 피부 상태입니다.",
+      detailAdvice:
+        parsed.detailAdvice ||
+        "세안 후 기본 보습을 꼼꼼하게 해주시고, 자외선 차단제를 매일 사용하는 것만으로도 지금보다 훨씬 건강한 피부 컨디션을 유지할 수 있습니다.",
+    };
+
+    return res.json({
+      success: true,
+      data: safeResult,
+    });
+  } catch (error) {
+    console.error("❌ /api/skin-analyze 오류:", error);
+
     return res.status(500).json({
-      ok: false,
-      error: "AI 분석 중 오류가 발생했습니다.",
+      success: false,
+      error: "피부 분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
     });
   }
 });
 
-// 서버 시작
+// 포트 설정 (Render에서 PORT 환경변수 사용)
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-  console.log(`Backend server running on port ${PORT}`);
+  console.log(`✅ 서버가 포트 ${PORT}에서 실행 중입니다. (PORT=${PORT})`);
 });
