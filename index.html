@@ -14,210 +14,244 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 16px;
+      padding: 18px;
     }
     .card {
       width: 100%;
-      max-width: 420px;
+      max-width: 460px;
       background: rgba(15,23,42,0.96);
-      border-radius: 18px;
-      border: 1px solid rgba(148,163,184,0.5);
-      box-shadow: 0 20px 45px rgba(15,23,42,0.9);
-      padding: 20px 18px 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(148,163,184,0.6);
+      box-shadow: 0 22px 50px rgba(15,23,42,0.9);
+      padding: 22px 20px 18px;
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #e0f2fe 0, #a5b4fc 25%, #4f46e5 55%, #020617 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 30px rgba(79,70,229,0.9);
+      font-size: 22px;
+    }
+    .title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
     h1 {
-      font-size: 20px;
-      margin-bottom: 8px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .badge {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #a5b4fc;
     }
     .sub {
-      font-size: 13px;
-      color: #9ca3af;
-      margin-bottom: 16px;
+      font-size: 14px;
+      color: #d1d5db;
+      margin-bottom: 18px;
+      line-height: 1.6;
     }
-    label {
-      font-size: 13px;
-      margin-bottom: 4px;
-      display: block;
-      color: #e5e7eb;
-    }
-    .field {
-      margin-bottom: 12px;
-    }
-    input[type="file"],
-    select,
-    textarea {
-      width: 100%;
-      font-size: 13px;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(148,163,184,0.7);
+
+    .upload-area {
       background: #020617;
-      color: #e5e7eb;
-      outline: none;
+      border-radius: 14px;
+      border: 1px dashed rgba(148,163,184,0.8);
+      padding: 16px 14px;
+      text-align: center;
+      margin-bottom: 14px;
     }
-    textarea {
-      resize: vertical;
-      min-height: 70px;
+    .upload-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
     }
-    select:focus, textarea:focus {
-      border-color: #6366f1;
-      box-shadow: 0 0 0 1px rgba(99,102,241,0.7);
-    }
-    .hint {
-      font-size: 11px;
+    .upload-desc {
+      font-size: 12px;
       color: #9ca3af;
-      margin-top: 3px;
+      margin-bottom: 10px;
+      line-height: 1.4;
     }
-    button {
+    #photo-name {
+      font-size: 12px;
+      color: #cbd5f5;
+      margin-top: 6px;
+      min-height: 16px;
+    }
+    #photo-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(129,140,248,0.9);
+      padding: 9px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      background: linear-gradient(135deg,#111827,#1f2937);
+      color: #e5e7eb;
+      cursor: pointer;
+    }
+
+    .preview-wrap {
+      margin-top: 10px;
+      text-align: center;
+      display: none;
+    }
+    .preview-wrap img {
+      max-width: 100%;
+      max-height: 260px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.9);
+      object-fit: cover;
+      background: #020617;
+    }
+
+    button[type="submit"] {
       width: 100%;
       border: none;
       border-radius: 999px;
-      margin-top: 6px;
-      padding: 10px 14px;
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      margin-top: 14px;
+      padding: 11px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       cursor: pointer;
       background: linear-gradient(135deg,#4f46e5,#6366f1,#0ea5e9);
       color: #eef2ff;
-      box-shadow: 0 14px 30px rgba(79,70,229,0.9);
+      box-shadow: 0 16px 32px rgba(79,70,229,0.95);
     }
-    button:disabled {
+    button[type="submit"]:disabled {
       opacity: 0.7;
       box-shadow: none;
       cursor: default;
     }
+
     .small {
       margin-top: 10px;
       font-size: 11px;
       color: #9ca3af;
       text-align: center;
-      line-height: 1.4;
+      line-height: 1.5;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>AI 피부 코치</h1>
+    <div class="header-row">
+      <div class="logo-mark">💧</div>
+      <div class="title-wrap">
+        <h1>AI 피부 코치</h1>
+        <div class="badge">PHOTO · ANALYSIS · ROUTINE</div>
+      </div>
+    </div>
+
     <p class="sub">
-      얼굴이나 트러블이 보이는 사진을 찍고,<br>
-      피부 타입과 고민을 선택하면 다음 페이지에서
-      <strong>피부 진단 + 루틴 + 제품 추천 + 챗봇</strong>을 볼 수 있어요.
+      얼굴이나 트러블이 보이게 사진 한 장만 올리면<br>
+      다음 페이지에서 <strong>피부 상태 설명 · 루틴 · 제품 추천</strong>을 한 번에 볼 수 있어요.
     </p>
 
     <form id="skin-form">
-      <div class="field">
-        <label for="photo">얼굴 / 트러블 사진</label>
-        <input
-          type="file"
-          id="photo"
-          accept="image/*"
-          capture="user"
-        />
-        <p class="hint">가능하면 조명 밝게, 얼굴이나 고민 부위가 잘 보이게 찍어주세요. (사진 없이도 테스트 가능)</p>
+      <!-- 실제 파일 입력은 숨기고 버튼으로만 조작 -->
+      <input
+        type="file"
+        id="photo"
+        accept="image/*"
+        style="display:none"
+      />
+
+      <div class="upload-area">
+        <div class="upload-title">사진 업로드 또는 촬영</div>
+        <div class="upload-desc">
+          갤러리에서 고르거나 카메라로 찍어서 올려주세요.<br>
+          (조명은 밝게, 고민 부위가 잘 보이게)
+        </div>
+        <button type="button" id="photo-btn">사진 선택하기</button>
+        <div id="photo-name"></div>
       </div>
 
-      <div class="field">
-        <label for="skin-type">피부 타입</label>
-        <select id="skin-type" required>
-          <option value="모르겠음">모르겠음 / 잘 모르겠어요</option>
-          <option value="건성">건성</option>
-          <option value="지성">지성</option>
-          <option value="복합성">복합성</option>
-          <option value="민감성">민감성</option>
-          <option value="중성">중성</option>
-        </select>
+      <div class="preview-wrap" id="preview-wrap">
+        <img id="preview-img" alt="선택한 사진 미리보기" />
       </div>
 
-      <div class="field">
-        <label for="main-concern">가장 신경 쓰이는 고민</label>
-        <select id="main-concern" required>
-          <option value="여드름">여드름 / 트러블</option>
-          <option value="모공피부결">모공 / 피부결 / 블랙헤드</option>
-          <option value="홍조민감">홍조 / 민감 / 붉음</option>
-          <option value="잡티색소">잡티 / 색소 / 기미</option>
-          <option value="주름탄력">주름 / 탄력 / 노화</option>
-          <option value="건조각질">건조 / 각질 / 당김</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="age-range">나이대</label>
-        <select id="age-range">
-          <option value="10대">10대</option>
-          <option value="20대" selected>20대</option>
-          <option value="30대">30대</option>
-          <option value="40대 이상">40대 이상</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="budget-range">제품 예산 감각</label>
-        <select id="budget-range">
-          <option value="가성비">가성비 위주</option>
-          <option value="중간가격">중간 가격대</option>
-          <option value="프리미엄">프리미엄도 괜찮아요</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label for="extra-notes">현재 루틴 / 사용 제품 / 추가 메모</label>
-        <textarea
-          id="extra-notes"
-          placeholder="예: 아침엔 물세안만, 밤엔 폼클+수분크림 / 턱 주변에 여드름 자주 남 / 겨울이라 많이 건조함"
-        ></textarea>
-      </div>
-
-      <button type="submit" id="submit-btn">피부 분석 시작하기</button>
+      <button type="submit" id="submit-btn">AI 진단 시작하기</button>
     </form>
 
     <p class="small">
-      다음 페이지에서 진단 결과와 추천 제품을 한눈에 볼 수 있고,<br>
-      아래 챗봇에게 자유롭게 질문도 할 수 있어요.
+      이 화면에서는 사진만 올리면 되고,<br>
+      자세한 설명과 루틴은 다음 페이지에서 확인할 수 있어요.
     </p>
   </div>
 
   <script>
+    const fileInput = document.getElementById('photo');
+    const photoBtn = document.getElementById('photo-btn');
+    const photoName = document.getElementById('photo-name');
+    const previewWrap = document.getElementById('preview-wrap');
+    const previewImg = document.getElementById('preview-img');
     const form = document.getElementById('skin-form');
     const submitBtn = document.getElementById('submit-btn');
 
+    // 파일 선택 버튼 눌렀을 때: 시스템에서 "카메라 or 갤러리" 선택 뜸
+    photoBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // 파일 선택 후 표시 + 미리보기
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (!file) {
+        photoName.textContent = '';
+        previewWrap.style.display = 'none';
+        return;
+      }
+      photoName.textContent = `선택된 파일: ${file.name}`;
+      const reader = new FileReader();
+      reader.onload = () => {
+        previewImg.src = reader.result;
+        previewWrap.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    });
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      submitBtn.disabled = true;
-      submitBtn.textContent = '준비 중...';
-
-      const skinType = document.getElementById('skin-type').value;
-      const mainConcern = document.getElementById('main-concern').value;
-      const ageRange = document.getElementById('age-range').value;
-      const budgetRange = document.getElementById('budget-range').value;
-      const extraNotes = document.getElementById('extra-notes').value.trim();
-      const fileInput = document.getElementById('photo');
       const file = fileInput.files[0];
 
-      const payload = {
-        skinType,
-        mainConcern,
-        ageRange,
-        budgetRange,
-        extraNotes,
-        imageData: null
-      };
+      if (!file) {
+        alert('먼저 얼굴이나 트러블 사진을 선택해 주세요.');
+        return;
+      }
 
-      // 사진이 있으면 base64로 변환해서 같이 저장
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          payload.imageData = reader.result; // data URL
-          localStorage.setItem('skinInput', JSON.stringify(payload));
-          window.location.href = 'result.html';
+      submitBtn.disabled = true;
+      submitBtn.textContent = '분석 준비 중...';
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const payload = {
+          // 👉 아직 두 번째 페이지(result.html)는
+          // 피부타입/고민/나이 등 값을 기대하니까
+          // 첫 화면에서는 UI는 없애고, 기본값만 넣어서 넘겨줌
+          skinType: "모르겠음",
+          mainConcern: "여드름",
+          ageRange: "20대",
+          budgetRange: "가성비",
+          extraNotes: "",
+          imageData: reader.result  // 사진 데이터
         };
-        reader.readAsDataURL(file);
-      } else {
-        // 사진 없이도 테스트 가능
+
         localStorage.setItem('skinInput', JSON.stringify(payload));
         window.location.href = 'result.html';
-      }
+      };
+      reader.readAsDataURL(file);
     });
   </script>
 </body>
