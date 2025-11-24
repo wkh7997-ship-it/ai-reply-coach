@@ -14,7 +14,6 @@
       --text-main: #f9fafb;
       --text-sub: #cbd5f5;
       --text-muted: #9ca3c9;
-      --badge: #1f2937;
     }
 
     * {
@@ -82,7 +81,7 @@
     .header {
       text-align: center;
       margin-top: 14px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .title {
@@ -98,155 +97,125 @@
       line-height: 1.4;
     }
 
-    .pill-row {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 10px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
+    .result-box {
+      margin-top: 12px;
+      padding: 12px 11px;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(30, 64, 175, 0.6);
+      min-height: 150px;
+      position: relative;
+      overflow-y: auto;
     }
 
-    .pill {
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 255, 0.5);
-      font-size: 0.75rem;
-      color: var(--text-sub);
-    }
-
-    .section {
-      margin-top: 10px;
-      padding: 10px 10px 9px;
-      border-radius: 16px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(30, 64, 175, 0.55);
-    }
-
-    .section-title {
+    .result-title {
       font-size: 0.9rem;
-      font-weight: 700;
+      font-weight: 600;
       margin-bottom: 6px;
       display: flex;
       align-items: center;
-      gap: 4px;
-    }
-
-    .section-title span.icon {
-      font-size: 1.05rem;
-    }
-
-    .section-body {
-      font-size: 0.82rem;
-      color: var(--text-sub);
-      line-height: 1.5;
-    }
-
-    .badge-row {
-      display: flex;
-      flex-wrap: wrap;
       gap: 6px;
-      margin-top: 4px;
     }
 
-    .badge {
-      font-size: 0.78rem;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: var(--badge);
-      border: 1px solid rgba(55, 65, 81, 0.9);
-      color: #e5e7eb;
-    }
-
-    .routine-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .routine-col {
-      flex: 1;
-      border-radius: 12px;
-      padding: 6px 7px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(55, 65, 81, 0.8);
-    }
-
-    .routine-col-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .routine-col ul {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    .routine-col li {
-      font-size: 0.78rem;
+    .result-body {
+      font-size: 0.84rem;
       color: var(--text-sub);
-      line-height: 1.4;
+      line-height: 1.6;
+      white-space: pre-line;
     }
 
-    .product-list {
-      margin-top: 2px;
-    }
-
-    .product-item {
+    .loading {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      padding: 5px 0;
-      border-top: 1px solid rgba(30, 64, 175, 0.4);
-    }
-
-    .product-item:first-child {
-      border-top: none;
-    }
-
-    .product-info {
-      font-size: 0.8rem;
-      color: var(--text-sub);
-    }
-
-    .product-info strong {
-      display: block;
-      color: #e5e7eb;
+      gap: 8px;
       font-size: 0.82rem;
-    }
-
-    .product-btn {
-      font-size: 0.75rem;
-      padding: 5px 9px;
-      border-radius: 999px;
-      border: none;
-      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
-      color: #f9fafb;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .footer-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 10px;
-      font-size: 0.78rem;
       color: var(--text-muted);
     }
 
-    .footer-link-btn {
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #a5b4fc;
+      animation: blink 1s infinite ease-in-out;
+    }
+
+    .dot:nth-child(2) { animation-delay: 0.15s; }
+    .dot:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.2; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-2px); }
+    }
+
+    .btn-row {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .btn {
+      width: 100%;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 255, 0.6);
-      padding: 6px 10px;
-      font-size: 0.78rem;
+      padding: 11px 0;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 650;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.18),
+        transparent 45%,
+        rgba(148, 163, 255, 0.25)
+      );
+      opacity: 0;
+      transition: opacity 0.2s ease-out;
+      pointer-events: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
+      color: #f9fafb;
+      box-shadow:
+        0 14px 28px rgba(55, 48, 163, 0.75),
+        0 0 0 1px rgba(199, 179, 255, 0.55);
+    }
+
+    .btn-secondary {
       background: transparent;
       color: #e5e7eb;
-      cursor: pointer;
+      border: 1px solid rgba(148, 163, 255, 0.6);
+    }
+
+    .btn-tertiary {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      font-size: 0.8rem;
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 8px 18px rgba(55, 48, 163, 0.7);
+    }
+
+    .btn:hover::before {
+      opacity: 1;
     }
   </style>
 </head>
@@ -258,132 +227,81 @@
       <div class="header">
         <div class="title">AI 진단 결과</div>
         <div class="subtitle">
-          촬영한 사진을 기반으로 한<br />
-          피부 상태 요약과 루틴, 추천 제품이에요.
+          업로드한 사진을 기반으로 한<br />
+          피부 상태 분석 결과입니다.
         </div>
       </div>
 
-      <div class="pill-row">
-        <div class="pill">테스트용 더미 결과</div>
-        <div class="pill">나중에 OpenAI 분석 연결</div>
+      <!-- 진단 결과 영역 -->
+      <div class="result-box">
+        <div class="result-title">
+          <span>🔍 AI 분석 내용</span>
+        </div>
+        <div id="loading" class="loading">
+          <span>피부를 분석하는 중이에요</span>
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+        <div id="result" class="result-body" style="display:none;"></div>
       </div>
 
-      <!-- 1. 피부 상태 요약 -->
-      <div class="section">
-        <div class="section-title">
-          <span class="icon">📊</span>
-          <span>피부 상태 요약</span>
-        </div>
-        <div class="section-body" id="summary-text">
-          T존은 조금 번들거리고, 볼은 살짝 건조한
-          <strong>복합성 피부</strong>에 가깝습니다.<br />
-          모공·피부결·붉은기 정도를 기준으로, 전체 난이도는
-          <strong>중간 단계</strong>로 보입니다.
-        </div>
-      </div>
-
-      <!-- 2. 주요 고민 / 타입 -->
-      <div class="section">
-        <div class="section-title">
-          <span class="icon">🧬</span>
-          <span>피부 타입 & 주요 고민</span>
-        </div>
-        <div class="section-body">
-          아래 항목은 샘플입니다. 나중에 AI 분석 결과에 맞게 자동으로 바꿀 수 있어요.
-          <div class="badge-row">
-            <div class="badge">복합성</div>
-            <div class="badge">모공·피부결</div>
-            <div class="badge">가벼운 유분</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. 추천 루틴 -->
-      <div class="section">
-        <div class="section-title">
-          <span class="icon">🧴</span>
-          <span>추천 루틴 (샘플)</span>
-        </div>
-        <div class="section-body">
-          아침·저녁 루틴 예시입니다. 나중에 AI가 텍스트를 채우도록 만들면 돼요.
-          <div class="routine-row">
-            <div class="routine-col">
-              <div class="routine-col-title">아침</div>
-              <ul>
-                <li>① 순한 젤 타입 클렌저</li>
-                <li>② 수분 토너·에센스</li>
-                <li>③ 가벼운 수분 크림</li>
-                <li>④ SPF 50 선크림</li>
-              </ul>
-            </div>
-            <div class="routine-col">
-              <div class="routine-col-title">저녁</div>
-              <ul>
-                <li>① 1차 세안 후 저자극 클렌저</li>
-                <li>② 진정 토너 (패드 OK)</li>
-                <li>③ 기능성 세럼 (예: 나이아신아마이드)</li>
-                <li>④ 크림 또는 슬리핑팩</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4. 쿠팡 추천 제품 영역 (샘플) -->
-      <div class="section">
-        <div class="section-title">
-          <span class="icon">🛒</span>
-          <span>쿠팡 추천 제품 (샘플)</span>
-        </div>
-        <div class="section-body">
-          아래는 구조 예시입니다. 실제로는 쿠팡 파트너스 링크를 연결하면 돼요.
-          <div class="product-list">
-            <div class="product-item">
-              <div class="product-info">
-                <strong>순한 약산성 클렌저</strong>
-                지복합성 피부용, 과세안 없이 노폐물만 정리
-              </div>
-              <button class="product-btn" onclick="openCoupang('#')">쿠팡에서 보기</button>
-            </div>
-            <div class="product-item">
-              <div class="product-info">
-                <strong>수분·진정 토너</strong>
-                알콜 프리, 자극 없이 레이어링 가능한 타입
-              </div>
-              <button class="product-btn" onclick="openCoupang('#')">쿠팡에서 보기</button>
-            </div>
-            <div class="product-item">
-              <div class="product-info">
-                <strong>가벼운 수분 크림</strong>
-                기초에 처음 입문하는 사람용 기본 보습 크림
-              </div>
-              <button class="product-btn" onclick="openCoupang('#')">쿠팡에서 보기</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer-row">
-        <div>※ 모든 내용은 테스트용 더미 텍스트입니다.</div>
-        <button class="footer-link-btn" onclick="goHome()">다른 사진 다시 진단</button>
+      <!-- 버튼들 -->
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="goPage4()">
+          ➜ 4페이지로 이동
+        </button>
+        <button class="btn btn-secondary" onclick="goPage5()">
+          ➜ 5페이지로 이동
+        </button>
+        <button class="btn btn-tertiary" onclick="goHome()">
+          ← 다른 사진으로 다시 진단
+        </button>
       </div>
     </div>
   </div>
 
   <script>
-    // 나중에 여기에 OpenAI 결과를 반영하면 됨
-    // 예: sessionStorage에서 분석 텍스트를 읽어서 summary-text에 넣기 등
+    // ===== 여기서 OpenAI 연동 예정 =====
+    // 지금은 테스트용으로 더미 텍스트만 보여줌.
+    // 나중에 fetch('/analyze') 등으로 결과를 받아와서
+    // setDiagnosisText(...)에 넣어주면 됨.
 
-    function openCoupang(url) {
-      if (url === '#') {
-        alert('여기에 나중에 쿠팡 파트너스 링크를 넣으면 됩니다.');
-      } else {
-        window.open(url, '_blank');
-      }
+    function setDiagnosisText(text) {
+      const loadingEl = document.getElementById('loading');
+      const resultEl = document.getElementById('result');
+
+      loadingEl.style.display = 'none';
+      resultEl.style.display = 'block';
+      resultEl.textContent = text;
+    }
+
+    // 테스트용 더미 결과 (페이지 들어오면 1초 후 표시)
+    window.onload = function () {
+      // 실제로는 여기에서 sessionStorage에 저장된 이미지 → 서버로 전달 → OpenAI 결과 받아오기
+      setTimeout(function () {
+        const dummy =
+`T존은 살짝 유분이 있고, 볼은 비교적 건조한 복합성 피부로 보입니다.
+
+● 모공 : 코 주변 중심으로 확장된 모공이 관찰됩니다.
+● 붉은기 : 볼과 콧망울에 가벼운 홍조가 있습니다.
+● 트러블 : 뺨과 턱 라인에 잔여 자국과 미세한 잡티가 있습니다.
+
+세안 직후의 당김을 줄이고,
+유수분 밸런스를 맞추는 루틴이 필요해 보입니다.`;
+
+        setDiagnosisText(dummy);
+      }, 1000);
+    };
+
+    // ===== 페이지 이동 =====
+    function goPage4() {
+      window.location.href = 'page4.html';
+    }
+
+    function goPage5() {
+      window.location.href = 'page5.html';
     }
 
     function goHome() {
-      // 사진도 다시 고르게 하기 위해 sessionStorage 초기화
       sessionStorage.removeItem('uploadedImage');
       window.location.href = 'index.html';
     }
