@@ -119,8 +119,17 @@
       text-align: center;
       font-size: 0.93rem;
       color: var(--text-sub);
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       line-height: 1.5;
+    }
+
+    /* 스크롤 힌트 */
+    .scroll-hint {
+      display: none; /* 결과가 로딩된 뒤 JS에서 켬 */
+      text-align: center;
+      font-size: 0.78rem;
+      color: rgba(203,213,255,0.85);
+      margin-bottom: 6px;
     }
 
     .result-wrapper {
@@ -348,6 +357,11 @@
       결과를 불러오는 중입니다...
     </div>
 
+    <!-- 스크롤 안내 문구 -->
+    <div class="scroll-hint" id="scroll-hint">
+      ⬇ 아래로 내려서 루틴과 상세 분석을 확인해 보세요
+    </div>
+
     <div class="card-inner-scroll">
       <!-- 결과 -->
       <div id="result-wrapper" class="result-wrapper">
@@ -425,8 +439,8 @@
         AI 피부 상담 챗봇으로 이동
       </button>
 
-      <!-- 3: 첫 화면으로 돌아가기 -->
-      <button class="btn" onclick="goHome()">
+      <!-- 3: 첫 화면으로 돌아가기 (색 통일: secondary로 변경) -->
+      <button class="btn btn-secondary" onclick="goHome()">
         첫 화면으로 돌아가기
       </button>
 
@@ -499,6 +513,7 @@
     const spinner = document.getElementById("spinner");
     const statusText = document.getElementById("status-text");
     const wrapper = document.getElementById("result-wrapper");
+    const scrollHint = document.getElementById("scroll-hint");
 
     let raw = sessionStorage.getItem("aiSkinResult");
 
@@ -506,6 +521,7 @@
       spinner.style.display = "none";
       statusText.innerText =
         "분석 결과를 찾지 못했어요.\n처음 화면에서 다시 진단을 진행해 주세요.";
+      scrollHint.style.display = "none";
       return;
     }
 
@@ -517,6 +533,7 @@
       spinner.style.display = "none";
       statusText.innerText =
         "결과를 불러오는 중 오류가 발생했습니다.\n다시 진단을 진행해 주세요.";
+      scrollHint.style.display = "none";
       return;
     }
 
@@ -571,6 +588,7 @@
     spinner.style.display = "none";
     statusText.style.display = "none";
     wrapper.style.display = "block";
+    scrollHint.style.display = "block";
   }
 
   function goHome() {
