@@ -12,10 +12,6 @@ import OpenAI from "openai";
 // .env 로드 (OPENAI_API_KEY 포함)
 dotenv.config();
 
-if (!process.env.OPENAI_API_KEY) {
-  console.error("❌ OPENAI_API_KEY가 설정되어 있지 않습니다. .env 파일을 확인하세요.");
-}
-
 const app = express();
 
 // __dirname 대체 (ES Module 방식)
@@ -26,7 +22,6 @@ const __dirname = path.dirname(__filename);
 app.use(cors());
 app.use(
   bodyParser.json({
-    // base64 이미지 때문에 넉넉하게
     limit: "50mb",
   })
 );
@@ -37,14 +32,11 @@ app.use(
   })
 );
 
-// ===== 정적 파일 서빙 설정 =====
-// 1) /public 폴더가 있다면 거기서도 파일 서빙
+// ===== 정적 파일 서빙 =====
 app.use(express.static(path.join(__dirname, "public")));
-
-// 2) HTML 파일이 server.js와 같은 폴더에 있어도 동작하도록 루트도 정적 경로로 추가
 app.use(express.static(__dirname));
 
-// 3) 루트("/") 접속 시 index.html 반환
+// 루트("/") → index.html
 app.get("/", (req, res) => {
   const publicIndex = path.join(__dirname, "public", "index.html");
   const rootIndex = path.join(__dirname, "index.html");
@@ -71,6 +63,17 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
 
+// 🔹 fallback용 더미 결과 (OpenAI 문제 시 사용)
+const demoResult = {
+  score: 72,
+  skinType: "복합성",
+  issues: ["모공", "피지", "잔주름"],
+  riskLevel: "mid",
+  summary: "전반적으로 무난한 복합성 피부지만, T존 피지와 모공 관리가 필요해 보여요.",
+  detailAdvice:
+    "아침에는 자극 적은 젤 타입 세안제로 가볍게 세안하고, 유분이 많은 부위에는 유분 조절 토너를 한 번 더 사용해 주세요. 저녁에는 진한 세안 후 수분 위주의 세럼과 크림으로 충분히 보습해 주는 것이 좋아요. 주 1~2회 정도 각질/피지 케어 제품(필링 패드, 클레이 마스크 등)을 T존 위주로만 사용해 주면 모공 관리에 도움이 됩니다. 자외선 차단제는 사계절 매일 꼼꼼하게 발라주세요."
+};
+
 /**
  * 피부 분석 API
  * POST /api/skin-analyze
@@ -81,36 +84,39 @@ app.get("/health", (req, res) => {
  * }
  */
 app.post("/api/skin-analyze", async (req, res) => {
+  // body에서 이미지 찾기
+  const {
+    imageBase64: rawImageBase64,
+    uploadedImage,
+    image,
+    dataUrl,
+  } = req.body || {};
+  const imageBase64 =
+    rawImageBase64 || uploadedImage || image || dataUrl;
+
+  console.log("📩 /api/skin-analyze body keys:", Object.keys(req.body || {}));
+
+  if (!imageBase64 || typeof imageBase64 !== "string") {
+    // 그래도 500 말고 400으로 깔끔하게
+    return res.status(400).json({
+      success: false,
+      error:
+        "imageBase64(또는 uploadedImage) 필드가 비어 있습니다. 사진을 다시 업로드해 주세요.",
+    });
+  }
+
+  // 🔸 OPENAI_API_KEY 가 없다 → 더미 결과라도 반환 (500 안 띄움)
+  if (!process.env.OPENAI_API_KEY) {
+    console.error("❌ OPENAI_API_KEY 미설정 – demoResult 반환");
+    return res.json({
+      success: true,
+      data: demoResult,
+      usedFallback: true,
+      reason: "OPENAI_API_KEY 미설정으로 더미 결과를 반환했습니다."
+    });
+  }
+
   try {
-    // 혹시 다른 키 이름으로 들어와도 대응하도록 안전하게 처리
-    const {
-      imageBase64: rawImageBase64,
-      uploadedImage,
-      image,
-      dataUrl,
-    } = req.body || {};
-
-    const imageBase64 =
-      rawImageBase64 || uploadedImage || image || dataUrl;
-
-    // 디버깅용: 어떤 키가 들어왔는지 로그
-    console.log("📩 /api/skin-analyze body keys:", Object.keys(req.body || {}));
-
-    if (!imageBase64 || typeof imageBase64 !== "string") {
-      return res.status(400).json({
-        success: false,
-        error:
-          "imageBase64(또는 uploadedImage) 필드가 필요합니다. 프론트에서 전송 필드를 확인하세요.",
-      });
-    }
-
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({
-        success: false,
-        error: "서버에 OPENAI_API_KEY가 설정되어 있지 않습니다.",
-      });
-    }
-
     const systemPrompt = `
 당신은 전문 피부과 전문의입니다.
 사용자가 보낸 얼굴 사진을 분석해서 피부 상태를 평가합니다.
@@ -128,7 +134,7 @@ app.post("/api/skin-analyze", async (req, res) => {
     `.trim();
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
+      model: "gpt-4o-mini",
       response_format: { type: "json_object" },
       messages: [
         {
@@ -145,8 +151,7 @@ app.post("/api/skin-analyze", async (req, res) => {
             {
               type: "input_image",
               image_url: {
-                // 클라이언트에서 "data:image/jpeg;base64,..." 형식으로 보내주면 그대로 사용
-                url: imageBase64,
+                url: imageBase64, // data URL 그대로 사용
               },
             },
           ],
@@ -171,31 +176,35 @@ app.post("/api/skin-analyze", async (req, res) => {
       score:
         typeof parsed.score === "number"
           ? Math.min(Math.max(parsed.score, 0), 100)
-          : 70,
-      skinType: parsed.skinType || "복합성",
-      issues: Array.isArray(parsed.issues) ? parsed.issues : [],
+          : demoResult.score,
+      skinType: parsed.skinType || demoResult.skinType,
+      issues: Array.isArray(parsed.issues) && parsed.issues.length
+        ? parsed.issues
+        : demoResult.issues,
       riskLevel:
         parsed.riskLevel === "low" ||
         parsed.riskLevel === "mid" ||
         parsed.riskLevel === "high"
           ? parsed.riskLevel
-          : "mid",
-      summary: parsed.summary || "전반적으로 무난한 피부 상태입니다.",
-      detailAdvice:
-        parsed.detailAdvice ||
-        "세안 후 기본 보습을 꼼꼼하게 해주시고, 자외선 차단제를 매일 사용하는 것만으로도 지금보다 훨씬 건강한 피부 컨디션을 유지할 수 있습니다.",
+          : demoResult.riskLevel,
+      summary: parsed.summary || demoResult.summary,
+      detailAdvice: parsed.detailAdvice || demoResult.detailAdvice,
     };
 
     return res.json({
       success: true,
       data: safeResult,
+      usedFallback: false,
     });
   } catch (error) {
-    console.error("❌ /api/skin-analyze 오류:", error);
+    console.error("❌ /api/skin-analyze OpenAI 호출 오류:", error);
 
-    return res.status(500).json({
-      success: false,
-      error: "피부 분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+    // 🔸 OpenAI 쪽 에러여도, 더미 결과 반환 (500 대신 200)
+    return res.json({
+      success: true,
+      data: demoResult,
+      usedFallback: true,
+      reason: error?.message || "OpenAI 호출 중 오류가 발생하여 더미 결과를 반환했습니다.",
     });
   }
 });
