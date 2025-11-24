@@ -16,11 +16,7 @@
       --border-soft: rgba(148, 163, 255, 0.35);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
@@ -42,7 +38,6 @@
     }
 
     .card {
-      position: relative;
       background: var(--glass);
       border-radius: 24px;
       padding: 22px 18px 18px;
@@ -50,6 +45,7 @@
       box-shadow:
         0 20px 45px rgba(0, 0, 0, 0.85),
         0 0 0 1px rgba(15, 23, 42, 0.7);
+      position: relative;
       overflow: hidden;
       backdrop-filter: blur(16px);
     }
@@ -60,86 +56,57 @@
       inset: 1px;
       border-radius: 22px;
       border: 1px solid rgba(148, 163, 255, 0.35);
-      pointer-events: none;
     }
 
-    /* 상단 포인트 라인 */
     .top-accent {
       position: absolute;
       left: 16%;
       right: 16%;
       top: 10px;
       height: 1px;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(148, 163, 255, 0.9),
-        transparent
-      );
-      opacity: 0.9;
+      background: linear-gradient(90deg, transparent, rgba(148,163,255,0.9), transparent);
     }
 
-    /* 로고 배지 */
     .logo-badge-wrap {
-      display: flex;
-      justify-content: center;
-      margin-top: 8px;
-      margin-bottom: 10px;
+      display: flex; justify-content: center;
+      margin-top: 8px; margin-bottom: 10px;
     }
 
     .logo-badge {
-      width: 70px;
-      height: 70px;
-      border-radius: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 70px; height: 70px; border-radius: 22px;
+      display: flex; align-items: center; justify-content: center;
       background:
-        radial-gradient(circle at 25% 0%, rgba(255, 255, 255, 0.7), transparent 55%),
-        radial-gradient(circle at 80% 100%, rgba(129, 140, 248, 0.75), transparent 55%),
+        radial-gradient(circle at 25% 0%, rgba(255,255,255,0.7), transparent 55%),
+        radial-gradient(circle at 80% 100%, rgba(129,140,248,0.75), transparent 55%),
         linear-gradient(135deg, #181b3a, #2f3564);
       box-shadow:
-        0 16px 30px rgba(15, 23, 42, 0.95),
-        0 0 0 1px rgba(148, 163, 255, 0.5);
-      position: relative;
+        0 16px 30px rgba(15,23,42,0.95),
+        0 0 0 1px rgba(148,163,255,0.5);
     }
 
     .logo-badge-inner {
-      width: 50px;
-      height: 50px;
-      border-radius: 18px;
+      width: 50px; height: 50px; border-radius: 18px;
       background: radial-gradient(circle at 30% 0%, #ffffff, #c7d2ff);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       box-shadow:
-        0 8px 18px rgba(59, 130, 246, 0.6),
-        0 0 0 1px rgba(226, 232, 255, 0.7);
+        0 8px 18px rgba(59,130,246,0.6),
+        0 0 0 1px rgba(226,232,255,0.7);
     }
 
-    .logo-badge svg {
-      width: 26px;
-      height: 26px;
-      filter: drop-shadow(0 4px 8px rgba(37, 99, 235, 0.7));
-    }
+    .logo-badge svg { width: 26px; height: 26px; }
 
     h1 {
-      font-size: 2rem;
-      font-weight: 800;
-      text-align: center;
-      margin-bottom: 4px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      text-align: center; margin-bottom: 4px;
+      font-size: 2rem; font-weight: 800;
+      letter-spacing: 0.08em; text-transform: uppercase;
       background: linear-gradient(120deg, #ffffff, #e0e7ff);
-      -webkit-background-clip: text;
-      color: transparent;
+      -webkit-background-clip: text; color: transparent;
     }
 
     .subtitle {
       text-align: center;
       font-size: 0.8rem;
       letter-spacing: 0.28em;
-      text-transform: uppercase;
       color: #a5b4fc;
       margin-bottom: 16px;
     }
@@ -152,36 +119,27 @@
       margin-bottom: 20px;
     }
 
-    .highlight {
-      font-weight: 600;
-      color: #e0e7ff;
-    }
-
     .section-box {
       background:
-        radial-gradient(circle at top left, rgba(148, 163, 255, 0.22), transparent 55%),
-        rgba(15, 23, 42, 0.96);
+        radial-gradient(circle at top left, rgba(148,163,255,0.22), transparent 55%),
+        rgba(15,23,42,0.96);
       border-radius: 20px;
       padding: 14px 14px 12px;
       border: 1px solid var(--border-soft);
-      margin-bottom: 12px;
     }
 
     .section-title {
-      font-size: 1rem;
-      font-weight: 600;
       text-align: center;
-      margin-bottom: 6px;
+      font-size: 1rem;
       letter-spacing: 0.12em;
-      text-transform: uppercase;
       color: #e5e7ff;
+      margin-bottom: 6px;
     }
 
     .section-hint {
-      font-size: 0.84rem;
       text-align: center;
+      font-size: 0.84rem;
       color: var(--text-sub);
-      line-height: 1.4;
       margin-bottom: 12px;
     }
 
@@ -193,151 +151,170 @@
       font-size: 0.95rem;
       font-weight: 650;
       cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.22s ease-out;
-      position: relative;
-      overflow: hidden;
-      letter-spacing: 0.03em;
-    }
-
-    .btn::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.24),
-        transparent 45%,
-        rgba(148, 163, 255, 0.25)
-      );
-      opacity: 0;
-      transition: opacity 0.22s ease-out;
-      pointer-events: none;
-    }
-
-    .btn-primary {
       background: linear-gradient(135deg, var(--primary-strong), var(--primary));
-      color: #f9fafb;
-      box-shadow:
-        0 12px 26px rgba(55, 48, 163, 0.75),
-        0 0 0 1px rgba(199, 210, 254, 0.6);
+      color: #fff;
+      box-shadow: 0 12px 26px rgba(55, 48, 163, 0.75);
       margin-bottom: 8px;
     }
 
-    .btn-label-icon {
-      font-size: 1.1rem;
+    input[type=file] { display: none; }
+
+    /* ▼ MY 피부 기록 메뉴 */
+    .menu-box {
+      margin-top: 16px;
+      padding: 14px 14px 12px;
+      border-radius: 20px;
+      background: rgba(15, 23, 42, 0.86);
+      border: 1px solid var(--border-soft);
     }
 
-    .btn:active {
-      transform: translateY(1px) scale(0.99);
-      box-shadow: 0 7px 18px rgba(55, 48, 163, 0.6);
+    .menu-title {
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #9ca3ff;
+      margin-bottom: 6px;
     }
 
-    .btn:hover::before {
-      opacity: 1;
-    }
-
-    .footer-text {
-      margin-top: 10px;
+    .today-status {
       text-align: center;
-      font-size: 0.8rem;
-      color: var(--text-sub);
-      line-height: 1.4;
+      margin-bottom: 6px;
+      font-size: 0.84rem;
+      color: #cbd5ff;
     }
 
-    /* 숨겨진 파일 input */
-    input[type=file] {
-      display: none;
+    .btn-mini {
+      width: 100%;
+      border-radius: 999px;
+      padding: 9px 10px;
+      margin-top: 6px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148, 163, 255, 0.4);
+      color: #e5e7eb;
+      font-size: 0.87rem;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-mini-outline {
+      background: transparent;
+      border-style: dashed;
+      border-color: rgba(148,163,255,0.5);
     }
   </style>
 </head>
+
 <body>
-  <div class="shell">
-    <div class="card">
-      <div class="top-accent"></div>
+<div class="shell">
+  <div class="card">
+    <div class="top-accent"></div>
 
-      <!-- 로고 -->
-      <div class="logo-badge-wrap">
-        <div class="logo-badge">
-          <div class="logo-badge-inner">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="#2563eb" d="M12 2.5C11.4 3.4 7 9.5 7 13a5 5 0 0010 0c0-3.5-4.4-9.6-5-10.5z"/>
-              <path fill="#60a5fa" d="M12 4s-3.5 4.7-3.5 8a3.5 3.5 0 007 0C15.5 8.7 12 4 12 4z"/>
-            </svg>
-          </div>
+    <!-- 로고 -->
+    <div class="logo-badge-wrap">
+      <div class="logo-badge">
+        <div class="logo-badge-inner">
+          <svg viewBox="0 0 24 24">
+            <path fill="#2563eb" d="M12 2.5C11.4 3.4 7 9.5 7 13a5 5 0 0010 0c0-3.5-4.4-9.6-5-10.5z"/>
+            <path fill="#60a5fa" d="M12 4s-3.5 4.7-3.5 8a3.5 3.5 0 007 0C15.5 8.7 12 4 12 4z"/>
+          </svg>
         </div>
       </div>
-
-      <h1>AI 피부 코치</h1>
-      <div class="subtitle">PHOTO • ANALYSIS • ROUTINE</div>
-
-      <div class="description">
-        얼굴이 보이는 사진 <span class="highlight">한 장</span>만 올리면,<br />
-        AI가 <span class="highlight">피부 상태·루틴·추천 제품</span>을<br />
-        간단하게 정리해 드립니다.
-      </div>
-
-      <div class="section-box">
-        <div class="section-title">PHOTO UPLOAD</div>
-        <div class="section-hint">
-          갤러리에서 선택하거나,<br />
-          밝은 곳에서 고민 부위가 잘 보이게 촬영해주세요.
-        </div>
-
-        <!-- 파일 선택 -->
-        <label class="btn btn-primary">
-          <span class="btn-label-icon">📁</span>
-          <span>파일에서 선택하기</span>
-          <input type="file" accept="image/*" onchange="goNextPage(event)">
-        </label>
-
-        <!-- 카메라 촬영 -->
-        <label class="btn btn-primary">
-          <span class="btn-label-icon">📷</span>
-          <span>카메라로 촬영하기</span>
-          <input type="file" accept="image/*" capture="environment" onchange="goNextPage(event)">
-        </label>
-      </div>
-
-      <div class="footer-text">
-        이 화면에서는 사진만 업로드하면 됩니다.<br />
-        진단과 분석은 다음 화면에서 시작됩니다.
-      </div>
-
     </div>
+
+    <h1>AI 피부 코치</h1>
+    <div class="subtitle">PHOTO • ANALYSIS • ROUTINE</div>
+
+    <div class="description">
+      얼굴이 보이는 사진 <span class="highlight">한 장</span>만 올리면,<br />
+      AI가 <span class="highlight">피부 분석·루틴·추천 제품</span>을<br />
+      간단하게 제공해드립니다.
+    </div>
+
+    <!-- 업로드 영역 -->
+    <div class="section-box">
+      <div class="section-title">PHOTO UPLOAD</div>
+      <div class="section-hint">
+        갤러리에서 선택하거나,<br />
+        밝은 곳에서 고민 부위가 보이게 촬영하세요.
+      </div>
+
+      <!-- 파일 선택 -->
+      <label class="btn">
+        📁 파일에서 선택하기
+        <input type="file" accept="image/*" onchange="goNextPage(event)">
+      </label>
+
+      <!-- 카메라 -->
+      <label class="btn">
+        📷 카메라로 촬영하기
+        <input type="file" accept="image/*" capture="environment" onchange="goNextPage(event)">
+      </label>
+    </div>
+
+    <!-- ▼ MY 피부 기록 -->
+    <div class="menu-box">
+      <div id="today-status" class="today-status">📅 오늘 기록 없음</div>
+      <div class="menu-title">MY 피부 기록</div>
+
+      <button class="btn-mini" onclick="goToProducts()">
+        🔁 최근 진단 결과 · 추천 제품 보기
+      </button>
+
+      <button class="btn-mini btn-mini-outline" onclick="goToChat()">
+        💬 AI 피부 상담 챗봇으로 이동
+      </button>
+    </div>
+
   </div>
+</div>
 
 <script>
-  // 파일 선택/카메라 촬영 후 호출되는 함수
+  /* 사진 선택 후 다음 페이지 */
   function goNextPage(event) {
     const file = event.target.files[0];
     if (!file) return;
 
     const reader = new FileReader();
-
     reader.onload = function (e) {
-      const imageData = e.target.result; // base64 데이터URL
-      // 브라우저 임시 저장소에 저장
-      sessionStorage.setItem("uploadedImage", imageData);
-      // 2페이지(컨펌 페이지)로 이동
+      sessionStorage.setItem("uploadedImage", e.target.result);
       window.location.href = "confirm.html";
     };
-
     reader.readAsDataURL(file);
   }
+
+  /* 오늘 기록 확인 */
+  function updateTodayStatus() {
+    const raw = localStorage.getItem("diagnosisHistory");
+    const today = new Date().toISOString().slice(0, 10);
+    let text = "📅 오늘 기록 없음";
+
+    if (raw) {
+      const history = JSON.parse(raw);
+      if (history.some(h => h.date === today)) {
+        text = "📅 오늘 기록 있음 → 바로 보기";
+      }
+    }
+    document.getElementById("today-status").innerText = text;
+  }
+
+  function goToProducts() {
+    const raw = localStorage.getItem("diagnosisHistory");
+    if (!raw) return alert("먼저 AI 진단을 진행해주세요!");
+    window.location.href = "products.html";
+  }
+
+  function goToChat() {
+    const raw = localStorage.getItem("diagnosisHistory");
+    if (!raw) return alert("먼저 AI 진단을 진행해주세요!");
+    window.location.href = "chat.html";
+  }
+
+  updateTodayStatus();
 </script>
-
-
 
 </body>
 </html>
-
-
-
-
-
-
