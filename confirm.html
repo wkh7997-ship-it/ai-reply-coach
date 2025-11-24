@@ -134,12 +134,21 @@
       text-align: center;
       color: var(--text-sub);
       line-height: 1.5;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     .highlight {
       color: #fefce8;
       font-weight: 600;
+    }
+
+    .status-text {
+      font-size: 0.8rem;
+      text-align: center;
+      color: var(--text-muted);
+      min-height: 18px;
+      margin-top: 4px;
+      margin-bottom: 4px;
     }
 
     .btn {
@@ -203,6 +212,12 @@
     .btn:hover::before {
       opacity: 1;
     }
+
+    .btn[disabled] {
+      opacity: 0.8;
+      cursor: default;
+      box-shadow: none;
+    }
   </style>
 </head>
 <body>
@@ -230,7 +245,9 @@
         피부 상태와 루틴, 추천 제품을 받아보세요.
       </div>
 
-      <button class="btn btn-primary" onclick="startAnalysis()">
+      <div id="status-text" class="status-text"></div>
+
+      <button id="analyze-btn" class="btn btn-primary" onclick="startAnalysis()">
         <span class="btn-icon">🔍</span>
         <span>AI 분석 시작하기</span>
       </button>
@@ -243,37 +260,80 @@
   </div>
 
   <script>
-  // 페이지 로드 시 업로드한 이미지 미리보기
-  window.addEventListener("DOMContentLoaded", function () {
-    const imgData = sessionStorage.getItem("uploadedImage");
-    const imgEl = document.getElementById("preview-img");
+    // 페이지 로드 시 업로드한 이미지 미리보기
+    window.addEventListener("DOMContentLoaded", function () {
+      const imgData = sessionStorage.getItem("uploadedImage");
+      const imgEl = document.getElementById("preview-img");
 
-    if (!imgData) {
-      alert("이미지 정보가 없습니다. 처음 화면으로 돌아갑니다.");
-      window.location.href = "index.html";
-      return;
+      if (!imgData) {
+        alert("이미지 정보가 없습니다. 처음 화면으로 돌아갑니다.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      imgEl.src = imgData;
+    });
+
+    // 🔍 AI 분석 시작하기 → 서버 /api/skin-analyze 호출
+    async function startAnalysis() {
+      const imgData = sessionStorage.getItem("uploadedImage");
+      const statusEl = document.getElementById("status-text");
+      const btn = document.getElementById("analyze-btn");
+
+      if (!imgData) {
+        alert("이미지를 다시 선택해 주세요.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      try {
+        // 버튼/상태 UI 업데이트
+        btn.disabled = true;
+        btn.querySelector("span:nth-child(2)").innerText = "AI가 분석 중...";
+        statusEl.innerText = "약 10초 정도 소요될 수 있어요. 창을 닫지 말고 잠시만 기다려 주세요.";
+
+        const response = await fetch("/api/skin-analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            imageBase64: imgData
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error("서버 오류가 발생했습니다. (" + response.status + ")");
+        }
+
+        const result = await response.json();
+
+        if (!result.success) {
+          throw new Error(result.error || "분석에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        }
+
+        // 서버에서 받은 분석 결과를 sessionStorage에 저장
+        // result.data 구조: { score, skinType, issues, riskLevel, summary, detailAdvice }
+        sessionStorage.setItem("aiSkinResult", JSON.stringify(result.data));
+
+        // result.html로 이동
+        window.location.href = "result.html";
+      } catch (err) {
+        console.error("분석 중 오류:", err);
+        alert(err.message || "AI 분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        statusEl.innerText = "오류가 발생했습니다. 네트워크 상태를 확인하고 다시 시도해 주세요.";
+      } finally {
+        // 에러가 난 경우에만 다시 활성화되고,
+        // 성공했다면 이미 result.html로 이동해서 사용자는 못 느낌
+        btn.disabled = false;
+        btn.querySelector("span:nth-child(2)").innerText = "AI 분석 시작하기";
+      }
     }
 
-    imgEl.src = imgData;
-  });
-
-  // 🔍 AI 분석 시작하기 → 이제는 그냥 결과 페이지로 이동만 함
-  function startAnalysis() {
-    const imgData = sessionStorage.getItem("uploadedImage");
-    if (!imgData) {
-      alert("이미지를 다시 선택해 주세요.");
+    function goBack() {
       window.location.href = "index.html";
-      return;
     }
-
-    // 예전처럼: 3페이지에서 "생성중입니다" 보여주면서 분석하게 함
-    window.location.href = "result.html";
-  }
-
-  function goBack() {
-    window.location.href = "index.html";
-  }
-</script>
+  </script>
 
 </body>
 </html>
