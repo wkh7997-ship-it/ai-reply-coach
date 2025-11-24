@@ -32,10 +32,7 @@
       padding: 18px 16px;
     }
 
-    .shell {
-      width: 100%;
-      max-width: 440px;
-    }
+    .shell { width: 100%; max-width: 440px; }
 
     .card {
       background: var(--glass);
@@ -56,17 +53,15 @@
       inset: 1px;
       border-radius: 22px;
       border: 1px solid rgba(148, 163, 255, 0.35);
+      pointer-events: none !important; /* ← 터치 차단 방지 */
     }
 
     .top-accent {
-      position: absolute;
-      left: 16%;
-      right: 16%;
-      top: 10px;
-      height: 1px;
+      position: absolute; left: 16%; right: 16%; top: 10px; height: 1px;
       background: linear-gradient(90deg, transparent, rgba(148,163,255,0.9), transparent);
     }
 
+    /* 로고 */
     .logo-badge-wrap {
       display: flex; justify-content: center;
       margin-top: 8px; margin-bottom: 10px;
@@ -126,6 +121,7 @@
       border-radius: 20px;
       padding: 14px 14px 12px;
       border: 1px solid var(--border-soft);
+      margin-bottom: 12px;
     }
 
     .section-title {
@@ -159,11 +155,22 @@
       color: #fff;
       box-shadow: 0 12px 26px rgba(55, 48, 163, 0.75);
       margin-bottom: 8px;
+      position: relative;
+      overflow: hidden;
     }
 
-    input[type=file] { display: none; }
+    /* 중요한 부분: label 안 input 터치 가능하게 */
+    input[type=file] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      z-index: 5;
+    }
 
-    /* ▼ MY 피부 기록 메뉴 */
+    /* ▼ MY 피부 기록 */
     .menu-box {
       margin-top: 16px;
       padding: 14px 14px 12px;
@@ -205,6 +212,7 @@
       border-style: dashed;
       border-color: rgba(148,163,255,0.5);
     }
+
   </style>
 </head>
 
@@ -230,11 +238,10 @@
 
     <div class="description">
       얼굴이 보이는 사진 <span class="highlight">한 장</span>만 올리면,<br />
-      AI가 <span class="highlight">피부 분석·루틴·추천 제품</span>을<br />
-      간단하게 제공해드립니다.
+      AI가 <span class="highlight">피부 분석·루틴·추천 제품</span>을 안내해드립니다.
     </div>
 
-    <!-- 업로드 영역 -->
+    <!-- 업로드 박스 -->
     <div class="section-box">
       <div class="section-title">PHOTO UPLOAD</div>
       <div class="section-hint">
@@ -273,7 +280,6 @@
 </div>
 
 <script>
-  /* 사진 선택 후 다음 페이지 */
   function goNextPage(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -286,7 +292,6 @@
     reader.readAsDataURL(file);
   }
 
-  /* 오늘 기록 확인 */
   function updateTodayStatus() {
     const raw = localStorage.getItem("diagnosisHistory");
     const today = new Date().toISOString().slice(0, 10);
