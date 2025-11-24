@@ -1,7 +1,7 @@
 {
-  "name": "ai-reply-coach-backend",
+  "name": "ai-skin-coach-backend",
   "version": "1.0.0",
-  "description": "AI 대화 코치 백엔드",
+  "description": "AI 피부 코치 백엔드",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -10,8 +10,10 @@
   "dependencies": {
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "openai": "^4.67.2"
   },
   "engines": {
     "node": ">=18"
