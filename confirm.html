@@ -243,70 +243,37 @@
   </div>
 
   <script>
-    // 페이지 로드 시 이미지 미리보기 세팅
-    window.addEventListener("DOMContentLoaded", function () {
-      const imgData = sessionStorage.getItem("uploadedImage");
-      const imgEl = document.getElementById("preview-img");
+  // 페이지 로드 시 업로드한 이미지 미리보기
+  window.addEventListener("DOMContentLoaded", function () {
+    const imgData = sessionStorage.getItem("uploadedImage");
+    const imgEl = document.getElementById("preview-img");
 
-      if (!imgData) {
-        alert("이미지 정보가 없습니다. 처음 화면으로 돌아갑니다.");
-        window.location.href = "index.html";
-        return;
-      }
-
-      imgEl.src = imgData;
-    });
-
-    // 🔍 AI 분석 시작하기
-    async function startAnalysis() {
-      const imgData = sessionStorage.getItem("uploadedImage");
-      if (!imgData) {
-        alert("이미지를 다시 선택해 주세요.");
-        window.location.href = "index.html";
-        return;
-      }
-
-      // 클릭이 먹는지 먼저 확인용
-      console.log("startAnalysis 클릭됨");
-      // alert("버튼 클릭 됨 (테스트용)");
-
-      try {
-        const res = await fetch("/api/analyze", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            skin_type: "정보 없음(이미지 업로드 기준)",
-            problem_area: "얼굴 전체",
-            concerns: ["모공", "피지", "잔주름"],
-            notes: "사용자가 얼굴 사진을 업로드했습니다. 이미지 데이터 앞부분: " + imgData.slice(0, 200)
-          })
-        });
-
-        if (!res.ok) {
-          console.error("API ERROR", res.status);
-          alert("AI 분석 서버에서 오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.");
-          return;
-        }
-
-        const data = await res.json();
-        console.log("API RESULT:", data);
-
-        const text = data.analysis || "분석 결과를 가져오지 못했습니다.";
-        sessionStorage.setItem("skin_analysis", text);
-
-        window.location.href = "result.html";
-      } catch (err) {
-        console.error("FETCH ERROR", err);
-        alert("서버 접속 오류가 발생했습니다.\n네트워크 상태를 확인한 뒤 다시 시도해 주세요.");
-      }
-    }
-
-    function goBack() {
-      console.log("goBack 클릭됨");
+    if (!imgData) {
+      alert("이미지 정보가 없습니다. 처음 화면으로 돌아갑니다.");
       window.location.href = "index.html";
+      return;
     }
-  </script>
+
+    imgEl.src = imgData;
+  });
+
+  // 🔍 AI 분석 시작하기 → 이제는 그냥 결과 페이지로 이동만 함
+  function startAnalysis() {
+    const imgData = sessionStorage.getItem("uploadedImage");
+    if (!imgData) {
+      alert("이미지를 다시 선택해 주세요.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    // 예전처럼: 3페이지에서 "생성중입니다" 보여주면서 분석하게 함
+    window.location.href = "result.html";
+  }
+
+  function goBack() {
+    window.location.href = "index.html";
+  }
+</script>
+
 </body>
 </html>
