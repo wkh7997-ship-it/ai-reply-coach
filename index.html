@@ -6,15 +6,14 @@
   <title>AI 피부 코치</title>
   <style>
     :root {
-      --primary: #c7b3ff;          /* 실버 퍼플 */
-      --primary-strong: #8f7bff;   /* 포인트 퍼플 */
-      --accent-soft: #f4e5c8;      /* 샴페인 골드 */
-      --bg-deep: #05040b;
-      --bg-top: #111322;
-      --glass: rgba(8, 10, 24, 0.92);
-      --text-main: #f9fafb;
-      --text-sub: #cbd5f5;
-      --text-muted: #9ca3c9;
+      --bg: #050505;
+      --bg-soft: #111111;
+      --border-strong: rgba(255, 255, 255, 0.32);
+      --border-soft: rgba(255, 255, 255, 0.12);
+      --text-main: #f9faf9;
+      --text-sub: #b3b3b3;
+      --accent: #ffffff;
+      --accent-soft: #e5e5e5;
     }
 
     * {
@@ -27,9 +26,9 @@
       font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
       min-height: 100vh;
       background:
-        radial-gradient(circle at top, rgba(129, 140, 248, 0.32) 0, transparent 52%),
-        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.75) 0, transparent 58%),
-        linear-gradient(160deg, var(--bg-top), var(--bg-deep));
+        radial-gradient(circle at top, rgba(255, 255, 255, 0.09) 0, transparent 55%),
+        radial-gradient(circle at bottom, rgba(255, 255, 255, 0.03) 0, transparent 60%),
+        linear-gradient(160deg, #000000, #050505);
       color: var(--text-main);
       display: flex;
       align-items: center;
@@ -44,116 +43,113 @@
 
     .card {
       position: relative;
-      background: var(--glass);
-      border-radius: 26px;
+      background: var(--bg-soft);
+      border-radius: 22px;
       padding: 22px 18px 18px;
-      border: 1px solid rgba(148, 163, 255, 0.22);
-      box-shadow:
-        0 20px 45px rgba(0, 0, 0, 0.75),
-        0 0 0 1px rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(18px);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 22px 40px rgba(0, 0, 0, 0.9);
       overflow: hidden;
     }
 
     .card::before {
       content: "";
       position: absolute;
-      inset: 1px;
-      border-radius: 24px;
-      border: 1px solid rgba(248, 250, 252, 0.02);
+      inset: 0;
+      border-radius: inherit;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       pointer-events: none;
     }
 
     /* 상단 얇은 포인트 라인 */
-    .top-accent {
+    .top-line {
       position: absolute;
-      left: 12%;
-      right: 12%;
+      left: 14%;
+      right: 14%;
       top: 10px;
       height: 1px;
       background: linear-gradient(
         90deg,
         transparent,
-        rgba(244, 229, 200, 0.75),
+        rgba(255, 255, 255, 0.6),
         transparent
       );
-      opacity: 0.9;
     }
 
-    /* 로고 뱃지 */
+    /* 로고 영역 */
     .logo-wrap {
       display: flex;
       justify-content: center;
-      margin-top: 8px;
-      margin-bottom: 10px;
+      margin-top: 10px;
+      margin-bottom: 12px;
     }
 
     .logo-badge {
       width: 70px;
       height: 70px;
-      border-radius: 24px;
-      background:
-        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.7), transparent 55%),
-        radial-gradient(circle at 80% 100%, rgba(139, 92, 246, 0.6), transparent 55%),
-        linear-gradient(135deg, #141628, #303356);
-      box-shadow:
-        0 16px 30px rgba(17, 24, 39, 0.9),
-        0 0 0 1px rgba(148, 163, 255, 0.4);
+      border-radius: 50%;
+      border: 1px solid var(--border-strong);
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
+      background:
+        radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.18), transparent 55%),
+        radial-gradient(circle at 70% 100%, rgba(255, 255, 255, 0.08), transparent 55%),
+        #050505;
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, 1),
+        0 0 0 1px rgba(0, 0, 0, 1);
     }
 
-    .logo-badge::after {
-      content: "";
-      position: absolute;
-      inset: 8px;
-      border-radius: 20px;
-      background: radial-gradient(circle at 30% 0%, #f9fafb, #c7d2fe);
-      opacity: 0.9;
+    .logo-inner-ring {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 0%, #181818, #000000);
     }
 
     .logo-mark {
-      position: relative;
       width: 30px;
       height: 30px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0%, #eff6ff, #bfdbfe);
+      border-radius: 50%;
+      background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.85);
     }
 
     .logo-mark svg {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
     }
 
     h1 {
-      font-size: 2.0rem;
+      font-size: 1.9rem;
       font-weight: 800;
       text-align: center;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.3em;
       margin-bottom: 6px;
       text-transform: uppercase;
-      background: linear-gradient(120deg, #ffffff, #e5e7ff);
-      -webkit-background-clip: text;
-      color: transparent;
+      color: var(--accent);
     }
 
-    .brand-subtitle {
+    .brand-sub {
       text-align: center;
       font-size: 0.78rem;
-      letter-spacing: 0.32em;
+      letter-spacing: 0.28em;
       text-transform: uppercase;
-      color: #a5b4fc;
-      margin-bottom: 16px;
+      color: var(--text-sub);
+      margin-bottom: 18px;
     }
 
     .description {
-      font-size: 0.96rem;
+      font-size: 0.95rem;
       text-align: center;
       line-height: 1.6;
       color: var(--text-sub);
@@ -161,34 +157,32 @@
     }
 
     .highlight {
-      font-weight: 600;
-      color: #fefce8;
+      color: var(--accent);
+      font-weight: 500;
     }
 
     .section-box {
-      background:
-        radial-gradient(circle at top left, rgba(148, 163, 255, 0.18), transparent 55%),
-        rgba(12, 16, 34, 0.96);
-      border-radius: 20px;
+      border-radius: 18px;
       padding: 14px 14px 12px;
-      border: 1px solid rgba(148, 163, 255, 0.44);
+      border: 1px solid var(--border-strong);
+      background: #050505;
       margin-bottom: 12px;
     }
 
     .section-title {
-      font-size: 1.02rem;
+      font-size: 0.9rem;
       font-weight: 600;
       text-align: center;
-      margin-bottom: 6px;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: #e5e7f5;
+      color: var(--accent);
+      margin-bottom: 8px;
     }
 
     .section-hint {
-      font-size: 0.84rem;
+      font-size: 0.83rem;
       text-align: center;
-      color: var(--text-muted);
+      color: var(--text-sub);
       line-height: 1.4;
       margin-bottom: 12px;
     }
@@ -196,65 +190,48 @@
     .btn {
       width: 100%;
       border-radius: 999px;
-      padding: 12px 0;
-      border: none;
-      font-size: 0.95rem;
-      font-weight: 650;
+      padding: 11px 0;
+      border: 1px solid var(--accent-soft);
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      transition: all 0.22s ease-out;
+      gap: 6px;
+      text-transform: uppercase;
+      background: #ffffff;
+      color: #000000;
+      transition: all 0.2s ease-out;
       margin-top: 6px;
-      position: relative;
-      overflow: hidden;
     }
 
-    .btn::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.16),
-        transparent 45%,
-        rgba(148, 163, 255, 0.2)
-      );
-      opacity: 0;
-      transition: opacity 0.22s ease-out;
-      pointer-events: none;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
-      color: #f9fafb;
-      box-shadow:
-        0 14px 28px rgba(55, 48, 163, 0.75),
-        0 0 0 1px rgba(199, 179, 255, 0.55);
-    }
-
-    .btn-label-icon {
-      font-size: 1.1rem;
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent-soft);
+      border-color: var(--border-strong);
     }
 
     .btn:active {
       transform: translateY(1px) scale(0.99);
-      box-shadow:
-        0 8px 18px rgba(55, 48, 163, 0.7);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.9);
     }
 
-    .btn:hover::before {
-      opacity: 1;
+    .btn:hover {
+      background: #f5f5f5;
+    }
+
+    .btn-secondary:hover {
+      background: #111111;
     }
 
     .footer-text {
-      margin-top: 10px;
+      margin-top: 12px;
       text-align: center;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.4;
+      font-size: 0.78rem;
+      color: var(--text-sub);
+      line-height: 1.5;
     }
 
     input[type=file] {
@@ -265,58 +242,59 @@
 <body>
   <div class="shell">
     <div class="card">
-      <div class="top-accent"></div>
+      <div class="top-line"></div>
 
       <!-- 로고 -->
       <div class="logo-wrap">
         <div class="logo-badge">
-          <div class="logo-mark">
-            <!-- 물방울 아이콘 -->
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path fill="#2563eb" d="M12 2.5C11.4 3.4 7 9.5 7 13a5 5 0 0010 0c0-3.5-4.4-9.6-5-10.5z"/>
-              <path fill="#60a5fa" d="M12 4s-3.5 4.7-3.5 8a3.5 3.5 0 007 0C15.5 8.7 12 4 12 4z"/>
-            </svg>
+          <div class="logo-inner-ring">
+            <div class="logo-mark">
+              <!-- 심플한 물방울 아이콘 (모노톤) -->
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#000000" d="M12 2.5C11.4 3.4 7 9.5 7 13a5 5 0 0010 0c0-3.5-4.4-9.6-5-10.5z"/>
+                <path fill="#4b5563" d="M12 4s-3.5 4.7-3.5 8a3.5 3.5 0 007 0C15.5 8.7 12 4 12 4z"/>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- 타이틀 -->
-      <h1>AI 피부 코치</h1>
-      <div class="brand-subtitle">PHOTO • ANALYSIS • ROUTINE</div>
+      <h1>AI SKIN</h1>
+      <div class="brand-sub">DIAGNOSIS • ROUTINE</div>
 
       <!-- 설명 -->
       <div class="description">
-        얼굴이 보이는 사진 <span class="highlight">한 장</span>만 올리면,<br />
-        AI가 <span class="highlight">피부 상태 · 루틴 · 추천 제품</span>을<br />
-        간결하게 정리해 드립니다.
+        얼굴이 보이는 사진 <span class="highlight">한 장</span>을 업로드하면,<br />
+        AI가 <span class="highlight">피부 상태 · 루틴 · 제품 추천</span>을<br />
+        간결하고 명확하게 정리해 드립니다.
       </div>
 
       <!-- 업로드 영역 -->
       <div class="section-box">
-        <div class="section-title">PHOTO UPLOAD</div>
+        <div class="section-title">Photo Upload</div>
         <div class="section-hint">
-          갤러리에서 고르거나,<br />
+          갤러리에서 선택하거나,<br />
           밝은 곳에서 정면에 가깝게 촬영해주세요.
         </div>
 
         <!-- 파일 선택 -->
-        <label class="btn btn-primary">
-          <span class="btn-label-icon">📁</span>
-          <span>파일에서 선택하기</span>
+        <label class="btn">
+          <span>From Library</span>
           <input type="file" accept="image/*" onchange="goNextPage(event)" />
         </label>
 
         <!-- 카메라 촬영 -->
-        <label class="btn btn-primary">
-          <span class="btn-label-icon">📷</span>
-          <span>카메라로 촬영하기</span>
+        <label class="btn btn-secondary">
+          <span>Use Camera</span>
           <input type="file" accept="image/*" capture="environment" onchange="goNextPage(event)" />
         </label>
       </div>
 
+      <!-- 하단 안내 -->
       <div class="footer-text">
-        이 화면에서는 사진만 업로드하면 됩니다.<br />
-        실제 진단과 분석은 다음 화면에서 시작됩니다.
+        이 화면에서는 사진만 업로드합니다.<br />
+        진단과 분석은 다음 화면에서 시작됩니다.
       </div>
     </div>
   </div>
