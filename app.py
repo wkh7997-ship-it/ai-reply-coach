@@ -41,7 +41,10 @@ def analyze_skin():
     area = data.get("problem_area", "정보 없음")
     notes = data.get("notes", "")
 
-    concerns_text = ", ".join(concerns) if isinstance(concerns, list) else str(concerns)
+    if isinstance(concerns, list):
+        concerns_text = ", ".join(concerns)
+    else:
+        concerns_text = str(concerns)
 
     user_prompt = f"""
 사용자의 피부 고민 정보는 다음과 같습니다:
@@ -51,48 +54,46 @@ def analyze_skin():
 - 특히 신경 쓰이는 부위: {area}
 - 사용자의 추가 설명: {notes}
 
-아래 구조로 설명해주세요:
+아래 구조로 한국어로 자연스럽게 설명해 주세요.
 
-1) 전체 평가
-2) 부위별 관찰  
-3) 셀프 확인 포인트  
-4) 관리 방향  
-5) 안전 문구 (필수)  
+1. 전체 평가 (2~3문장)
+2. 부위별 관찰 (눈가 / 볼·광대 / 턱·입 주변 / 피부결·민감도)
+3. 집에서 체크해볼 수 있는 셀프 확인 포인트
+4. 관리 방향 (클렌저, 각질/피지 관리, 진정/수분, 레티놀 주의점)
+5. 안전 문구 (정확한 진단은 피부과 전문의에게 받아야 한다는 내용 포함)
+
+톤:
+- 실제 사람이 설명해주는 것처럼 부드럽게
+- 과한 공포 유발 없이 차분하게
+- 질환명을 단정적으로 말하지 말고, '패턴'과 '경향' 중심으로 설명
 """
 
-    # 🔥 Responses API 호출
-    completion = client.responses.create(
-        model="gpt-4.1-mini",
-        input=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_prompt},
-        ],
-    )
-
-    # 🔥🔥 Responses API 결과 안전하게 파싱하기
-    analysis_text = ""
-
     try:
-        # 최상위 output 배열 검사
-        if completion.output and len(completion.output) > 0:
-            first = completion.output[0]
+        # 👉 Chat Completions API 사용 (파싱이 훨씬 단순함)
+        completion = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt},
+            ],
+        )
 
-            # content 배열 검사
-            if "content" in first and len(first["content"]) > 0:
-                block = first["content"][0]
+        analysis_text = completion.choices[0].message.content.strip()
 
-                # text 추출
-                if "text" in block:
-                    analysis_text = block["text"]
+        if not analysis_text:
+            analysis_text = "결과를 생성하지 못했습니다. 잠시 후 다시 시도해 주세요."
+
+        return jsonify({"analysis": analysis_text})
 
     except Exception as e:
-        analysis_text = "AI 응답 처리 중 오류가 발생했습니다."
+        # Render 로그에서 에러 확인용
+        print("ERROR in /api/analyze:", e, flush=True)
+        return jsonify({
+            "analysis": "",
+            "error": "analysis_failed",
+            "message": str(e)
+        }), 500
 
-    # 혹시 빈값이면 fallback
-    if not analysis_text:
-        analysis_text = "결과를 생성하지 못했습니다. 잠시 후 다시 시도해주세요."
-
-    return jsonify({"analysis": analysis_text})
 
 # ------------------------------
 # 3) 로컬 실행
@@ -100,3 +101,4 @@ def analyze_skin():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
