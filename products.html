@@ -413,7 +413,7 @@
     if (!category || !Array.isArray(category.items) || category.items.length === 0) {
       return null;
     }
-    const idx = Math.floor(Math.random() * category.items.length);
+    const idx = Math.floor(Math.random() * (i + 1));
     return category.items[idx];
   }
 
@@ -480,11 +480,19 @@
   }
 
   async function loadProducts() {
+    const latest = loadLatestDiagnosis();
+    if (!latest) {
+      alert("먼저 AI 진단을 진행해 주세요!");
+      goHome();
+      return;
+    }
+
     updateHeaderTags();
 
     let data;
     try {
-      const res = await fetch("/data/coupang-links.json");
+      // 🔹 GitHub Pages / Render 모두 안전하게: 절대경로(X) → 상대경로(O)
+      const res = await fetch("data/coupang-links.json");
       data = await res.json();
     } catch (e) {
       console.error("coupang-links.json 로드 실패:", e);
