@@ -217,7 +217,7 @@
       <div class="top-accent"></div>
 
       <div class="header">
-        <div class="title">이 사진으로 진단할까요?</div>
+        <div class="title">이 사진으로 진행할까요?</div>
         <div class="subtitle">
           얼굴과 고민 부위가 잘 보이는지<br />
           한 번만 확인해 주세요.
@@ -232,13 +232,14 @@
       </div>
 
       <div class="info-text">
-        괜찮다면 <span class="highlight">AI 분석 시작하기</span>를 눌러<br />
-        피부 상태와 루틴, 추천 제품을 받아보세요.
+        이 사진이 괜찮다면 <span class="highlight">다음 단계로</span> 넘어가서<br />
+        나의 피부 고민을 선택해 주세요.
       </div>
 
-      <button class="btn btn-primary" id="analyze-btn" onclick="startAnalysis()">
-        <span class="btn-icon">🔍</span>
-        <span>AI 분석 시작하기</span>
+      <!-- ✅ 여기서부터는 AI 분석이 아니라 '고민 선택 페이지로 이동' -->
+      <button class="btn btn-primary" id="next-btn" onclick="goToOptions()">
+        <span class="btn-icon">➡️</span>
+        <span>다음 단계로</span>
       </button>
 
       <button class="btn btn-secondary" onclick="goBack()">
@@ -263,8 +264,8 @@
       imgEl.src = imgData;
     });
 
-    // 🔍 AI 분석 시작하기 -> 서버에 요청 → 결과 sessionStorage 저장 → result.html로 이동
-    async function startAnalysis() {
+    // ✅ 다음 단계(고민 선택 페이지)로 이동
+    function goToOptions() {
       const imgData = sessionStorage.getItem("uploadedImage");
       if (!imgData) {
         alert("이미지를 다시 선택해 주세요.");
@@ -272,44 +273,8 @@
         return;
       }
 
-      const btn = document.getElementById("analyze-btn");
-      btn.disabled = true;
-      btn.querySelector("span:nth-child(2)").innerText = "AI 분석 요청 중...";
-
-      try {
-        const res = await fetch("/api/analyze", {   // 🔴 여기 주소가 핵심! (POST /api/analyze)
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            skin_type: "정보 없음(이미지 업로드 기준)",
-            problem_area: "얼굴 전체",
-            concerns: ["모공", "피지", "잔주름"],
-            notes:
-              "사용자가 얼굴 사진을 업로드했습니다. 이미지 데이터 앞부분: " +
-              imgData.slice(0, 200)
-          })
-        });
-
-        if (!res.ok) {
-          alert("AI 분석 서버에서 오류가 발생했습니다. (HTTP " + res.status + ")");
-          btn.disabled = false;
-          btn.querySelector("span:nth-child(2)").innerText = "AI 분석 시작하기";
-          return;
-        }
-
-        const data = await res.json();
-
-        // 서버에서 받은 결과를 그대로 저장 (result.html에서 사용)
-        sessionStorage.setItem("aiSkinResult", JSON.stringify(data));
-
-        // 결과 페이지로 이동
-        window.location.href = "result.html";
-      } catch (err) {
-        console.error("FETCH ERROR", err);
-        alert("서버 접속 오류가 발생했습니다.\n네트워크 상태를 확인한 뒤 다시 시도해 주세요.");
-        btn.disabled = false;
-        btn.querySelector("span:nth-child(2)").innerText = "AI 분석 시작하기";
-      }
+      // 정적 파일 구조라면 options.html, 서버 라우팅이면 "/options"로 교체하면 됨
+      window.location.href = "options.html";
     }
 
     function goBack() {
