@@ -4,6 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AI 피부 코치</title>
+
+  <!-- ⭐ PWA & 아이콘 연결 -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#11152b" />
+
+  <!-- 안드로이드/웹 아이콘 -->
+  <link rel="icon" type="image/png" sizes="192x192" href="아이콘/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="아이콘/icon-512.png">
+
+  <!-- iOS 홈화면 아이콘 -->
+  <link rel="apple-touch-icon" href="아이콘/icon-192.png" />
+
   <style>
     :root {
       --primary: #9b8bff;
@@ -37,10 +49,10 @@
     .card {
       background: var(--glass);
       border-radius: 24px;
-      padding: 18px 18px 18px;
+      padding: 18px;
       border: 1px solid rgba(15, 23, 42, 0.9);
       box-shadow:
-        0 20px 45px rgba(0, 0, 0, 0.85),
+        0 20px 45px rgba(0,0,0,0.85),
         0 0 0 1px rgba(15, 23, 42, 0.7);
       position: relative;
       overflow: hidden;
@@ -52,8 +64,7 @@
       position: absolute;
       inset: 1px;
       border-radius: 22px;
-      border: 1px solid rgba(148, 163, 255, 0.35);
-      pointer-events: none !important;
+      border: 1px solid rgba(148,163,255,0.35);
     }
 
     .top-accent {
@@ -61,53 +72,34 @@
       background: linear-gradient(90deg, transparent, rgba(148,163,255,0.9), transparent);
     }
 
-    /* ⭐ 공통 스타일에 맞춘 상단 스텝 바 (뒤로가기 없음) */
     .top-bar {
-      position: relative;
-      z-index: 2;
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-top: 8px;
       margin-bottom: 4px;
+      position: relative;
+      z-index: 2;
     }
 
-    .top-bar-left,
-    .top-bar-center,
-    .top-bar-right {
-      display: flex;
-      align-items: center;
-    }
-
-    .top-bar-left { min-width: 70px; } /* 첫 페이지라 비워둠 */
+    .top-bar-left { min-width: 70px; }
     .top-bar-center {
-      flex: 1;
-      justify-content: center;
-      font-size: 0.9rem;
-      font-weight: 600;
+      flex: 1; text-align: center;
+      font-size: .9rem; font-weight: 600;
       color: #e5e7ff;
     }
-    .top-bar-right {
-      min-width: 70px;
-      justify-content: flex-end;
-    }
+    .top-bar-right { min-width: 70px; text-align: right; }
 
     .step-pill {
       padding: 3px 9px;
       border-radius: 999px;
       border: 1px solid rgba(148,163,255,0.7);
-      font-size: 0.72rem;
-      color: rgba(203,213,255,0.95);
       background: rgba(10,16,40,0.95);
-      white-space: nowrap;
+      font-size: .72rem;
+      color: rgba(203,213,255,0.95);
     }
 
-    /* 로고 */
-    .logo-badge-wrap {
-      display: flex; justify-content: center;
-      margin-top: 8px; margin-bottom: 10px;
-    }
-
+    .logo-badge-wrap { display: flex; justify-content: center; margin: 10px 0; }
     .logo-badge {
       width: 70px; height: 70px; border-radius: 22px;
       display: flex; align-items: center; justify-content: center;
@@ -121,7 +113,8 @@
     }
 
     .logo-badge-inner {
-      width: 50px; height: 50px; border-radius: 18px;
+      width: 50px; height: 50px;
+      border-radius: 18px;
       background: radial-gradient(circle at 30% 0%, #ffffff, #c7d2ff);
       display: flex; align-items: center; justify-content: center;
       box-shadow:
@@ -129,30 +122,32 @@
         0 0 0 1px rgba(226,232,255,0.7);
     }
 
-    .logo-badge svg { width: 26px; height: 26px; }
-
     h1 {
-      text-align: center; margin-bottom: 4px;
-      font-size: 2rem; font-weight: 800;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      background: linear-gradient(120deg, #ffffff, #e0e7ff);
-      -webkit-background-clip: text; color: transparent;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      background: linear-gradient(120deg,#fff,#e0e7ff);
+      -webkit-background-clip: text;
+      color: transparent;
     }
 
     .subtitle {
       text-align: center;
-      font-size: 0.8rem;
-      letter-spacing: 0.28em;
+      font-size: .8rem;
+      letter-spacing: .28em;
       color: #a5b4fc;
       margin-bottom: 16px;
     }
 
     .description {
-      font-size: 0.98rem;
       text-align: center;
-      line-height: 1.45;
+      font-size: .98rem;
       color: var(--text-sub);
       margin-bottom: 26px;
+      line-height: 1.45;
     }
 
     .section-box {
@@ -160,7 +155,7 @@
         radial-gradient(circle at top left, rgba(148,163,255,0.22), transparent 55%),
         rgba(15,23,42,0.96);
       border-radius: 20px;
-      padding: 14px 14px 12px;
+      padding: 14px;
       border: 1px solid var(--border-soft);
       margin-bottom: 14px;
     }
@@ -168,82 +163,74 @@
     .section-title {
       text-align: center;
       font-size: 1rem;
-      letter-spacing: 0.12em;
+      letter-spacing: .12em;
       color: #e5e7ff;
       margin-bottom: 6px;
     }
 
     .section-hint {
       text-align: center;
-      font-size: 0.84rem;
+      font-size: .84rem;
       color: var(--text-sub);
       margin-bottom: 12px;
     }
 
     .btn {
       width: 100%;
-      border-radius: 999px;
       padding: 12px 0;
-      border: none;
-      font-size: 0.95rem;
-      font-weight: 650;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
-      color: #fff;
-      box-shadow: 0 12px 26px rgba(55, 48, 163, 0.75);
-      margin-bottom: 8px;
-      position: relative;
-      overflow: hidden;
+      border-radius: 999px;
+      background: linear-gradient(135deg,var(--primary-strong),var(--primary));
+      color:#fff;
+      font-weight:650;
+      font-size:.95rem;
+      border:none;
+      margin-bottom:8px;
+      display:flex;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+      box-shadow:0 12px 26px rgba(55,48,163,0.75);
     }
 
     input[type=file] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      width: 100%;
-      height: 100%;
-      cursor: pointer;
-      z-index: 5;
+      position:absolute;
+      inset:0;
+      opacity:0;
+      cursor:pointer;
     }
 
-    /* ▼ MY 피부 기록 */
     .menu-box {
       margin-top: 16px;
-      padding: 14px 14px 12px;
+      padding: 14px;
       border-radius: 20px;
-      background: rgba(15, 23, 42, 0.86);
+      background: rgba(15,23,42,0.86);
       border: 1px solid var(--border-soft);
     }
-
     .menu-title {
-      font-size: 0.82rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #9ca3ff;
-      margin-bottom: 4px;
+      font-size:.82rem;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:#9ca3ff;
+      margin-bottom:4px;
     }
-
     .today-status {
-      font-size: 0.84rem;
-      color: #cbd5ff;
-      margin-bottom: 8px;
+      font-size:.84rem;
+      color:#cbd5ff;
+      margin-bottom:8px;
     }
-
     .btn-mini {
-      width: 100%;
-      border-radius: 999px;
-      padding: 10px 10px;
-      margin-top: 4px;
-      background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(148, 163, 255, 0.6);
-      color: #e5e7eb;
-      font-size: 0.87rem;
-      display: flex; align-items: center; justify-content: center;
-      gap: 8px;
+      width:100%;
+      padding:10px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,255,0.6);
+      background:rgba(15,23,42,0.9);
+      color:#e5e7eb;
+      font-size:.87rem;
+      display:flex;
+      justify-content:center;
+      gap:8px;
     }
   </style>
 </head>
@@ -253,7 +240,6 @@
   <div class="card">
     <div class="top-accent"></div>
 
-    <!-- ⭐ 상단 스텝 바 (첫 화면: 뒤로가기 없음) -->
     <div class="top-bar">
       <div class="top-bar-left"></div>
       <div class="top-bar-center">AI 피부 코치</div>
@@ -262,7 +248,6 @@
       </div>
     </div>
 
-    <!-- 로고 -->
     <div class="logo-badge-wrap">
       <div class="logo-badge">
         <div class="logo-badge-inner">
@@ -283,11 +268,10 @@
       안내해드립니다.
     </div>
 
-    <!-- 업로드 박스 -->
     <div class="section-box">
       <div class="section-title">PHOTO UPLOAD</div>
       <div class="section-hint">
-        갤러리에서 선택하거나,<br />
+        갤러리에서 선택하거나,<br>
         밝은 곳에서 고민 부위가 보이게 촬영하세요.
       </div>
 
@@ -302,7 +286,6 @@
       </label>
     </div>
 
-    <!-- ▼ MY 피부 기록 -->
     <div class="menu-box">
       <div class="menu-title">MY 피부 기록</div>
       <div id="today-status" class="today-status">📅 오늘 기록 없음</div>
@@ -311,23 +294,17 @@
         🔁 최근 진단 결과 · 추천 제품 보기
       </button>
     </div>
-
   </div>
 </div>
 
 <script>
-  // 사진 선택/촬영 후 → base64 변환 → sessionStorage → confirm.html 이동
   function goNextPage(event) {
-    const file = event.target.files && event.target.files[0];
+    const file = event.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = e => {
       const base64 = e.target.result;
-      if (!base64) {
-        alert("이미지를 불러오는 중 문제가 발생했습니다. 다시 시도해주세요.");
-        return;
-      }
       sessionStorage.setItem("uploadedImage", base64);
       window.location.href = "confirm.html";
     };
@@ -342,19 +319,17 @@
     if (raw) {
       try {
         const history = JSON.parse(raw);
-        if (Array.isArray(history) && history.some(h => h.date === today)) {
+        if (history.some(h => h.date === today)) {
           text = "📅 오늘 기록 있음 → 바로 보기";
         }
-      } catch (_) {
-        // JSON 파싱 실패 시 기본 문구 유지
-      }
+      } catch {}
     }
     document.getElementById("today-status").innerText = text;
   }
 
   function goToProducts() {
-    const raw = localStorage.getItem("diagnosisHistory");
-    if (!raw) return alert("먼저 AI 진단을 진행해주세요!");
+    if (!localStorage.getItem("diagnosisHistory"))
+      return alert("먼저 AI 진단을 진행해주세요!");
     window.location.href = "products.html";
   }
 
