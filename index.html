@@ -3,13 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI 피부 코치 (TEST)</title>
+  <title>AI 피부 코치</title>
 
+  <!-- ⭐ PWA & 아이콘 연결 -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#11152b" />
 
+  <!-- 안드로이드/웹 아이콘 -->
   <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+
+  <!-- iOS 홈화면 아이콘 -->
   <link rel="apple-touch-icon" href="/icon-192.png" />
 
   <style>
@@ -216,6 +220,8 @@
       border-radius: 20px;
       background: rgba(15,23,42,0.86);
       border: 1px solid var(--border-soft);
+      position: relative;
+      z-index: 2;
     }
     .menu-title {
       font-size:.82rem;
@@ -240,8 +246,9 @@
       display:flex;
       justify-content:center;
       gap:8px;
-      text-decoration:none;   /* 링크 밑줄 제거 */
-      align-items:center;
+      cursor:pointer;
+      position: relative;
+      z-index: 3;
     }
   </style>
 </head>
@@ -253,12 +260,13 @@
 
     <div class="top-bar">
       <div class="top-bar-left"></div>
-      <div class="top-bar-center">AI 피부 코치 (TEST)</div>
+      <div class="top-bar-center">AI 피부 코치</div>
       <div class="top-bar-right">
         <div class="step-pill">STEP 1 / 4</div>
       </div>
     </div>
 
+    <!-- 🌟 물방울 SVG → icon-192.png 로 대체 -->
     <div class="logo-badge-wrap">
       <div class="logo-badge">
         <div class="logo-badge-inner">
@@ -267,74 +275,4 @@
       </div>
     </div>
 
-    <h1>AI 피부 코치</h1>
-    <div class="subtitle">PHOTO • ANALYSIS • ROUTINE</div>
-
-    <div class="description">
-      얼굴이 보이는 사진 한 장만 올리면,<br />
-      AI가 피부 분석·루틴·추천 제품을<br />
-      안내해드립니다.
-    </div>
-
-    <div class="section-box">
-      <div class="section-title">PHOTO UPLOAD</div>
-      <div class="section-hint">
-        갤러리에서 선택하거나,<br>
-        밝은 곳에서 고민 부위가 보이게 촬영하세요.
-      </div>
-
-      <label class="btn">
-        📁 파일에서 선택하기
-        <input type="file" accept="image/*" onchange="goNextPage(event)">
-      </label>
-
-      <label class="btn">
-        📷 카메라로 촬영하기
-        <input type="file" accept="image/*" capture="environment" onchange="goNextPage(event)">
-      </label>
-    </div>
-
-    <div class="menu-box">
-      <div class="menu-title">MY 피부 기록</div>
-      <div id="today-status" class="today-status">📅 아직 진단 기록이 없습니다</div>
-
-      <!-- ✅ JS 없이 products.html로 가는 순수 링크 -->
-      <a class="btn-mini" href="./products.html">
-        🔁 최근 진단 결과 · 추천 제품 보기
-      </a>
-    </div>
-  </div>
-</div>
-
-<script>
-  function goNextPage(event) {
-    const file = event.target && event.target.files && event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64 = e.target.result;
-      sessionStorage.setItem("uploadedImage", base64);
-      window.location.href = "confirm.html";
-    };
-    reader.readAsDataURL(file);
-  }
-
-  // (옵션) 최근 날짜 표시 – 없어도 버튼 동작에는 영향 없음
-  (function updateTodayStatus() {
-    const el = document.getElementById("today-status");
-    const raw = localStorage.getItem("diagnosisHistory");
-    if (!raw) return;
-    try {
-      const history = JSON.parse(raw);
-      if (!Array.isArray(history) || history.length === 0) return;
-      const latest = history[0];
-      el.innerText = `📅 마지막 진단: ${latest.date} · 바로 보기`;
-    } catch (e) {
-      console.warn("diagnosisHistory 파싱 오류:", e);
-    }
-  })();
-</script>
-
-</body>
-</html>
+    <
