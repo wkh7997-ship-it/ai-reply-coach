@@ -3,17 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI 피부 코치</title>
+  <title>AI 피부 코치 (TEST)</title>
 
-  <!-- ⭐ PWA & 아이콘 연결 -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#11152b" />
 
-  <!-- 안드로이드/웹 아이콘 -->
   <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
-
-  <!-- iOS 홈화면 아이콘 -->
   <link rel="apple-touch-icon" href="/icon-192.png" />
 
   <style>
@@ -65,6 +61,7 @@
       inset: 1px;
       border-radius: 22px;
       border: 1px solid rgba(148,163,255,0.35);
+      pointer-events: none;
     }
 
     .top-accent {
@@ -243,7 +240,8 @@
       display:flex;
       justify-content:center;
       gap:8px;
-      cursor:pointer;
+      text-decoration:none;   /* 링크 밑줄 제거 */
+      align-items:center;
     }
   </style>
 </head>
@@ -255,13 +253,12 @@
 
     <div class="top-bar">
       <div class="top-bar-left"></div>
-      <div class="top-bar-center">AI 피부 코치</div>
+      <div class="top-bar-center">AI 피부 코치 (TEST)</div>
       <div class="top-bar-right">
         <div class="step-pill">STEP 1 / 4</div>
       </div>
     </div>
 
-    <!-- 🌟 물방울 SVG → icon-192.png 로 대체 -->
     <div class="logo-badge-wrap">
       <div class="logo-badge">
         <div class="logo-badge-inner">
@@ -299,12 +296,12 @@
 
     <div class="menu-box">
       <div class="menu-title">MY 피부 기록</div>
-      <div id="today-status" class="today-status">📅 오늘 기록 없음</div>
+      <div id="today-status" class="today-status">📅 아직 진단 기록이 없습니다</div>
 
-      <!-- ✅ 여기 버튼만 수정 -->
-      <button class="btn-mini" type="button" onclick="goToProducts()">
+      <!-- ✅ JS 없이 products.html로 가는 순수 링크 -->
+      <a class="btn-mini" href="./products.html">
         🔁 최근 진단 결과 · 추천 제품 보기
-      </button>
+      </a>
     </div>
   </div>
 </div>
@@ -323,40 +320,21 @@
     reader.readAsDataURL(file);
   }
 
-  // 🔹 최근 진단 날짜 표시
-  function updateTodayStatus() {
+  // (옵션) 최근 날짜 표시 – 없어도 버튼 동작에는 영향 없음
+  (function updateTodayStatus() {
     const el = document.getElementById("today-status");
     const raw = localStorage.getItem("diagnosisHistory");
-
-    if (!raw) {
-      el.innerText = "📅 아직 진단 기록이 없습니다";
-      return;
-    }
-
+    if (!raw) return;
     try {
       const history = JSON.parse(raw);
-      if (!Array.isArray(history) || history.length === 0) {
-        el.innerText = "📅 아직 진단 기록이 없습니다";
-        return;
-      }
-
-      const latest = history[0]; // 가장 최근 기록
+      if (!Array.isArray(history) || history.length === 0) return;
+      const latest = history[0];
       el.innerText = `📅 마지막 진단: ${latest.date} · 바로 보기`;
     } catch (e) {
-      el.innerText = "📅 기록을 불러오는 중 오류가 발생했습니다";
       console.warn("diagnosisHistory 파싱 오류:", e);
     }
-  }
-
-  // ✅ 이 함수가 버튼에 직접 연결되어 있음
-  function goToProducts() {
-    alert("추천 제품 페이지로 이동합니다."); // ← 이게 반드시 떠야 함
-    window.location.href = "products.html";
-  }
-
-  updateTodayStatus();
+  })();
 </script>
-
 
 </body>
 </html>
