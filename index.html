@@ -300,7 +300,8 @@
       <div class="menu-title">MY 피부 기록</div>
       <div id="today-status" class="today-status">📅 오늘 기록 없음</div>
 
-      <button class="btn-mini" onclick="goToProducts()">
+      <!-- 🔧 수정: onclick 제거, id/ type 추가 -->
+      <button class="btn-mini" type="button" id="btn-products">
         🔁 최근 진단 결과 · 추천 제품 보기
       </button>
     </div>
@@ -348,14 +349,19 @@
 
   // 🔹 버튼은 항상 products.html로 이동하게(항상 '활성화' 느낌)
   function goToProducts() {
+    console.log("goToProducts 호출됨");
     window.location.href = "products.html";
   }
 
-  updateTodayStatus();
+  // 🔧 수정: DOM이 준비된 후에 상태 업데이트 + 클릭 이벤트 연결
+  window.addEventListener("DOMContentLoaded", () => {
+    updateTodayStatus();
+    const btn = document.getElementById("btn-products");
+    if (btn) {
+      btn.addEventListener("click", goToProducts);
+    }
+  });
 </script>
-
 
 </body>
 </html>
-
-
