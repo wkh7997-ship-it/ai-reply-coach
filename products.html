@@ -4,286 +4,330 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AI 피부 코치 - 추천 제품</title>
-
   <style>
     :root {
       --primary: #9b8bff;
       --primary-strong: #5c6bff;
       --bg-deep: #050616;
       --bg-top: #11152b;
-      --glass: rgba(10, 14, 32, 0.95);
+      --glass: rgba(9, 12, 30, 0.96);
       --text-main: #f9fafb;
       --text-sub: #cbd5f5;
-      --border-soft: rgba(148, 163, 255, 0.35);
+      --border-soft: rgba(148, 163, 255, 0.4);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
       min-height: 100vh;
       background:
-        radial-gradient(circle at top, rgba(88,101,242,0.32) 0, transparent 55%),
-        radial-gradient(circle at bottom, rgba(59,130,246,0.26) 0, transparent 62%),
+        radial-gradient(circle at top, rgba(88, 101, 242, 0.35) 0, transparent 55%),
+        radial-gradient(circle at bottom, rgba(6, 95, 180, 0.28) 0, transparent 60%),
         linear-gradient(160deg, var(--bg-top), var(--bg-deep));
       color: var(--text-main);
       display: flex;
+      align-items: center;
       justify-content: center;
-      padding: 14px;
+      padding: 18px 14px;
     }
 
-    .shell {
-      width: 100%;
-      max-width: 440px;
-    }
+    .shell { width: 100%; max-width: 440px; }
 
     .card {
       background: var(--glass);
       border-radius: 26px;
-      padding: 18px 16px 18px;
+      padding: 18px 16px 14px;
       border: 1px solid var(--border-soft);
       box-shadow:
-        0 22px 50px rgba(0, 0, 0, 0.9),
-        0 0 0 1px rgba(15, 23, 42, 0.7);
+        0 22px 50px rgba(0,0,0,0.9),
+        0 0 0 1px rgba(15,23,42,0.7);
       backdrop-filter: blur(18px);
-      overflow-y: auto;
-      max-height: calc(100vh - 28px);
+      position: relative;
+      overflow: hidden;
+      max-height: calc(100vh - 32px);
+      display: flex;
+      flex-direction: column;
     }
 
     .top-accent {
       position: absolute;
-      left: 14%;
-      right: 14%;
-      top: 10px;
+      left: 14%; right: 14%; top: 10px;
       height: 1px;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(148,163,255,0.7),
-        transparent
-      );
+      background: linear-gradient(90deg, transparent, rgba(148,163,255,0.9), transparent);
+      opacity: 0.95;
+    }
+
+    .card-inner-scroll {
+      overflow-y: auto;
+      padding-right: 2px;
+      margin-right: -4px;
+      flex: 1;
     }
 
     .header {
+      margin-top: 14px;
+      margin-bottom: 12px;
       text-align: center;
-      margin-bottom: 16px;
     }
 
     .title {
-      font-size: 1.45rem;
-      font-weight: 750;
-      letter-spacing: 0.04em;
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
     }
 
     .subtitle {
       margin-top: 6px;
+      font-size: 0.9rem;
       color: var(--text-sub);
-      font-size: 0.85rem;
-      line-height: 1.4;
+      line-height: 1.5;
     }
 
-    /* 태그 */
-    .context-block {
+    .tag-row {
       margin-top: 12px;
-      margin-bottom: 12px;
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      justify-content: center;
+      gap: 8px;
     }
 
-    .tag-chip {
-      font-size: 0.78rem;
-      padding: 4px 8px;
+    .tag-pill {
+      padding: 4px 10px;
       border-radius: 999px;
+      border: 1px solid rgba(148,163,255,0.6);
+      font-size: 0.78rem;
+      color: #e5e7ff;
       background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(148,163,255,0.45);
-      color: #e5e7ef;
     }
 
-    /* 구분 라벨 */
-    .section-label {
-      font-size: 0.9rem;
+    .section-title {
+      margin-top: 18px;
+      margin-bottom: 6px;
+      font-size: 1.05rem;
       font-weight: 700;
-      margin: 14px 0 8px;
-      padding-left: 6px;
-      border-left: 3px solid rgba(148,163,255,0.7);
+      letter-spacing: 0.08em;
+      color: #e5e7ff;
     }
 
-    /* 제품 카드 */
+    .section-title span {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-sub);
+      margin-left: 4px;
+    }
+
     .product-card {
-      background: rgba(15, 23, 42, 0.92);
-      border-radius: 18px;
-      padding: 12px;
-      margin-bottom: 12px;
-      border: 1px solid rgba(148,163,255,0.45);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
-    }
-
-    .product-main {
+      margin-top: 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(148,163,255,0.5);
+      background:
+        radial-gradient(circle at top left, rgba(148,163,255,0.22), transparent 60%),
+        rgba(11,17,38,0.98);
+      padding: 12px 12px 12px;
       display: flex;
       gap: 10px;
-      align-items: flex-start;
     }
 
-    .product-thumb {
-      width: 62px;
-      height: 62px;
-      border-radius: 14px;
+    .thumb {
+      width: 80px;
+      min-width: 80px;
+      height: 80px;
+      border-radius: 18px;
       overflow: hidden;
-      background: rgba(15,23,42,0.8);
-      border: 1px solid rgba(148,163,255,0.4);
-      flex-shrink: 0;
+      background: rgba(15,23,42,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .product-thumb img {
+    .thumb img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    .product-text { flex: 1; }
-
-    .product-name {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #fdfcff;
-    }
-
-    .product-desc {
-      margin-top: 4px;
-      font-size: 0.80rem;
-      color: var(--text-sub);
-      line-height: 1.45;
-    }
-
-    .product-link-wrap { margin-top: 8px; }
-
-    .product-link-btn {
-      display: inline-block;
-      padding: 7px 12px;
+    .thumb-placeholder {
+      width: 60%;
+      height: 60%;
       border-radius: 999px;
-      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
-      color: white;
-      font-size: 0.82rem;
-      font-weight: 650;
-      text-decoration: none;
-      box-shadow: 0 10px 22px rgba(88,81,233,0.55);
+      border: 1px dashed rgba(148,163,255,0.7);
     }
 
-    .btn-wrap {
-      margin-top: 16px;
+    .p-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    .back-btn {
+    .p-name {
+      font-size: 0.96rem;
+      font-weight: 700;
+    }
+
+    .p-desc {
+      font-size: 0.83rem;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    .p-tag-row {
+      margin-top: 2px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .p-tag {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,255,0.6);
+      color: #e5e7ff;
+      background: rgba(15,23,42,0.95);
+    }
+
+    .p-btn-wrap {
+      margin-top: 6px;
+    }
+
+    .btn-primary {
       width: 100%;
-      padding: 12px 0;
-      border-radius: 18px;
-      background: transparent;
-      border: 1px solid rgba(148,163,255,0.5);
-      color: var(--text-main);
-      font-size: 0.95rem;
+      padding: 8px 0;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.86rem;
       font-weight: 650;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(88,81,233,0.6);
+    }
+
+    .focus-empty {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: var(--text-sub);
+    }
+
+    .btn-footer-wrap {
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(15,23,42,0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-footer {
+      width: 100%;
+      padding: 11px 0;
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,255,0.5);
+      background:
+        radial-gradient(circle at top left, rgba(148,163,255,0.18), transparent 60%),
+        rgba(11,17,38,0.98);
+      color: #e5e7ff;
+      font-size: 0.95rem;
+      font-weight: 620;
       cursor: pointer;
     }
   </style>
 </head>
-
 <body>
 <div class="shell">
   <div class="card">
     <div class="top-accent"></div>
 
-    <div class="header">
-      <div class="title">추천 제품 목록</div>
-      <div class="subtitle">
-        방금 진단한 피부 상태에 맞춰<br />
-        AI가 상품을 자동 추천해 드려요.
+    <div class="card-inner-scroll">
+      <div class="header">
+        <div class="title">추천 제품 목록</div>
+        <div class="subtitle">
+          방금 진단한 피부 상태에 맞춰<br />
+          AI가 상품을 자동 추천해 드려요.
+        </div>
+
+        <div class="tag-row">
+          <span class="tag-pill" id="tag-skin-type">피부 타입: -</span>
+          <span class="tag-pill" id="tag-concern">주요 고민: -</span>
+        </div>
+      </div>
+
+      <!-- 기본 루틴 -->
+      <div>
+        <div class="section-title">
+          기본 루틴 추천
+          <span>세안 → 보습 → 자외선 차단</span>
+        </div>
+        <div id="basic-list"></div>
+      </div>
+
+      <!-- 집중 케어 -->
+      <div style="margin-top: 18px;">
+        <div class="section-title">
+          집중 케어 추천
+          <span>선택한 고민에 맞춘 타겟 케어</span>
+        </div>
+        <div id="focus-list"></div>
+        <div id="focus-empty" class="focus-empty" style="display:none;">
+          아직 등록된 집중 케어 제품이 없어요. 곧 채워 넣을 예정입니다.
+        </div>
       </div>
     </div>
 
-    <div id="context-tags" class="context-block"></div>
-
-    <div class="section-label">기본 루틴 추천</div>
-    <div id="essential-list"></div>
-
-    <div class="section-label">집중 케어 추천</div>
-    <div id="focus-list"></div>
-
-    <div class="btn-wrap">
-      <button class="back-btn" onclick="goBack()">이전 결과로 돌아가기</button>
+    <!-- 하단 버튼 -->
+    <div class="btn-footer-wrap">
+      <button class="btn-footer" onclick="goBackResult()">
+        이전 결과로 돌아가기
+      </button>
+      <button class="btn-footer" onclick="goHome()">
+        첫 화면으로 돌아가기
+      </button>
     </div>
   </div>
 </div>
+
 <script>
-  /* ---------------------------------------
-     1) 이전 진단 정보 + 고민 정보 불러오기
-  --------------------------------------- */
-  function loadContext() {
-    const tagsWrap = document.getElementById("context-tags");
-    tagsWrap.innerHTML = "";
-
-    // 저장된 진단 정보
-    const historyRaw = localStorage.getItem("diagnosisHistory");
-    let latest = null;
-    if (historyRaw) {
-      try {
-        const history = JSON.parse(historyRaw);
-        latest = Array.isArray(history) && history.length > 0 ? history[0] : null;
-      } catch (e) {
-        console.error("diagnosisHistory 파싱 오류:", e);
-      }
-    }
-
-    // 저장된 고민 정보
-    const concernsRaw = sessionStorage.getItem("userConcerns");
-    let concerns = [];
-    if (concernsRaw) {
-      try {
-        concerns = JSON.parse(concernsRaw);
-      } catch (e) {
-        console.error("userConcerns 파싱 오류:", e);
-      }
-    }
-
-    // 태그 표시
-    if (latest && latest.skinType) {
-      const chip = document.createElement("span");
-      chip.className = "tag-chip";
-      chip.innerText = `피부 타입: ${latest.skinType}`;
-      tagsWrap.appendChild(chip);
-    }
-
-    if (concerns.length > 0) {
-      concerns.forEach((c) => {
-        const chip = document.createElement("span");
-        chip.className = "tag-chip";
-        chip.innerText = c;
-        tagsWrap.appendChild(chip);
-      });
-    }
-
-    return { latest, concerns };
-  }
-
-  /* ---------------------------------------
-     2) Coupang 링크 JSON 불러오기
-  --------------------------------------- */
-  async function loadLinks() {
+  // 로컬 스토리지에서 최근 진단 정보 읽어오기
+  function loadLatestDiagnosis() {
     try {
-      const res = await fetch("/data/coupang-links.json");
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return await res.json();
-    } catch (e) {
-      console.error("coupang-links.json 로드 실패:", e);
-      return {};
+      const raw = localStorage.getItem("diagnosisHistory");
+      if (!raw) return null;
+      const history = JSON.parse(raw);
+      if (!Array.isArray(history) || history.length === 0) return null;
+      return history[0]; // 가장 최근 것
+    } catch (_) {
+      return null;
     }
   }
 
-  /* ---------------------------------------
-     3) 랜덤 제품 선택
-  --------------------------------------- */
-  function pickRandomProduct(category) {
+  function updateHeaderTags() {
+    const latest = loadLatestDiagnosis();
+    const tagSkin = document.getElementById("tag-skin-type");
+    const tagConcern = document.getElementById("tag-concern");
+
+    if (!latest) {
+      tagSkin.innerText = "피부 타입: -";
+      tagConcern.innerText = "주요 고민: -";
+      return;
+    }
+
+    tagSkin.innerText = `피부 타입: ${latest.skinType || "-"}`;
+    // summary 말고 concerns는 sessionStorage에 따로 저장해뒀을 수도 있어서 fallback
+    const rawConcerns = sessionStorage.getItem("userConcerns");
+    let text = "-";
+    if (rawConcerns) {
+      try {
+        const arr = JSON.parse(rawConcerns);
+        if (Array.isArray(arr) && arr.length) text = arr.join(", ");
+      } catch {}
+    }
+    tagConcern.innerText = `주요 고민: ${text}`;
+  }
+
+  function pickRandomItem(category) {
     if (!category || !Array.isArray(category.items) || category.items.length === 0) {
       return null;
     }
@@ -291,170 +335,188 @@
     return category.items[idx];
   }
 
-  /* ---------------------------------------
-     4) 추천 구성 (루틴 + 고민별 케어)
-  --------------------------------------- */
-  function buildRecommendations(context, links) {
-    const { latest, concerns } = context;
-    const skinType = latest?.skinType || "복합성";
-    const concernText = (concerns || []).join(" ");
+  function createProductCard(config, item) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "product-card";
 
-    const essential = [];
-    const focus = [];
+    const thumb = document.createElement("div");
+    thumb.className = "thumb";
 
-    /* ---------- 🧴 1) 기본 루틴 구성 ---------- */
-
-    // 클렌저
-    const cleanserItem = pickRandomProduct(links.cleanser);
-    essential.push({
-      name: "클렌저",
-      desc: "자극은 줄이고 피부 장벽은 지켜주는 약산성 클렌저가 좋아요.",
-      image: cleanserItem?.image || null,
-      url: cleanserItem?.url || null
-    });
-
-    // 토너
-    const tonerItem = pickRandomProduct(links.toner);
-    essential.push({
-      name: "토너",
-      desc: "세안 후 당김을 완화하고 피부 밸런스를 잡아주는 기본 보습 토너.",
-      image: tonerItem?.image || null,
-      url: tonerItem?.url || null
-    });
-
-    // 장벽 크림
-    const ceramideItem = pickRandomProduct(links.ceramideCream);
-    essential.push({
-      name: "장벽 크림",
-      desc: "세라마이드 기반 보습 크림으로 피부를 견고하게 보호해 줍니다.",
-      image: ceramideItem?.image || null,
-      url: ceramideItem?.url || null
-    });
-
-    // 선크림
-    const sunItem = pickRandomProduct(links.sunscreen);
-    essential.push({
-      name: "선크림",
-      desc: "자외선은 모든 피부 문제의 원인이 될 수 있어요. SPF 50 권장!",
-      image: sunItem?.image || null,
-      url: sunItem?.url || null
-    });
-
-    /* ---------- 🎯 2) 고민 기반 집중 케어 ---------- */
-
-    const hasAcne = /여드름|뾰루지/i.test(concernText);
-    const hasPore = /모공|피지|블랙헤드/i.test(concernText);
-    const hasPigment = /기미|잡티|색소/i.test(concernText);
-    const hasRed = /붉은기|홍조|민감/i.test(concernText);
-
-    // 여드름 케어
-    if (hasAcne) {
-      const item = pickRandomProduct(links.acne);
-      focus.push({
-        name: "여드름 스팟 케어",
-        desc: "활성 여드름 부위에만 소량 사용하는 국소 케어 제품입니다.",
-        image: item?.image || null,
-        url: item?.url || null
-      });
+    if (item && item.image) {
+      const img = document.createElement("img");
+      img.src = item.image;
+      img.alt = config.title;
+      thumb.appendChild(img);
+    } else {
+      const ph = document.createElement("div");
+      ph.className = "thumb-placeholder";
+      thumb.appendChild(ph);
     }
 
-    // 모공·피지 케어
-    if (hasPore) {
-      const item = pickRandomProduct(links.pore);
-      focus.push({
-        name: "모공·피지 케어",
-        desc: "블랙헤드와 모공 관리에 효과적인 저자극 필링류입니다.",
-        image: item?.image || null,
-        url: item?.url || null
-      });
-    }
+    const body = document.createElement("div");
+    body.className = "p-body";
 
-    // 색소침착·잡티 케어
-    if (hasPigment) {
-      const item = pickRandomProduct(links.pigment);
-      focus.push({
-        name: "색소침착 케어",
-        desc: "기미·잡티 완화에 도움을 주는 미백 기능성 에센스 계열입니다.",
-        image: item?.image || null,
-        url: item?.url || null
-      });
-    }
+    const nameEl = document.createElement("div");
+    nameEl.className = "p-name";
+    nameEl.innerText = config.title;
 
-    // 진정·붉은기 케어
-    if (hasRed) {
-      const item = pickRandomProduct(links.soothing);
-      focus.push({
-        name: "진정 케어",
-        desc: "피부 열감과 붉은기를 완화시키는 진정 성분 제품이에요.",
-        image: item?.image || null,
-        url: item?.url || null
-      });
-    }
+    const descEl = document.createElement("div");
+    descEl.className = "p-desc";
+    descEl.innerText = config.text;
 
-    return { essential, focus };
+    const tagRow = document.createElement("div");
+    tagRow.className = "p-tag-row";
+    (config.tags || []).forEach((t) => {
+      const s = document.createElement("span");
+      s.className = "p-tag";
+      s.innerText = t;
+      tagRow.appendChild(s);
+    });
+
+    const btnWrap = document.createElement("div");
+    btnWrap.className = "p-btn-wrap";
+    const btn = document.createElement("button");
+    btn.className = "btn-primary";
+    btn.innerText = "쿠팡에서 보기";
+    if (item && item.url) {
+      btn.onclick = () => window.open(item.url, "_blank");
+    } else {
+      btn.disabled = true;
+      btn.innerText = "준비 중입니다";
+    }
+    btnWrap.appendChild(btn);
+
+    body.appendChild(nameEl);
+    body.appendChild(descEl);
+    body.appendChild(tagRow);
+    body.appendChild(btnWrap);
+
+    wrapper.appendChild(thumb);
+    wrapper.appendChild(body);
+
+    return wrapper;
   }
 
-  /* ---------------------------------------
-     5) 제품 카드 생성
-  --------------------------------------- */
-  function createProductCard(item) {
-    const card = document.createElement("div");
-    card.className = "product-card";
+  async function loadProducts() {
+    updateHeaderTags();
 
-    const imgHTML = item.image
-      ? `<div class="product-thumb"><img src="${item.image}" alt=""></div>`
-      : `<div class="product-thumb" style="background:#222"></div>`;
+    let data;
+    try {
+      const res = await fetch("/data/coupang-links.json");
+      data = await res.json();
+    } catch (e) {
+      console.error("coupang-links.json 로드 실패:", e);
+      alert("제품 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      return;
+    }
 
-    const linkHTML = item.url
-      ? `<div class="product-link-wrap">
-           <a href="${item.url}" target="_blank" class="product-link-btn">쿠팡에서 보기</a>
-         </div>`
-      : "";
+    const basicListEl = document.getElementById("basic-list");
+    const focusListEl = document.getElementById("focus-list");
+    const focusEmptyEl = document.getElementById("focus-empty");
 
-    card.innerHTML = `
-      <div class="product-main">
-        ${imgHTML}
-        <div class="product-text">
-          <div class="product-name">${item.name}</div>
-          <div class="product-desc">${item.desc}</div>
-        </div>
-      </div>
-      ${linkHTML}
-    `;
+    basicListEl.innerHTML = "";
+    focusListEl.innerHTML = "";
+    focusEmptyEl.style.display = "none";
 
-    return card;
+    // 기본 루틴용 설정
+    const basicConfigs = [
+      {
+        key: "cleanser",
+        title: "클렌저",
+        text: "자극은 줄이고 피부 장벽은 지켜주는 약산성 클렌저가 좋아요.",
+        tags: ["약산성", "민감성 사용 가능", "가볍게 세정"]
+      },
+      {
+        key: "toner",
+        title: "토너",
+        text: "세안 후 당김을 완화하고 피부 밸런스를 잡아주는 기본 보습 토너.",
+        tags: ["보습", "피부결 정돈"]
+      },
+      {
+        key: "ceramideCream",
+        title: "장벽 크림",
+        text: "세라마이드 기반 보습 크림으로 피부 장벽을 튼튼하게 보호해 줍니다.",
+        tags: ["장벽 강화", "저자극"]
+      },
+      {
+        key: "sunscreen",
+        title: "선크림",
+        text: "자외선은 대부분의 피부 문제 원인! SPF 50 이상을 추천해요.",
+        tags: ["SPF 50+", "자외선 차단"]
+      }
+    ];
+
+    basicConfigs.forEach((cfg) => {
+      const cat = data[cfg.key];
+      const item = cat ? pickRandomItem(cat) : null;
+      if (!cat || !cat.items || cat.items.length === 0) {
+        // 데이터가 아예 없으면 기본 카드도 그리지 않음
+        return;
+      }
+      const card = createProductCard(cfg, item);
+      basicListEl.appendChild(card);
+    });
+
+    // 집중 케어용 설정 (여기에 repairCream 포함!)
+    const focusConfigs = [
+      {
+        key: "acne",
+        title: "여드름·트러블 케어",
+        text: "붉은 염증 여드름에는 피부과 약과 함께 저자극 스팟 케어만 가볍게.",
+        tags: ["스팟 케어", "저자극"]
+      },
+      {
+        key: "pore",
+        title: "모공·피지 케어",
+        text: "모공, 블랙헤드 고민에는 과한 압출 대신 각질·피지 케어 위주로!",
+        tags: ["블랙헤드", "T존 관리"]
+      },
+      {
+        key: "pigment",
+        title: "색소·잡티 케어",
+        text: "기미, 잡티는 자외선 차단 + 미백 성분 제품을 꾸준히 사용하는 게 핵심이에요.",
+        tags: ["기미", "잡티", "톤 개선"]
+      },
+      {
+        key: "soothing",
+        title: "진정·민감 케어",
+        text: "붉은기와 민감한 피부에는 알코올·향료 적은 진정 라인을 추천합니다.",
+        tags: ["진정", "민감피부"]
+      },
+      {
+        key: "repairCream",
+        title: "장벽 재생 크림",
+        text: "각질·당김·자극이 반복될 땐 세라마이드·판테놀 계열 장벽 재생 크림이 좋아요.",
+        tags: ["장벽 회복", "손상 피부 케어"]
+      }
+    ];
+
+    let focusCount = 0;
+
+    focusConfigs.forEach((cfg) => {
+      const cat = data[cfg.key];
+      if (!cat || !Array.isArray(cat.items) || cat.items.length === 0) return;
+
+      const item = pickRandomItem(cat);
+      const card = createProductCard(cfg, item);
+      focusListEl.appendChild(card);
+      focusCount++;
+    });
+
+    if (focusCount === 0) {
+      focusEmptyEl.style.display = "block";
+    }
   }
 
-  /* ---------------------------------------
-     6) 리스트 렌더링
-  --------------------------------------- */
-  function renderLists(essential, focus) {
-    const es = document.getElementById("essential-list");
-    const fc = document.getElementById("focus-list");
-
-    es.innerHTML = "";
-    fc.innerHTML = "";
-
-    essential.forEach((p) => es.appendChild(createProductCard(p)));
-    focus.forEach((p) => fc.appendChild(createProductCard(p)));
-  }
-
-  /* ---------------------------------------
-     7) 뒤로가기
-  --------------------------------------- */
-  function goBack() {
+  function goBackResult() {
     window.location.href = "result.html";
   }
 
-  /* ---------------------------------------
-     8) 실행 시작
-  --------------------------------------- */
-  window.addEventListener("DOMContentLoaded", async () => {
-    const context = loadContext();
-    const links = await loadLinks();
-    const { essential, focus } = buildRecommendations(context, links);
-    renderLists(essential, focus);
-  });
+  function goHome() {
+    window.location.href = "index.html";
+  }
+
+  window.addEventListener("DOMContentLoaded", loadProducts);
 </script>
 </body>
 </html>
