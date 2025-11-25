@@ -335,7 +335,7 @@
       box-shadow: none;
     }
 
-    /* ▶ 하단 4개 버튼을 위한 새 스타일 */
+    /* ▶ 하단 버튼들을 위한 스타일 */
     .action-btn {
       width: 100%;
       padding: 13px 14px;
@@ -468,7 +468,7 @@
       </div>
     </div>
 
-    <!-- 하단 버튼 4개 -->
+    <!-- 하단 버튼 3개만 유지 -->
     <div class="btn-wrap">
       <!-- 1: 추천 제품 보러가기 -->
       <button class="action-btn" onclick="goProducts()">
@@ -486,12 +486,6 @@
       <button class="action-btn" onclick="goHome()">
         <span class="action-icon">🏠</span>
         <span>첫 화면으로 돌아가기</span>
-      </button>
-
-      <!-- 4: 다른 사진으로 다시 진단 -->
-      <button class="action-btn" onclick="retry()">
-        <span class="action-icon">📸</span>
-        <span>다른 사진으로 다시 진단</span>
       </button>
     </div>
   </div>
@@ -637,12 +631,6 @@
   }
 
   function goHome() {
-    sessionStorage.removeItem("uploadedImage");
-    sessionStorage.removeItem("aiSkinResult");
-    window.location.href = "index.html";
-  }
-
-  function retry() {
     sessionStorage.removeItem("uploadedImage");
     sessionStorage.removeItem("aiSkinResult");
     window.location.href = "index.html";
