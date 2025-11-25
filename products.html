@@ -4,13 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AI 피부 코치 - 추천 제품</title>
+
   <style>
     :root {
       --primary: #9b8bff;
       --primary-strong: #5c6bff;
       --bg-deep: #050616;
       --bg-top: #11152b;
-      --glass: rgba(10, 14, 32, 0.96);
+      --glass: rgba(10, 14, 32, 0.95);
       --text-main: #f9fafb;
       --text-sub: #cbd5f5;
       --border-soft: rgba(148, 163, 255, 0.35);
@@ -19,7 +20,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      font-family: Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
       min-height: 100vh;
       background:
         radial-gradient(circle at top, rgba(88,101,242,0.32) 0, transparent 55%),
@@ -27,309 +28,202 @@
         linear-gradient(160deg, var(--bg-top), var(--bg-deep));
       color: var(--text-main);
       display: flex;
-      align-items: center;
       justify-content: center;
-      padding: 16px 14px;
+      padding: 14px;
     }
 
-    .shell { width: 100%; max-width: 440px; }
+    .shell {
+      width: 100%;
+      max-width: 440px;
+    }
 
     .card {
       background: var(--glass);
       border-radius: 26px;
-      padding: 18px 16px 12px;
+      padding: 18px 16px 18px;
       border: 1px solid var(--border-soft);
       box-shadow:
-        0 22px 50px rgba(0,0,0,0.9),
-        0 0 0 1px rgba(15,23,42,0.7);
+        0 22px 50px rgba(0, 0, 0, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.7);
       backdrop-filter: blur(18px);
-      position: relative;
-      overflow: hidden;
-      max-height: calc(100vh - 32px);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .card-inner-scroll {
       overflow-y: auto;
-      padding-right: 2px;
-      margin-right: -4px;
-      flex: 1;
+      max-height: calc(100vh - 28px);
     }
 
     .top-accent {
       position: absolute;
-      left: 14%; right: 14%; top: 10px;
+      left: 14%;
+      right: 14%;
+      top: 10px;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(148,163,255,0.9), transparent);
-      opacity: 0.95;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(148,163,255,0.7),
+        transparent
+      );
     }
 
-    .header-wrap {
-      margin-top: 12px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 10px;
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
     }
 
-    .header-title {
-      font-size: 1.35rem;
+    .title {
+      font-size: 1.45rem;
       font-weight: 750;
-      line-height: 1.1;
+      letter-spacing: 0.04em;
     }
 
-    .header-sub {
-      font-size: 0.8rem;
+    .subtitle {
+      margin-top: 6px;
       color: var(--text-sub);
-      margin-top: 4px;
+      font-size: 0.85rem;
       line-height: 1.4;
     }
 
-    .header-badge {
-      font-size: 0.72rem;
-      color: rgba(203,213,255,0.9);
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,255,0.6);
-      background: rgba(15,23,42,0.9);
-      text-align: right;
-      white-space: pre-line; /* 줄바꿈 유지 */
-    }
-
-    .tag-row {
+    /* 태그 */
+    .context-block {
+      margin-top: 12px;
+      margin-bottom: 12px;
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
-      margin-top: 6px;
-      margin-bottom: 8px;
     }
 
     .tag-chip {
-      font-size: 0.72rem;
-      padding: 3px 8px;
+      font-size: 0.78rem;
+      padding: 4px 8px;
       border-radius: 999px;
-      border: 1px solid rgba(148,163,255,0.6);
-      color: #e5e7eb;
       background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,255,0.45);
+      color: #e5e7ef;
     }
 
-    .section {
-      background: rgba(11,17,38,0.96);
-      border-radius: 18px;
-      padding: 10px 11px 9px;
-      border: 1px solid rgba(148,163,255,0.3);
-      margin-bottom: 10px;
+    /* 구분 라벨 */
+    .section-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin: 14px 0 8px;
+      padding-left: 6px;
+      border-left: 3px solid rgba(148,163,255,0.7);
     }
 
-    .section-title {
-      font-size: 0.8rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #9ca3ff;
-      margin-bottom: 4px;
-    }
-
-    .section-sub {
-      font-size: 0.8rem;
-      color: var(--text-sub);
-      margin-bottom: 6px;
-      line-height: 1.5;
-    }
-
-    .product-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
+    /* 제품 카드 */
     .product-card {
-      border-radius: 14px;
-      padding: 8px 9px;
-      background:
-        radial-gradient(circle at top left, rgba(148,163,255,0.18), transparent 60%),
-        rgba(15,23,42,0.96);
-      border: 1px solid rgba(148,163,255,0.4);
+      background: rgba(15, 23, 42, 0.92);
+      border-radius: 18px;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(148,163,255,0.45);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.45);
     }
 
-    .product-header {
+    .product-main {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 2px;
+      gap: 10px;
+      align-items: flex-start;
     }
+
+    .product-thumb {
+      width: 62px;
+      height: 62px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(148,163,255,0.4);
+      flex-shrink: 0;
+    }
+
+    .product-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .product-text { flex: 1; }
 
     .product-name {
-      font-size: 0.9rem;
-      font-weight: 640;
-    }
-
-    .product-step {
-      font-size: 0.72rem;
-      padding: 2px 7px;
-      border-radius: 999px;
-      border: 1px solid rgba(191,219,254,0.8);
-      color: #e0f2fe;
-      background: rgba(15,23,42,0.9);
-      white-space: nowrap;
-    }
-
-    .product-meta {
-      font-size: 0.74rem;
-      color: rgba(191,219,254,0.9);
-      margin-bottom: 3px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fdfcff;
     }
 
     .product-desc {
-      font-size: 0.78rem;
-      color: var(--text-sub);
-      line-height: 1.5;
-    }
-
-    .product-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
       margin-top: 4px;
-    }
-
-    .product-tag {
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,255,0.5);
-      color: #e5e7eb;
-      background: rgba(15,23,42,0.9);
-    }
-
-    .empty-text {
-      font-size: 0.8rem;
+      font-size: 0.80rem;
       color: var(--text-sub);
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
-    .footer-note {
-      font-size: 0.72rem;
-      color: rgba(148,163,255,0.9);
-      text-align: center;
-      margin-top: 6px;
+    .product-link-wrap { margin-top: 8px; }
+
+    .product-link-btn {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
+      color: white;
+      font-size: 0.82rem;
+      font-weight: 650;
+      text-decoration: none;
+      box-shadow: 0 10px 22px rgba(88,81,233,0.55);
     }
 
     .btn-wrap {
-      margin-top: 8px;
-      padding-top: 6px;
-      border-top: 1px solid rgba(15,23,42,0.9);
+      margin-top: 16px;
     }
 
-    .action-btn {
+    .back-btn {
       width: 100%;
-      padding: 13px 14px;
-      margin-top: 9px;
+      padding: 12px 0;
       border-radius: 18px;
-      border: 1px solid rgba(148,163,255,0.45);
-      background:
-        radial-gradient(circle at top left, rgba(148,163,255,0.18), transparent 60%),
-        rgba(12,16,40,0.95);
-      color: #e5e7ff;
+      background: transparent;
+      border: 1px solid rgba(148,163,255,0.5);
+      color: var(--text-main);
       font-size: 0.95rem;
-      font-weight: 620;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 12px;
+      font-weight: 650;
       cursor: pointer;
-      box-shadow:
-        0 6px 18px rgba(0,0,0,0.45),
-        0 0 0 1px rgba(15,23,42,0.8);
-      transition: all 0.18s ease-out;
-    }
-
-    .action-btn:hover {
-      background:
-        radial-gradient(circle at top left, rgba(191,219,254,0.22), transparent 60%),
-        rgba(16,22,54,0.98);
-      transform: translateY(-2px);
-      box-shadow:
-        0 10px 26px rgba(0,0,0,0.55),
-        0 0 0 1px rgba(129,140,248,0.9);
-    }
-
-    .action-icon {
-      font-size: 1.25rem;
-      opacity: 0.92;
     }
   </style>
 </head>
+
 <body>
 <div class="shell">
   <div class="card">
     <div class="top-accent"></div>
 
-    <!-- 상단 헤더 -->
-    <div class="header-wrap">
-      <div>
-        <div class="header-title">맞춤 제품 추천</div>
-        <div class="header-sub">
-          방금 진단 결과를 기준으로<br />
-          루틴별로 제품 타입을 정리했어요.
-        </div>
-      </div>
-      <div class="header-badge" id="header-badge">-</div>
-    </div>
-
-    <!-- 피부 타입 / 선택 고민 태그 -->
-    <div id="context-tags" class="tag-row"></div>
-
-    <div class="card-inner-scroll">
-      <!-- 필수 루틴 섹션 -->
-      <div class="section">
-        <div class="section-title">필수 루틴</div>
-        <div class="section-sub">
-          매일 사용하는 기본 루틴이에요. <br />
-          자극을 줄이고, 피부 장벽을 지키는 제품 위주로 골랐어요.
-        </div>
-        <div id="essential-list" class="product-list"></div>
-      </div>
-
-      <!-- 집중 케어 섹션 -->
-      <div class="section">
-        <div class="section-title">집중 케어</div>
-        <div class="section-sub">
-          선택한 고민(여드름, 편평사마귀, 모공 등)에 따라<br />
-          주 2~3회 정도 사용하면 좋은 타입들이에요.
-        </div>
-        <div id="focus-list" class="product-list"></div>
-      </div>
-
-      <div class="footer-note">
-        * 실제 제품 선택 시 전성분, 알러지, 기저질환 등을 꼭 확인해주세요.<br />
-        * 피부 질환이 의심되면 전문의 상담이 우선입니다.
+    <div class="header">
+      <div class="title">추천 제품 목록</div>
+      <div class="subtitle">
+        방금 진단한 피부 상태에 맞춰<br />
+        AI가 상품을 자동 추천해 드려요.
       </div>
     </div>
 
-    <!-- 하단 버튼 -->
+    <div id="context-tags" class="context-block"></div>
+
+    <div class="section-label">기본 루틴 추천</div>
+    <div id="essential-list"></div>
+
+    <div class="section-label">집중 케어 추천</div>
+    <div id="focus-list"></div>
+
     <div class="btn-wrap">
-      <button class="action-btn" onclick="goBackToResult()">
-        <span class="action-icon">📄</span>
-        <span>분석 리포트 화면으로 돌아가기</span>
-      </button>
-
-      <button class="action-btn" onclick="goHome()">
-        <span class="action-icon">🏠</span>
-        <span>첫 화면으로 돌아가기</span>
-      </button>
+      <button class="back-btn" onclick="goBack()">이전 결과로 돌아가기</button>
     </div>
   </div>
 </div>
-
 <script>
-  // 1) 최근 진단 / 선택한 고민 불러오기
+  /* ---------------------------------------
+     1) 이전 진단 정보 + 고민 정보 불러오기
+  --------------------------------------- */
   function loadContext() {
-    const badgeEl = document.getElementById("header-badge");
     const tagsWrap = document.getElementById("context-tags");
+    tagsWrap.innerHTML = "";
 
+    // 저장된 진단 정보
     const historyRaw = localStorage.getItem("diagnosisHistory");
     let latest = null;
     if (historyRaw) {
@@ -341,6 +235,7 @@
       }
     }
 
+    // 저장된 고민 정보
     const concernsRaw = sessionStorage.getItem("userConcerns");
     let concerns = [];
     if (concernsRaw) {
@@ -351,18 +246,7 @@
       }
     }
 
-    // 상단 뱃지: 피부타입 + 점수 (두 줄)
-    if (latest) {
-      const scoreText = typeof latest.score === "number" ? `${latest.score}점` : "-";
-      const typeText = latest.skinType ? `${latest.skinType} 피부` : "피부 타입 정보 없음";
-      badgeEl.textContent = `${typeText}\n${scoreText}`;
-    } else {
-      badgeEl.textContent = "최근 진단 정보가 없습니다";
-    }
-
-    // 태그 영역 초기화
-    tagsWrap.innerHTML = "";
-
+    // 태그 표시
     if (latest && latest.skinType) {
       const chip = document.createElement("span");
       chip.className = "tag-chip";
@@ -370,25 +254,47 @@
       tagsWrap.appendChild(chip);
     }
 
-    if (concerns && concerns.length > 0) {
+    if (concerns.length > 0) {
       concerns.forEach((c) => {
         const chip = document.createElement("span");
         chip.className = "tag-chip";
         chip.innerText = c;
         tagsWrap.appendChild(chip);
       });
-    } else {
-      const chip = document.createElement("span");
-      chip.className = "tag-chip";
-      chip.innerText = "이전 단계에서 선택한 고민이 없습니다";
-      tagsWrap.appendChild(chip);
     }
 
     return { latest, concerns };
   }
 
-  // 2) 간단한 추천 로직 (타입/고민 기반)
-  function buildRecommendations(context) {
+  /* ---------------------------------------
+     2) Coupang 링크 JSON 불러오기
+  --------------------------------------- */
+  async function loadLinks() {
+    try {
+      const res = await fetch("/data/coupang-links.json");
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return await res.json();
+    } catch (e) {
+      console.error("coupang-links.json 로드 실패:", e);
+      return {};
+    }
+  }
+
+  /* ---------------------------------------
+     3) 랜덤 제품 선택
+  --------------------------------------- */
+  function pickRandomProduct(category) {
+    if (!category || !Array.isArray(category.items) || category.items.length === 0) {
+      return null;
+    }
+    const idx = Math.floor(Math.random() * category.items.length);
+    return category.items[idx];
+  }
+
+  /* ---------------------------------------
+     4) 추천 구성 (루틴 + 고민별 케어)
+  --------------------------------------- */
+  function buildRecommendations(context, links) {
     const { latest, concerns } = context;
     const skinType = latest?.skinType || "복합성";
     const concernText = (concerns || []).join(" ");
@@ -396,161 +302,158 @@
     const essential = [];
     const focus = [];
 
-    // 공통 필수 루틴
+    /* ---------- 🧴 1) 기본 루틴 구성 ---------- */
+
+    // 클렌저
+    const cleanserItem = pickRandomProduct(links.cleanser);
     essential.push({
-      name: "저자극 약산성 폼 클렌저",
-      step: "세안",
-      meta: `${skinType} 피부 공통 추천`,
-      desc: "피부 장벽을 최대한 덜 자극하는 약산성 타입의 클렌저. 이중 세안 대신 저자극 세안 위주로 사용하세요.",
-      tags: ["약산성", "민감성 사용 가능", "거품형"]
+      name: "클렌저",
+      desc: "자극은 줄이고 피부 장벽은 지켜주는 약산성 클렌저가 좋아요.",
+      image: cleanserItem?.image || null,
+      url: cleanserItem?.url || null
     });
 
+    // 토너
+    const tonerItem = pickRandomProduct(links.toner);
     essential.push({
-      name: "무향 · 무알콜 토너",
-      step: "정돈",
-      meta: "세안 직후 피부 진정",
-      desc: "각질 제거 기능보다는, 피부 pH를 정돈하고 당김을 줄이는 용도의 기본 보습 토너 위주로 선택하면 좋아요.",
-      tags: ["기본 보습", "무향", "알콜 프리"]
+      name: "토너",
+      desc: "세안 후 당김을 완화하고 피부 밸런스를 잡아주는 기본 보습 토너.",
+      image: tonerItem?.image || null,
+      url: tonerItem?.url || null
     });
 
+    // 장벽 크림
+    const ceramideItem = pickRandomProduct(links.ceramideCream);
     essential.push({
-      name: "세라마이드 베이스 보습 크림",
-      step: "보습",
-      meta: "장벽 강화 집중",
-      desc: "세라마이드, 콜레스테롤, 지방산 조합이 들어간 장벽 크림 위주로 선택하면, 피부 컨디션 회복에 도움이 됩니다.",
-      tags: ["장벽 케어", "건조함 완화"]
+      name: "장벽 크림",
+      desc: "세라마이드 기반 보습 크림으로 피부를 견고하게 보호해 줍니다.",
+      image: ceramideItem?.image || null,
+      url: ceramideItem?.url || null
     });
 
+    // 선크림
+    const sunItem = pickRandomProduct(links.sunscreen);
     essential.push({
-      name: "자외선 차단제 (SPF 50, PA++++)",
-      step: "아침 마무리",
-      meta: "데일리 선크림",
-      desc: "백탁/끈적임이 적고, 눈 시림이 덜한 포뮬러 위주로 테스트해보고 맞는 제품을 골라보세요.",
-      tags: ["데일리", "UVA/UVB 차단"]
+      name: "선크림",
+      desc: "자외선은 모든 피부 문제의 원인이 될 수 있어요. SPF 50 권장!",
+      image: sunItem?.image || null,
+      url: sunItem?.url || null
     });
 
-    // 고민별 플래그
+    /* ---------- 🎯 2) 고민 기반 집중 케어 ---------- */
+
     const hasAcne = /여드름|뾰루지/i.test(concernText);
-    const hasWart = /편평사마귀|사마귀/i.test(concernText);
-    const hasPore = /모공|블랙헤드|피지/i.test(concernText);
-    const hasPigment = /잡티|기미|색소/i.test(concernText);
+    const hasPore = /모공|피지|블랙헤드/i.test(concernText);
+    const hasPigment = /기미|잡티|색소/i.test(concernText);
+    const hasRed = /붉은기|홍조|민감/i.test(concernText);
 
+    // 여드름 케어
     if (hasAcne) {
+      const item = pickRandomProduct(links.acne);
       focus.push({
-        name: "국소용 BHA/살리실산 스팟 케어",
-        step: "국소 케어",
-        meta: "활성 여드름 부위 위주",
-        desc: "얼굴 전체가 아닌, 올라온 트러블 부위에만 소량 사용하는 스팟 제품 위주로 선택하는 것이 안전합니다.",
-        tags: ["국소 사용", "과사용 주의"]
+        name: "여드름 스팟 케어",
+        desc: "활성 여드름 부위에만 소량 사용하는 국소 케어 제품입니다.",
+        image: item?.image || null,
+        url: item?.url || null
       });
     }
 
+    // 모공·피지 케어
     if (hasPore) {
+      const item = pickRandomProduct(links.pore);
       focus.push({
-        name: "저농도 BHA 토너 또는 패드",
-        step: "주 2~3회",
-        meta: "모공·블랙헤드 케어",
-        desc: "피부가 강한 편이라면 저농도(2% 이하) BHA 제품을 주 2~3회만 사용해 모공과 피지를 관리해 줄 수 있어요.",
-        tags: ["피지 조절", "각질 관리", "과자극 주의"]
+        name: "모공·피지 케어",
+        desc: "블랙헤드와 모공 관리에 효과적인 저자극 필링류입니다.",
+        image: item?.image || null,
+        url: item?.url || null
       });
     }
 
+    // 색소침착·잡티 케어
     if (hasPigment) {
+      const item = pickRandomProduct(links.pigment);
       focus.push({
-        name: "미백 기능성 에센스 (나이아신아마이드/알부틴 계열)",
-        step: "에센스",
-        meta: "잡티·톤업 케어",
-        desc: "비타민C 고함량보다 자극이 비교적 덜한 나이아신아마이드, 알부틴 등의 성분이 들어간 에센스를 먼저 시도해보는 걸 추천합니다.",
-        tags: ["톤 균일", "장기 사용"]
+        name: "색소침착 케어",
+        desc: "기미·잡티 완화에 도움을 주는 미백 기능성 에센스 계열입니다.",
+        image: item?.image || null,
+        url: item?.url || null
       });
     }
 
-    if (hasWart) {
+    // 진정·붉은기 케어
+    if (hasRed) {
+      const item = pickRandomProduct(links.soothing);
       focus.push({
-        name: "피부과 전문의 상담 우선",
-        step: "주의",
-        meta: "편평사마귀·사마귀 관련",
-        desc: "편평사마귀/사마귀는 화장품보다는 시술·치료 영역에 가까워요. 자가 제거용 강한 각질용해제나 산 성분은 오히려 자극/흉터를 남길 수 있어, 전문의 상담을 먼저 권장합니다.",
-        tags: ["자가 제거 주의", "전문의 상담 권장"]
-      });
-    }
-
-    // 고민이 하나도 없을 때 기본 집중 케어
-    if (focus.length === 0) {
-      focus.push({
-        name: "진정용 시카/판테놀 세럼",
-        step: "에센스",
-        meta: "민감도 완화",
-        desc: "트러블이 크지 않다면, 자극적인 기능성보다 진정 중심 세럼을 사용해 피부 베이스 컨디션을 끌어올리는 게 더 도움이 됩니다.",
-        tags: ["진정", "장벽 케어"]
+        name: "진정 케어",
+        desc: "피부 열감과 붉은기를 완화시키는 진정 성분 제품이에요.",
+        image: item?.image || null,
+        url: item?.url || null
       });
     }
 
     return { essential, focus };
   }
 
-  // 3) 카드 렌더링
-  function renderProducts() {
-    const context = loadContext();
-    const { essential, focus } = buildRecommendations(context);
-
-    const essentialList = document.getElementById("essential-list");
-    const focusList = document.getElementById("focus-list");
-
-    essentialList.innerHTML = "";
-    focusList.innerHTML = "";
-
-    if (!essential.length) {
-      essentialList.innerHTML =
-        '<div class="empty-text">표시할 기본 루틴이 없습니다. 다시 진단을 진행해 주세요.</div>';
-    } else {
-      essential.forEach((item) => {
-        essentialList.appendChild(createProductCard(item));
-      });
-    }
-
-    if (!focus.length) {
-      focusList.innerHTML =
-        '<div class="empty-text">선택한 고민을 기반으로 한 집중 케어 항목이 없습니다.</div>';
-    } else {
-      focus.forEach((item) => {
-        focusList.appendChild(createProductCard(item));
-      });
-    }
-  }
-
+  /* ---------------------------------------
+     5) 제품 카드 생성
+  --------------------------------------- */
   function createProductCard(item) {
     const card = document.createElement("div");
     card.className = "product-card";
 
+    const imgHTML = item.image
+      ? `<div class="product-thumb"><img src="${item.image}" alt=""></div>`
+      : `<div class="product-thumb" style="background:#222"></div>`;
+
+    const linkHTML = item.url
+      ? `<div class="product-link-wrap">
+           <a href="${item.url}" target="_blank" class="product-link-btn">쿠팡에서 보기</a>
+         </div>`
+      : "";
+
     card.innerHTML = `
-      <div class="product-header">
-        <div class="product-name">${item.name}</div>
-        <div class="product-step">${item.step}</div>
+      <div class="product-main">
+        ${imgHTML}
+        <div class="product-text">
+          <div class="product-name">${item.name}</div>
+          <div class="product-desc">${item.desc}</div>
+        </div>
       </div>
-      <div class="product-meta">${item.meta}</div>
-      <div class="product-desc">${item.desc}</div>
-      ${
-        item.tags && item.tags.length
-          ? `<div class="product-tags">
-              ${item.tags.map((t) => `<span class="product-tag">${t}</span>`).join("")}
-            </div>`
-          : ""
-      }
+      ${linkHTML}
     `;
+
     return card;
   }
 
-  function goBackToResult() {
+  /* ---------------------------------------
+     6) 리스트 렌더링
+  --------------------------------------- */
+  function renderLists(essential, focus) {
+    const es = document.getElementById("essential-list");
+    const fc = document.getElementById("focus-list");
+
+    es.innerHTML = "";
+    fc.innerHTML = "";
+
+    essential.forEach((p) => es.appendChild(createProductCard(p)));
+    focus.forEach((p) => fc.appendChild(createProductCard(p)));
+  }
+
+  /* ---------------------------------------
+     7) 뒤로가기
+  --------------------------------------- */
+  function goBack() {
     window.location.href = "result.html";
   }
 
-  function goHome() {
-    window.location.href = "index.html";
-  }
-
-  window.addEventListener("DOMContentLoaded", () => {
-    renderProducts();
+  /* ---------------------------------------
+     8) 실행 시작
+  --------------------------------------- */
+  window.addEventListener("DOMContentLoaded", async () => {
+    const context = loadContext();
+    const links = await loadLinks();
+    const { essential, focus } = buildRecommendations(context, links);
+    renderLists(essential, focus);
   });
 </script>
 </body>
