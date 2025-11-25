@@ -7,84 +7,105 @@ import fetch from "node-fetch";
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: "20mb" })); // 이미지 Base64 데이터 받을 수 있도록 용량 증가
+app.use(express.json({ limit: "20mb" })); // 이미지 Base64도 받을 수 있게
 
 // 정적 파일 경로 설정
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname)));
 
 // ------------------------
-// 1) AI 분석 API (Gemini 호출)
+// 1) AI 분석 API (OpenAI 호출)
 // ------------------------
 app.post("/api/analyze", async (req, res) => {
   try {
     const { skin_type, problem_area, concerns, notes } = req.body;
 
-    // Gemini API 키
-    const API_KEY = process.env.GEMINI_API_KEY;
-    if (!API_KEY) {
-      return res.status(500).json({ error: "Gemini API KEY 누락됨" });
+    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    if (!OPENAI_API_KEY) {
+      return res.status(500).json({ error: "OPENAI_API_KEY 누락됨" });
     }
 
-    // Gemini 호출
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `
+    // OpenAI Chat Completions 호출
+    const prompt = `
 사용자 피부 분석:
 - 피부 타입: ${skin_type}
 - 고민 부위: ${problem_area}
-- 선택한 고민: ${concerns.join(", ")}
+- 선택한 고민: ${Array.isArray(concerns) ? concerns.join(", ") : concerns}
 - 추가 메모: ${notes}
 
-JSON 형식으로만 답변해줘:
+아래 JSON 형식으로만, 설명 없이 순수 JSON만 반환해줘:
+
 {
  "score": 숫자(0~100),
- "skinType": "건성/지성/복합성/민감성",
- "riskLevel": "low/mid/high",
+ "skinType": "건성/지성/복합성/민감성 중 하나",
+ "riskLevel": "low/mid/high 중 하나",
  "issues": ["문제1", "문제2"],
  "summary": "한 줄 요약",
  "detailAdvice": "상세 관리 팁"
 }
-`
-                }
-              ]
-            }
-          ]
-        })
-      }
-    );
+`;
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini", // 가지고 있는 모델로 바꿔도 됨 (gpt-4o 등)
+        messages: [
+          {
+            role: "system",
+            content:
+              "너는 피부과 전문의와 스킨케어 코치 역할을 하는 AI야. 사용자의 고민을 보고 피부 상태를 평가하고, JSON 형식으로만 답을 반환해.",
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        temperature: 0.7,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => "");
+      console.error("OpenAI API 오류:", response.status, errorText);
+      return res.status(500).json({
+        error: "OpenAI API 호출 실패",
+        status: response.status,
+        detail: errorText,
+      });
+    }
 
     const data = await response.json();
 
-    let text = "";
+    let text;
     try {
-      text = data.candidates[0].content.parts[0].text;
-    } catch {
-      return res.status(500).json({ error: "Gemini 응답 파싱 실패", raw: data });
+      text = data.choices[0].message.content;
+    } catch (e) {
+      console.error("OpenAI 응답 구조 예기치 못함:", data);
+      return res.status(500).json({
+        error: "OpenAI 응답 파싱 실패",
+        raw: data,
+      });
     }
 
-    // 응답이 JSON 형태인지 체크
     let json;
     try {
       json = JSON.parse(text);
     } catch (e) {
+      console.error("JSON.parse 실패, 원문:", text);
       return res.status(500).json({
         error: "AI 응답 JSON 변환 실패",
-        raw: text
+        raw: text,
       });
     }
 
+    // 최종 결과 반환 (result.html에서 그대로 사용)
     res.json(json);
   } catch (err) {
-    console.error("AI 분석 오류:", err);
+    console.error("AI 분석 서버 오류:", err);
     res.status(500).json({ error: "서버 분석 오류", detail: err.message });
   }
 });
