@@ -243,6 +243,7 @@
       display:flex;
       justify-content:center;
       gap:8px;
+      text-decoration:none; /* 링크 밑줄 제거 */
     }
   </style>
 </head>
@@ -300,10 +301,10 @@
       <div class="menu-title">MY 피부 기록</div>
       <div id="today-status" class="today-status">📅 오늘 기록 없음</div>
 
-      <!-- 🔧 수정: onclick 제거, id/ type 추가 -->
-      <button class="btn-mini" type="button" id="btn-products">
+      <!-- ✅ 여기만 변경: button → a 링크로 변경 -->
+      <a class="btn-mini" href="products.html">
         🔁 최근 진단 결과 · 추천 제품 보기
-      </button>
+      </a>
     </div>
   </div>
 </div>
@@ -322,7 +323,7 @@
     reader.readAsDataURL(file);
   }
 
-  // 🔹 오늘 기록 여부 대신, "최근 진단 날짜" 기준으로 안내
+  // 🔹 최근 진단 날짜 표시
   function updateTodayStatus() {
     const el = document.getElementById("today-status");
     const raw = localStorage.getItem("diagnosisHistory");
@@ -347,21 +348,9 @@
     }
   }
 
-  // 🔹 버튼은 항상 products.html로 이동하게(항상 '활성화' 느낌)
-  function goToProducts() {
-    console.log("goToProducts 호출됨");
-    window.location.href = "products.html";
-  }
-
-  // 🔧 수정: DOM이 준비된 후에 상태 업데이트 + 클릭 이벤트 연결
-  window.addEventListener("DOMContentLoaded", () => {
-    updateTodayStatus();
-    const btn = document.getElementById("btn-products");
-    if (btn) {
-      btn.addEventListener("click", goToProducts);
-    }
-  });
+  updateTodayStatus();
 </script>
+
 
 </body>
 </html>
