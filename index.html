@@ -37,7 +37,7 @@
     .card {
       background: var(--glass);
       border-radius: 24px;
-      padding: 22px 18px 18px;
+      padding: 18px 18px 18px;
       border: 1px solid rgba(15, 23, 42, 0.9);
       box-shadow:
         0 20px 45px rgba(0, 0, 0, 0.85),
@@ -59,6 +59,47 @@
     .top-accent {
       position: absolute; left: 16%; right: 16%; top: 10px; height: 1px;
       background: linear-gradient(90deg, transparent, rgba(148,163,255,0.9), transparent);
+    }
+
+    /* ⭐ 공통 스타일에 맞춘 상단 스텝 바 (뒤로가기 없음) */
+    .top-bar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .top-bar-left,
+    .top-bar-center,
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .top-bar-left { min-width: 70px; } /* 첫 페이지라 비워둠 */
+    .top-bar-center {
+      flex: 1;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e5e7ff;
+    }
+    .top-bar-right {
+      min-width: 70px;
+      justify-content: flex-end;
+    }
+
+    .step-pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,255,0.7);
+      font-size: 0.72rem;
+      color: rgba(203,213,255,0.95);
+      background: rgba(10,16,40,0.95);
+      white-space: nowrap;
     }
 
     /* 로고 */
@@ -211,6 +252,15 @@
 <div class="shell">
   <div class="card">
     <div class="top-accent"></div>
+
+    <!-- ⭐ 상단 스텝 바 (첫 화면: 뒤로가기 없음) -->
+    <div class="top-bar">
+      <div class="top-bar-left"></div>
+      <div class="top-bar-center">AI 피부 코치</div>
+      <div class="top-bar-right">
+        <div class="step-pill">STEP 1 / 4</div>
+      </div>
+    </div>
 
     <!-- 로고 -->
     <div class="logo-badge-wrap">
