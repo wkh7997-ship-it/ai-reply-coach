@@ -45,7 +45,7 @@
       position: relative;
       background: var(--glass);
       border-radius: 26px;
-      padding: 20px 16px 18px;
+      padding: 16px 16px 18px;
       border: 1px solid rgba(148, 163, 255, 0.24);
       box-shadow:
         0 20px 45px rgba(0, 0, 0, 0.75),
@@ -78,9 +78,72 @@
       opacity: 0.9;
     }
 
+    /* 🔹 상단 앱 헤더 */
+    .top-bar {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+
+    .top-bar-left,
+    .top-bar-center,
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .top-bar-left {
+      min-width: 60px;
+      justify-content: flex-start;
+    }
+
+    .top-bar-center {
+      flex: 1;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .top-bar-right {
+      min-width: 60px;
+      justify-content: flex-end;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      background: transparent;
+      border: none;
+      padding: 4px 4px;
+      cursor: pointer;
+    }
+
+    .back-btn span.icon {
+      font-size: 1rem;
+    }
+
+    .step-pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 255, 0.65);
+      font-size: 0.72rem;
+      color: var(--text-sub);
+      background: rgba(10, 16, 36, 0.9);
+      white-space: nowrap;
+    }
+
     .header {
       text-align: center;
-      margin-top: 14px;
+      margin-top: 8px;
       margin-bottom: 12px;
     }
 
@@ -216,6 +279,22 @@
     <div class="card">
       <div class="top-accent"></div>
 
+      <!-- 🔹 상단 헤더 (앱 느낌) -->
+      <div class="top-bar">
+        <div class="top-bar-left">
+          <button class="back-btn" type="button" onclick="goBack()">
+            <span class="icon">←</span>
+            <span>뒤로</span>
+          </button>
+        </div>
+        <div class="top-bar-center">
+          사진 확인하기
+        </div>
+        <div class="top-bar-right">
+          <div class="step-pill">STEP 2 / 4</div>
+        </div>
+      </div>
+
       <div class="header">
         <div class="title">이 사진으로 진행할까요?</div>
         <div class="subtitle">
@@ -236,13 +315,13 @@
         나의 피부 고민을 선택해 주세요.
       </div>
 
-      <!-- ✅ 여기서부터는 AI 분석이 아니라 '고민 선택 페이지로 이동' -->
+      <!-- ✅ 고민 선택 페이지로 이동 -->
       <button class="btn btn-primary" id="next-btn" onclick="goToOptions()">
         <span class="btn-icon">➡️</span>
         <span>다음 단계로</span>
       </button>
 
-      <button class="btn btn-secondary" onclick="goBack()">
+      <button class="btn btn-secondary" type="button" onclick="goBack()">
         <span class="btn-icon">↩</span>
         <span>첫 화면으로 돌아가기</span>
       </button>
@@ -272,8 +351,6 @@
         window.location.href = "index.html";
         return;
       }
-
-      // 정적 파일 구조라면 options.html, 서버 라우팅이면 "/options"로 교체하면 됨
       window.location.href = "options.html";
     }
 
