@@ -3,26 +3,12 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import path from "path";
 import { fileURLToPath } from "url";
-import dotenv from "dotenv";
-import OpenAI from "openai";
-
-dotenv.config();
 
 const app = express();
 
 // 현재 파일 경로 계산
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// OpenAI 클라이언트 (챗봇용)
-let openai = null;
-if (process.env.OPENAI_API_KEY) {
-  openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-} else {
-  console.warn("⚠ OPENAI_API_KEY가 설정되어 있지 않습니다. /api/chat에서 실제 AI 응답을 사용할 수 없습니다.");
-}
 
 // Middlewares
 app.use(cors());
@@ -32,7 +18,7 @@ app.use(bodyParser.json({ limit: "10mb" }));
 app.use(express.static(__dirname));
 
 // ------------------------------
-//  🔥 1) /api/analyze : 피부 분석 (현재는 임시/가짜 데이터)
+//  1) /api/analyze : 피부 분석 (임시/가짜 데이터)
 // ------------------------------
 app.post("/api/analyze", async (req, res) => {
   try {
@@ -60,7 +46,7 @@ app.post("/api/analyze", async (req, res) => {
 });
 
 // ------------------------------
-//  🔥 2) /api/chat : AI 피부 상담 챗봇
+//  2) /api/chat : AI 피부 상담 챗봇 (지금은 가짜 응답)
 // ------------------------------
 app.post("/api/chat", async (req, res) => {
   try {
@@ -73,15 +59,7 @@ app.post("/api/chat", async (req, res) => {
         .json({ error: "message는 반드시 문자열로 보내야 합니다." });
     }
 
-    // OpenAI API 키가 없으면 안내 메시지 반환
-    if (!openai) {
-      return res.json({
-        reply:
-          "현재 서버에 AI 키가 설정되어 있지 않아,\n실제 AI 상담은 불가능한 상태입니다.\n\n그래도 기본적인 피부 관리 원칙을 안내드리면:\n- 세안은 하루 2번, 자극적이지 않은 클렌저 사용\n- 본인 피부 타입에 맞는 보습제 꾸준히 사용\n- 자외선 차단제는 매일 충분히 바르는 것이 좋아요.",
-      });
-    }
-
-    // 기본 컨텍스트 정리 (결과 페이지에서 보낸 진단 요약)
+    // context를 간단하게 텍스트로 정리
     const infoLines = [];
     if (context) {
       if (typeof context.score === "number") {
@@ -97,49 +75,25 @@ app.post("/api/chat", async (req, res) => {
         infoLines.push(`- 고민 포인트: ${context.issues.join(", ")}`);
       }
       if (context.summary) {
-        infoLines.push(`- AI 요약: ${context.summary}`);
+        infoLines.push(`- 요약: ${context.summary}`);
       }
     }
 
-    const userContextText =
-      infoLines.length > 0
-        ? "다음은 사용자의 기본 피부 정보입니다:\n" +
-          infoLines.join("\n") +
-          "\n\n"
-        : "사용자의 상세 피부 정보는 제한적입니다.\n\n";
+    const contextText = infoLines.length
+      ? `지금 알려진 피부 정보는 아래와 같아요:\n${infoLines.join(
+          "\n"
+        )}\n\n`
+      : "";
 
-    const systemPrompt =
-      "너는 한국어로 대답하는 'AI 피부 코치'야. " +
-      "사용자의 피부 타입·고민·생활 습관을 고려해서, " +
-      "일상에서 실천 가능한 스킨케어 루틴과 제품 선택 기준을 친절하게 설명해 줘.\n\n" +
-      "- 단, 특정 질환에 대한 '진단'이나 '치료'를 단정적으로 말하지 말 것.\n" +
-      "- '피부과 전문의 진료가 필요해 보입니다'처럼 병원 방문이 필요한 상황에서는 반드시 안내할 것.\n" +
-      "- 답변은 너무 길게 말하지 말고, 3~6문장 정도로 핵심만 정리해서 말할 것.\n" +
-      "- 말투는 '조언해주는 친구 + 전문가' 사이 느낌으로, 반말이 아닌 존댓말로 부드럽게.\n";
-
-    const userPrompt =
-      userContextText +
-      "아래는 사용자의 질문입니다.\n" +
-      "질문:\n" +
-      message;
-
-    const aiRes = await openai.responses.create({
-      model: "gpt-4.1-mini",
-      input: [
-        {
-          role: "system",
-          content: systemPrompt,
-        },
-        {
-          role: "user",
-          content: userPrompt,
-        },
-      ],
-    });
-
+    // 🔹 지금은 OpenAI 안 쓰고, 임시로 “규칙형 답변”만 보냄
     const reply =
-      aiRes.output?.[0]?.content?.[0]?.text?.trim() ||
-      "지금은 정확한 답변을 생성하지 못했어요. 잠시 후 다시 시도해 주세요.";
+      contextText +
+      `질문 주신 내용은 다음과 같아요:\n"${message}"\n\n` +
+      "지금은 테스트 모드라 기본적인 안내만 드릴 수 있어요.\n" +
+      "· 자극적인 클렌징/스크럽은 주 1~2회 이내로 줄이기\n" +
+      "· 본인 피부 타입에 맞는 보습제(수분/유분 밸런스) 꾸준히 바르기\n" +
+      "· 자외선 차단제는 오전에 충분히, 야외 활동 시 2~3시간마다 덧바르기\n\n" +
+      "증상이 심해지거나 오래 지속된다면, 꼭 피부과 전문의와 상담해 보시는 걸 권장드릴게요 🙂";
 
     return res.json({ reply });
   } catch (err) {
