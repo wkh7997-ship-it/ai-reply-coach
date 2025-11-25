@@ -65,6 +65,7 @@
       flex: 1;
     }
 
+    /* ⭐ 공통 상단 헤더 */
     .top-bar {
       position: relative;
       z-index: 2;
@@ -299,6 +300,7 @@
   <div class="card">
     <div class="top-accent"></div>
 
+    <!-- ⭐ 상단 헤더: 결과로 돌아가기 + 제목 + STEP -->
     <div class="top-bar">
       <div class="top-bar-left">
         <button class="back-btn" onclick="goBackResult()">
@@ -348,6 +350,7 @@
       </div>
     </div>
 
+    <!-- 하단 버튼 -->
     <div class="btn-footer-wrap">
       <button class="btn-footer" onclick="goBackResult()">
         이전 결과로 돌아가기
@@ -360,6 +363,7 @@
 </div>
 
 <script>
+  // 배열 섞기(셔플)
   function shuffle(arr) {
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -369,6 +373,7 @@
     return a;
   }
 
+  // 최근 진단 정보
   function loadLatestDiagnosis() {
     try {
       const raw = localStorage.getItem("diagnosisHistory");
@@ -381,6 +386,7 @@
     }
   }
 
+  // 헤더 태그 업데이트
   function updateHeaderTags() {
     const latest = loadLatestDiagnosis();
     const tagSkin = document.getElementById("tag-skin-type");
@@ -388,23 +394,22 @@
 
     if (!latest) {
       tagSkin.innerText = "피부 타입: -";
-      tagConcern.innerText = "주요 고민: -";
-      return;
+    } else {
+      tagSkin.innerText = `피부 타입: ${latest.skinType || "-"}`;
     }
 
-    tagSkin.innerText = `피부 타입: ${latest.skinType || "-"}`;
     const rawConcerns = sessionStorage.getItem("userConcerns");
     let text = "-";
     if (rawConcerns) {
       try {
         const arr = JSON.parse(rawConcerns);
         if (Array.isArray(arr) && arr.length) text = arr.join(", ");
-      } catch {}
+      } catch (_) {}
     }
     tagConcern.innerText = `주요 고민: ${text}`;
   }
 
-  // ✅ 여기 버그 수정!
+  // 랜덤으로 상품 1개 선택
   function pickRandomItem(category) {
     if (!category || !Array.isArray(category.items) || category.items.length === 0) {
       return null;
@@ -413,6 +418,7 @@
     return category.items[idx];
   }
 
+  // 카드 DOM 생성
   function createProductCard(config, item) {
     const wrapper = document.createElement("div");
     wrapper.className = "product-card";
@@ -455,8 +461,8 @@
     btnWrap.className = "p-btn-wrap";
     const btn = document.createElement("button");
     btn.className = "btn-primary";
-    btn.innerText = "쿠팡에서 보기";
     if (item && item.url) {
+      btn.innerText = "쿠팡에서 보기";
       btn.onclick = () => window.open(item.url, "_blank");
     } else {
       btn.disabled = true;
@@ -477,24 +483,7 @@
 
   async function loadProducts() {
     const latest = loadLatestDiagnosis();
-    if (!latest) {
-      alert("먼저 AI 진단을 진행해 주세요!");
-      goHome();
-      return;
-    }
-
     updateHeaderTags();
-
-    let data;
-    try {
-      // ✅ 서버의 /api/products 사용
-      const res = await fetch("/api/products");
-      data = await res.json();
-    } catch (e) {
-      console.error("제품 정보 로드 실패:", e);
-      alert("제품 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
-      return;
-    }
 
     const basicListEl = document.getElementById("basic-list");
     const focusListEl = document.getElementById("focus-list");
@@ -503,6 +492,27 @@
     basicListEl.innerHTML = "";
     focusListEl.innerHTML = "";
     focusEmptyEl.style.display = "none";
+
+    // 🔹 진단 기록이 하나도 없을 때: 페이지는 열어두고 안내만 표시
+    if (!latest) {
+      focusEmptyEl.style.display = "block";
+      focusEmptyEl.innerText =
+        "아직 진단 기록이 없습니다. 첫 화면에서 AI 피부 진단을 먼저 진행해 주세요.";
+      return;
+    }
+
+    let data;
+    try {
+      // 이미 잘 뜨고 있다고 했으니, 기존과 동일하게 상대경로 사용
+      const res = await fetch("data/coupang-links.json");
+      data = await res.json();
+    } catch (e) {
+      console.error("coupang-links.json 로드 실패:", e);
+      focusEmptyEl.style.display = "block";
+      focusEmptyEl.innerText =
+        "제품 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
+      return;
+    }
 
     const basicConfigs = [
       {
@@ -564,6 +574,7 @@
       }
     ];
 
+    // 기본 루틴: 최대 3개 랜덤
     const basicAvailable = basicConfigs.filter((cfg) => {
       const cat = data[cfg.key];
       return cat && Array.isArray(cat.items) && cat.items.length > 0;
@@ -578,6 +589,7 @@
         basicListEl.appendChild(card);
       });
 
+    // 집중 케어: 최대 3개 랜덤
     const focusAvailable = focusConfigs.filter((cfg) => {
       const cat = data[cfg.key];
       return cat && Array.isArray(cat.items) && cat.items.length > 0;
@@ -586,6 +598,7 @@
     const pickedFocus = shuffle(focusAvailable).slice(0, 3);
     if (pickedFocus.length === 0) {
       focusEmptyEl.style.display = "block";
+      focusEmptyEl.innerText = "아직 등록된 집중 케어 제품이 없어요. 곧 채워 넣을 예정입니다.";
     } else {
       pickedFocus.forEach((cfg) => {
         const cat = data[cfg.key];
