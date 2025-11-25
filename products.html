@@ -65,8 +65,67 @@
       flex: 1;
     }
 
+    /* ⭐ 공통 상단 헤더 */
+    .top-bar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .top-bar-left,
+    .top-bar-center,
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .top-bar-left { min-width: 70px; }
+    .top-bar-center {
+      flex: 1;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e5e7ff;
+    }
+    .top-bar-right {
+      min-width: 70px;
+      justify-content: flex-end;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,255,0.6);
+      background: rgba(10,16,40,0.9);
+      font-size: 0.78rem;
+      color: #e5e7ff;
+      cursor: pointer;
+    }
+
+    .back-btn span:first-child {
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .step-pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,255,0.7);
+      font-size: 0.72rem;
+      color: rgba(203,213,255,0.95);
+      background: rgba(10,16,40,0.95);
+      white-space: nowrap;
+    }
+
     .header {
-      margin-top: 14px;
+      margin-top: 10px;
       margin-bottom: 12px;
       text-align: center;
     }
@@ -240,6 +299,20 @@
 <div class="shell">
   <div class="card">
     <div class="top-accent"></div>
+
+    <!-- ⭐ 상단 헤더: 결과로 돌아가기 + 제목 + STEP -->
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <button class="back-btn" onclick="goBackResult()">
+          <span>←</span>
+          <span>결과로</span>
+        </button>
+      </div>
+      <div class="top-bar-center">추천 제품</div>
+      <div class="top-bar-right">
+        <div class="step-pill">STEP 4 / 4</div>
+      </div>
+    </div>
 
     <div class="card-inner-scroll">
       <div class="header">
