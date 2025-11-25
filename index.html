@@ -308,45 +308,54 @@
 </div>
 
 <script>
-function goNextPage(event) {
-  const file = event.target && event.target.files && event.target.files[0];
-  if (!file) return;
+  function goNextPage(event) {
+    const file = event.target && event.target.files && event.target.files[0];
+    if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    const base64 = e.target.result;
-    sessionStorage.setItem("uploadedImage", base64);
-    window.location.href = "confirm.html";
-  };
-  reader.readAsDataURL(file);
-}
-
-
-  function updateTodayStatus() {
-    const raw = localStorage.getItem("diagnosisHistory");
-    const today = new Date().toISOString().slice(0, 10);
-    let text = "📅 오늘 기록 없음";
-
-    if (raw) {
-      try {
-        const history = JSON.parse(raw);
-        if (history.some(h => h.date === today)) {
-          text = "📅 오늘 기록 있음 → 바로 보기";
-        }
-      } catch {}
-    }
-    document.getElementById("today-status").innerText = text;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target.result;
+      sessionStorage.setItem("uploadedImage", base64);
+      window.location.href = "confirm.html";
+    };
+    reader.readAsDataURL(file);
   }
 
+  // 🔹 오늘 기록 여부 대신, "최근 진단 날짜" 기준으로 안내
+  function updateTodayStatus() {
+    const el = document.getElementById("today-status");
+    const raw = localStorage.getItem("diagnosisHistory");
+
+    if (!raw) {
+      el.innerText = "📅 아직 진단 기록이 없습니다";
+      return;
+    }
+
+    try {
+      const history = JSON.parse(raw);
+      if (!Array.isArray(history) || history.length === 0) {
+        el.innerText = "📅 아직 진단 기록이 없습니다";
+        return;
+      }
+
+      const latest = history[0]; // 가장 최근 기록
+      el.innerText = `📅 마지막 진단: ${latest.date} · 바로 보기`;
+    } catch (e) {
+      el.innerText = "📅 기록을 불러오는 중 오류가 발생했습니다";
+      console.warn("diagnosisHistory 파싱 오류:", e);
+    }
+  }
+
+  // 🔹 버튼은 항상 products.html로 이동하게(항상 '활성화' 느낌)
   function goToProducts() {
-    if (!localStorage.getItem("diagnosisHistory"))
-      return alert("먼저 AI 진단을 진행해주세요!");
     window.location.href = "products.html";
   }
 
   updateTodayStatus();
 </script>
 
+
 </body>
 </html>
+
 
