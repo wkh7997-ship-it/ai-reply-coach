@@ -308,18 +308,19 @@
 </div>
 
 <script>
-  function goNextPage(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+function goNextPage(event) {
+  const file = event.target && event.target.files && event.target.files[0];
+  if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = e => {
-      const base64 = e.target.result;
-      sessionStorage.setItem("uploadedImage", base64);
-      window.location.href = "confirm.html";
-    };
-    reader.readAsDataURL(file);
-  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const base64 = e.target.result;
+    sessionStorage.setItem("uploadedImage", base64);
+    window.location.href = "confirm.html";
+  };
+  reader.readAsDataURL(file);
+}
+
 
   function updateTodayStatus() {
     const raw = localStorage.getItem("diagnosisHistory");
@@ -348,3 +349,4 @@
 
 </body>
 </html>
+
