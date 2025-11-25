@@ -243,7 +243,7 @@
       display:flex;
       justify-content:center;
       gap:8px;
-      text-decoration:none; /* 링크 밑줄 제거 */
+      cursor:pointer;
     }
   </style>
 </head>
@@ -301,10 +301,10 @@
       <div class="menu-title">MY 피부 기록</div>
       <div id="today-status" class="today-status">📅 오늘 기록 없음</div>
 
-      <!-- ✅ 여기만 변경: button → a 링크로 변경 -->
-      <a class="btn-mini" href="products.html">
+      <!-- ✅ 여기 버튼만 수정 -->
+      <button class="btn-mini" type="button" onclick="goToProducts()">
         🔁 최근 진단 결과 · 추천 제품 보기
-      </a>
+      </button>
     </div>
   </div>
 </div>
@@ -346,6 +346,12 @@
       el.innerText = "📅 기록을 불러오는 중 오류가 발생했습니다";
       console.warn("diagnosisHistory 파싱 오류:", e);
     }
+  }
+
+  // ✅ 이 함수가 버튼에 직접 연결되어 있음
+  function goToProducts() {
+    alert("추천 제품 페이지로 이동합니다."); // ← 이게 반드시 떠야 함
+    window.location.href = "products.html";
   }
 
   updateTodayStatus();
