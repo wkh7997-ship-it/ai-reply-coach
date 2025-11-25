@@ -357,7 +357,8 @@
     });
   });
 
-  async function submitConcerns() {
+  // ⭐ AI 서버 호출 없이, 더미 결과로 result.html까지 흐름만 먼저 확인
+  function submitConcerns() {
     const selected = Array.from(
       document.querySelectorAll(".option-chip.selected")
     ).map((el) => el.getAttribute("data-value"));
@@ -373,46 +374,19 @@
     // 선택한 고민 저장 (result/products에서 사용)
     sessionStorage.setItem("userConcerns", JSON.stringify(selected));
 
-    const imgData = sessionStorage.getItem("uploadedImage") || "";
+    // 임시 더미 결과 (AI 없이도 결과 페이지가 뜨는지 확인용)
+    const dummyResult = {
+      score: 78,
+      skinType: "복합성",
+      riskLevel: "mid",
+      issues: selected,
+      summary: "전반적으로 무난하지만, 선택한 고민 부위 위주로 관리가 필요해요.",
+      detailAdvice:
+        "자극적인 세안은 피하고, 보습 · 진정 위주의 루틴을 2주 정도 꾸준히 유지해 보세요."
+    };
 
-    const nextBtn = document.getElementById("next-btn");
-    const nextBtnLabel = document.getElementById("next-btn-label");
-
-    // 중복 클릭 방지
-    nextBtn.disabled = true;
-    nextBtnLabel.textContent = "AI 분석 요청 중...";
-
-    try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          skin_type: "정보 없음(이미지 업로드 기준)",
-          problem_area: "얼굴 전체",
-          concerns: selected,
-          notes:
-            "사용자가 선택한 피부 고민: " +
-            selected.join(", ") +
-            (imgData ? " / 이미지 데이터 앞부분: " + imgData.slice(0, 200) : "")
-        })
-      });
-
-      if (!res.ok) {
-        alert("AI 분석 서버에서 오류가 발생했습니다. (HTTP " + res.status + ")");
-        nextBtn.disabled = false;
-        nextBtnLabel.textContent = "다음 단계로";
-        return;
-      }
-
-      const data = await res.json();
-      sessionStorage.setItem("aiSkinResult", JSON.stringify(data));
-      window.location.href = "result.html";
-    } catch (err) {
-      console.error(err);
-      alert("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
-      nextBtn.disabled = false;
-      nextBtnLabel.textContent = "다음 단계로";
-    }
+    sessionStorage.setItem("aiSkinResult", JSON.stringify(dummyResult));
+    window.location.href = "result.html";
   }
 
   function goBack() {
