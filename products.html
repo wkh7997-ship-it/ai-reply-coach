@@ -290,6 +290,16 @@
 </div>
 
 <script>
+  // 배열 섞기(셔플) – 랜덤 순서로 뽑기 위함
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
   // 로컬 스토리지에서 최근 진단 정보 읽어오기
   function loadLatestDiagnosis() {
     try {
@@ -315,7 +325,6 @@
     }
 
     tagSkin.innerText = `피부 타입: ${latest.skinType || "-"}`;
-    // summary 말고 concerns는 sessionStorage에 따로 저장해뒀을 수도 있어서 fallback
     const rawConcerns = sessionStorage.getItem("userConcerns");
     let text = "-";
     if (rawConcerns) {
@@ -418,7 +427,7 @@
     focusListEl.innerHTML = "";
     focusEmptyEl.style.display = "none";
 
-    // 기본 루틴용 설정
+    // ▼ 기본 루틴 카테고리 정의
     const basicConfigs = [
       {
         key: "cleanser",
@@ -446,18 +455,7 @@
       }
     ];
 
-    basicConfigs.forEach((cfg) => {
-      const cat = data[cfg.key];
-      const item = cat ? pickRandomItem(cat) : null;
-      if (!cat || !cat.items || cat.items.length === 0) {
-        // 데이터가 아예 없으면 기본 카드도 그리지 않음
-        return;
-      }
-      const card = createProductCard(cfg, item);
-      basicListEl.appendChild(card);
-    });
-
-    // 집중 케어용 설정 (여기에 repairCream 포함!)
+    // ▼ 집중 케어 카테고리 정의
     const focusConfigs = [
       {
         key: "acne",
@@ -491,20 +489,37 @@
       }
     ];
 
-    let focusCount = 0;
-
-    focusConfigs.forEach((cfg) => {
+    // -------- 기본 루틴: 최대 3개 랜덤 --------
+    const basicAvailable = basicConfigs.filter((cfg) => {
       const cat = data[cfg.key];
-      if (!cat || !Array.isArray(cat.items) || cat.items.length === 0) return;
-
-      const item = pickRandomItem(cat);
-      const card = createProductCard(cfg, item);
-      focusListEl.appendChild(card);
-      focusCount++;
+      return cat && Array.isArray(cat.items) && cat.items.length > 0;
     });
 
-    if (focusCount === 0) {
+    shuffle(basicAvailable)
+      .slice(0, 3) // 최대 3개
+      .forEach((cfg) => {
+        const cat = data[cfg.key];
+        const item = pickRandomItem(cat);
+        const card = createProductCard(cfg, item);
+        basicListEl.appendChild(card);
+      });
+
+    // -------- 집중 케어: 최대 3개 랜덤 --------
+    const focusAvailable = focusConfigs.filter((cfg) => {
+      const cat = data[cfg.key];
+      return cat && Array.isArray(cat.items) && cat.items.length > 0;
+    });
+
+    const pickedFocus = shuffle(focusAvailable).slice(0, 3); // 최대 3개
+    if (pickedFocus.length === 0) {
       focusEmptyEl.style.display = "block";
+    } else {
+      pickedFocus.forEach((cfg) => {
+        const cat = data[cfg.key];
+        const item = pickRandomItem(cat);
+        const card = createProductCard(cfg, item);
+        focusListEl.appendChild(card);
+      });
     }
   }
 
