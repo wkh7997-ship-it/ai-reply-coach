@@ -7,12 +7,12 @@
   "theme_color": "#11152b",
   "icons": [
     {
-      "src": "아이콘/icon-192.png",
+      "src": "/아이콘/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "아이콘/icon-512.png",
+      "src": "/아이콘/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
