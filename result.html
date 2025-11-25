@@ -123,9 +123,8 @@
       line-height: 1.5;
     }
 
-    /* 스크롤 힌트 */
     .scroll-hint {
-      display: none; /* 결과가 로딩된 뒤 JS에서 켬 */
+      display: none;
       text-align: center;
       font-size: 0.78rem;
       color: rgba(203,213,255,0.85);
@@ -134,7 +133,7 @@
 
     .result-wrapper {
       margin-top: 4px;
-      display: none; /* JS에서 표시 */
+      display: none;
     }
 
     .score-section {
@@ -313,27 +312,6 @@
       border-top: 1px solid rgba(15,23,42,0.9);
     }
 
-    .btn {
-      width: 100%;
-      padding: 11px 0;
-      margin-top: 7px;
-      border-radius: 999px;
-      border: none;
-      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
-      color: #fff;
-      font-weight: 650;
-      cursor: pointer;
-      font-size: 0.95rem;
-      box-shadow: 0 10px 22px rgba(88,81,233,0.6);
-    }
-
-    .btn-secondary {
-      background: transparent;
-      border: 1px solid rgba(148,163,255,0.5);
-      color: var(--text-main);
-      box-shadow: none;
-    }
-
     .action-btn {
       width: 100%;
       padding: 13px 14px;
@@ -424,7 +402,7 @@
           </div>
         </div>
 
-        <!-- ✅ 내가 선택한 고민 -->
+        <!-- 내가 선택한 고민 -->
         <div class="section">
           <div class="section-header">
             <div class="section-title">내가 선택한 피부 고민</div>
@@ -478,15 +456,11 @@
       </div>
     </div>
 
+    <!-- 하단 버튼: 제품 / 홈 -->
     <div class="btn-wrap">
       <button class="action-btn" onclick="goProducts()">
         <span class="action-icon">🧴</span>
         <span>최근 진단 기반 추천 제품 보기</span>
-      </button>
-
-      <button class="action-btn" onclick="goChat()">
-        <span class="action-icon">💬</span>
-        <span>AI 피부 상담 챗봇으로 이동</span>
       </button>
 
       <button class="action-btn" onclick="goHome()">
@@ -664,7 +638,7 @@
     document.getElementById("summary-text").innerText = summary;
     document.getElementById("detail-text").innerText = detailAdvice;
 
-    // ✅ 선택한 고민 렌더링
+    // 선택한 고민 렌더링
     renderUserConcerns();
 
     spinner.style.display = "none";
@@ -676,7 +650,7 @@
   function goHome() {
     sessionStorage.removeItem("uploadedImage");
     sessionStorage.removeItem("aiSkinResult");
-    sessionStorage.removeItem("userConcerns"); // ✅ 함께 정리
+    sessionStorage.removeItem("userConcerns");
     window.location.href = "index.html";
   }
 
@@ -687,15 +661,6 @@
       return;
     }
     window.location.href = "products.html";
-  }
-
-  function goChat() {
-    const raw = localStorage.getItem("diagnosisHistory");
-    if (!raw) {
-      alert("먼저 AI 진단을 진행해주세요!");
-      return;
-    }
-    window.location.href = "chat.html";
   }
 
   window.addEventListener("DOMContentLoaded", () => {
