@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI 피부 코치 - 추천 제품</title>
+  <style>
+    :root {
+      --primary: #9b8bff;
+      --primary-strong: #5c6bff;
+      --bg-deep: #050616;
+      --bg-top: #11152b;
+      --glass: rgba(10, 14, 32, 0.96);
+      --text-main: #f9fafb;
+      --text-sub: #cbd5f5;
+      --border-soft: rgba(148, 163, 255, 0.35);
+      --risk-low: #22c55e;
+      --risk-mid: #eab308;
+      --risk-high: #ef4444;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(88,101,242,0.32) 0, transparent 55%),
+        radial-gradient(circle at bottom, rgba(59,130,246,0.26) 0, transparent 62%),
+        linear-gradient(160deg, var(--bg-top), var(--bg-deep));
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 14px;
+    }
+
+    .shell { width: 100%; max-width: 440px; }
+
+    .card {
+      background: var(--glass);
+      border-radius: 26px;
+      padding: 18px 16px 14px;
+      border: 1px solid var(--border-soft);
+      box-shadow:
+        0 22px 50px rgba(0,0,0,0.9),
+        0 0 0 1px rgba(15,23,42,0.7);
+      backdrop-filter: blur(18px);
+      position: relative;
+      overflow: hidden;
+      max-height: calc(100vh - 32px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-inner-scroll {
+      overflow-y: auto;
+      padding-right: 2px;
+      margin-right: -4px;
+      flex: 1;
+    }
+
+    .top-accent {
+      position: absolute;
+      left: 14%; right: 14%; top: 10px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(148,163,255,0.9), transparent);
+      opacity: 0.95;
+    }
+
+    .header-wrap {
+      margin-top: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .header-title {
+      font-size: 1.3rem;
+      font-weight: 750;
+      line-height: 1.1;
+    }
+
+    .header-sub {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .header-date {
+      font-size: 0.72rem;
+      color: rgba(203,213,255,0.9);
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,255,0.6);
+      background: rgba(15,23,42,0.9);
+      white-space: nowrap;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,255,0.6);
+      color: #e5e7eb;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .badge-risk-low {
+      border-color: var(--risk-low);
+      color: #bbf7d0;
+      background: rgba(22,163,74,0.18);
+    }
+
+    .badge-risk-mid {
+      border-color: var(--risk-mid);
+      color: #fef9c3;
+      background: rgba(202,138,4,0.18);
+    }
+
+    .badge-risk-high {
+      border-color: var(--risk-high);
+      color: #fee2e2;
+      background: rgba(239,68,68,0.2);
+    }
+
+    .section {
+      background: rgba(11,17,38,0.96);
+      border-radius: 18px;
+      padding: 11px 13px 9px;
+      border: 1px solid rgba(148,163,255,0.3);
+      margin-bottom: 10px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .section-title {
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #9ca3ff;
+    }
+
+    .section-tag {
+      font-size: 0.72rem;
+      color: rgba(209,213,255,0.9);
+    }
+
+    .section-body {
+      font-size: 0.88rem;
+      color: var(--text-sub);
+      line-height: 1.6;
+      margin-top: 3px;
+    }
+
+    .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .product-item {
+      border-radius: 14px;
+      padding: 8px 9px;
+      background: rgba(15,23,42,0.96);
+      border: 1px solid rgba(148,163,255,0.35);
+    }
+
+    .product-name {
+      font-size: 0.9rem;
+      font-weight: 650;
+      margin-bottom: 2px;
+      color: #e5e7ff;
+    }
+
+    .product-tags {
+      font-size: 0.75rem;
+      color: rgba(191,219,254,0.9);
+      margin-bottom: 3px;
+    }
+
+    .product-desc {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    .issues-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 5px;
+    }
+
+    .issue-pill {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(30,64,175,0.85);
+      border: 1px solid rgba(191,219,254,0.7);
+      color: #e0f2fe;
+    }
+
+    .footer-note {
+      font-size: 0.74rem;
+      color: rgba(148,163,255,0.9);
+      text-align: center;
+      margin-top: 4px;
+      margin-bottom: 2px;
+    }
+
+    .btn-wrap {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(15,23,42,0.9);
+    }
+
+    .action-btn {
+      width: 100%;
+      padding: 13px 14px;
+      margin-top: 9px;
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,255,0.45);
+      background:
+        radial-gradient(circle at top left, rgba(148,163,255,0.18), transparent 60%),
+        rgba(12,16,40,0.95);
+      color: #e5e7ff;
+      font-size: 0.95rem;
+      font-weight: 620;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow:
+        0 6px 18px rgba(0,0,0,0.45),
+        0 0 0 1px rgba(15,23,42,0.8);
+      transition: all 0.18s ease-out;
+    }
+
+    .action-btn:hover {
+      background:
+        radial-gradient(circle at top left, rgba(191,219,254,0.22), transparent 60%),
+        rgba(16,22,54,0.98);
+      transform: translateY(-2px);
+      box-shadow:
+        0 10px 26px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(129,140,248,0.9);
+    }
+
+    .action-icon {
+      font-size: 1.25rem;
+      opacity: 0.92;
+    }
+
+    .empty-text {
+      font-size: 0.86rem;
+      color: var(--text-sub);
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+<div class="shell">
+  <div class="card">
+    <div class="top-accent"></div>
+
+    <div class="header-wrap">
+      <div>
+        <div class="header-title">추천 제품 가이드</div>
+        <div class="header-sub" id="header-sub">
+          가장 최근 AI 진단 결과를 기준으로<br />
+          카테고리별 제품 타입을 추천해 드려요.
+        </div>
+        <div class="badge-row">
+          <span id="badge-score" class="badge">점수: -</span>
+          <span id="badge-skin" class="badge">피부타입: -</span>
+          <span id="badge-risk" class="badge">위험도: -</span>
+        </div>
+      </div>
+      <div class="header-date" id="header-date">-</div>
+    </div>
+
+    <div class="card-inner-scroll" id="content-area">
+      <!-- 진단 없을 때 안내 -->
+      <div id="empty-state" class="empty-text" style="display:none;">
+        아직 저장된 진단 기록이 없습니다.<br />
+        먼저 AI 피부 진단을 진행해 주세요.
+      </div>
+
+      <!-- 추천 섹션 -->
+      <div id="products-wrapper" style="display:none;">
+        <!-- 아침 루틴 -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">아침 루틴 추천</div>
+            <div class="section-tag">Morning routine</div>
+          </div>
+          <div class="section-body">
+            <div class="product-list" id="morning-list"></div>
+          </div>
+        </div>
+
+        <!-- 저녁 루틴 -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">저녁 루틴 추천</div>
+            <div class="section-tag">Night routine</div>
+          </div>
+          <div class="section-body">
+            <div class="product-list" id="night-list"></div>
+          </div>
+        </div>
+
+        <!-- 고민 부위 중심 케어 -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">고민 부위 집중 케어</div>
+            <div class="section-tag">Target care</div>
+          </div>
+          <div class="section-body">
+            <div id="issues-helper-text">
+              아래 고민 키워드에 맞춰 제품 설명서를 비교해 보세요.
+            </div>
+            <div class="issues-pills" id="issues-pills"></div>
+          </div>
+        </div>
+
+        <div class="footer-note">
+          * 특정 브랜드가 아닌, 성분·타입 기준의 가이드입니다.<br />
+          * 피부과 전문의 상담이 필요한 경우에는 병원을 먼저 이용해 주세요.
+        </div>
+      </div>
+    </div>
+
+    <!-- 하단 버튼 -->
+    <div class="btn-wrap">
+      <button class="action-btn" onclick="goResult()">
+        <span class="action-icon">📊</span>
+        <span>오늘의 피부 리포트로 돌아가기</span>
+      </button>
+
+      <button class="action-btn" onclick="goChat()">
+        <span class="action-icon">💬</span>
+        <span>AI 피부 상담 챗봇으로 이동</span>
+      </button>
+
+      <button class="action-btn" onclick="goHome()">
+        <span class="action-icon">🏠</span>
+        <span>첫 화면으로 돌아가기</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function normalizeSkinType(skinType) {
+    if (!skinType) return "복합성";
+    if (skinType.includes("건성")) return "건성";
+    if (skinType.includes("지성")) return "지성";
+    if (skinType.includes("복합")) return "복합성";
+    if (skinType.includes("민감")) return "민감성";
+    return skinType;
+  }
+
+  function mapRiskBadge(riskLevel) {
+    if (riskLevel === "low") {
+      return { label: "위험도 낮음", className: "badge badge-risk-low" };
+    }
+    if (riskLevel === "high") {
+      return { label: "위험도 높음", className: "badge badge-risk-high" };
+    }
+    return { label: "위험도 보통", className: "badge badge-risk-mid" };
+  }
+
+  function setTodayLabel(dateStrFromHistory) {
+    const el = document.getElementById("header-date");
+    if (dateStrFromHistory) {
+      el.innerText = dateStrFromHistory.replace(/-/g, ".");
+      return;
+    }
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, "0");
+    const d = String(now.getDate()).padStart(2, "0");
+    el.innerText = `${y}.${m}.${d}`;
+  }
+
+  function buildRecommendations(latest) {
+    const skinType = normalizeSkinType(latest.skinType);
+    const issues = Array.isArray(latest.issues) ? latest.issues : [];
+    const riskLevel = latest.riskLevel || "mid";
+
+    const morning = [];
+    const night = [];
+
+    // 공통 클렌저
+    if (skinType === "건성" || skinType === "민감성") {
+      morning.push({
+        name: "저자극 수분 클렌저",
+        tags: "약산성 · 계면활성제 순함",
+        desc: "아침에는 유분과 노폐지만 가볍게 제거할 수 있는 젤·폼 타입 약산성 클렌저를 추천해요. 세안 후 얼굴이 당기지 않는 제품이 좋아요."
+      });
+      night.push({
+        name: "2단계 클렌징 (오일/밤 → 폼)",
+        tags: "메이크업/선크림 제거용",
+        desc: "색조 메이크업이나 워터프루프 선크림을 사용했다면 1차로 오일/밤으로 녹이고, 2차로 부드러운 약산성 폼으로 마무리해 주세요."
+      });
+    } else if (skinType === "지성" || skinType === "복합성") {
+      morning.push({
+        name: "피지 조절 약산성 클렌저",
+        tags: "모공 · 유분 케어",
+        desc: "T존 번들거림이 신경 쓰인다면, 과하게 뽀득한 느낌보다는 약산성인데도 미세 거품이 잘 나는 타입을 선택해 주세요."
+      });
+      night.push({
+        name: "모공·피지 집중 클렌저(저녁 한 번만)",
+        tags: "과도한 사용은 금지",
+        desc: "BHA/살리실산 성분이 소량 들어간 클렌저를 저녁에만 사용하면 모공 주변 피지 정리에 도움이 될 수 있어요."
+      });
+    } else {
+      morning.push({
+        name: "순한 젤 타입 클렌저",
+        tags: "모든 피부 공통",
+        desc: "자극감이 적고, 세안 후 미세하게 촉촉함이 남는 제형 위주로 골라 주세요."
+      });
+      night.push({
+        name: "선크림까지 제거 가능한 폼 클렌저",
+        tags: "기본 세안",
+        desc: "선크림을 매일 바른다면, 미온수 + 충분한 거품으로 30초 이내로 마무리해 주세요."
+      });
+    }
+
+    // 토너 / 미스트
+    if (riskLevel === "high" || issues.includes("홍조") || issues.includes("자극")) {
+      morning.push({
+        name: "수분·진정 토너 (무알코올)",
+        tags: "시카 · 판테놀 · 워터 타입",
+        desc: "솜에 듬뿍 적셔 강하게 문지르지 말고, 손으로 두드리듯 여러 번 겹쳐 바르거나, 진정 패드처럼 3분 정도 올려놔 주세요."
+      });
+      night.push({
+        name: "장벽 강화 토너",
+        tags: "세라마이드 · 콜레스테롤",
+        desc: "피부가 예민할 때는 각질 제거 토너 대신, 장벽 성분 위주의 토너만 사용하고 레티놀·산성분은 잠시 쉬어가는 것이 좋아요."
+      });
+    } else {
+      morning.push({
+        name: "가벼운 수분 토너",
+        tags: "히알루론산 · 글리세린",
+        desc: "피부결을 정리해 주되, 끈적임보다는 산뜻한 수분감을 중심으로 골라 주세요."
+      });
+      night.push({
+        name: "수분+영양 토너",
+        tags: "약간 점성이 있는 타입",
+        desc: "저녁에는 살짝 더 점성이 느껴지는 토너로 한 번 더 레이어링해 주면 다음 단계 흡수에 도움이 돼요."
+      });
+    }
+
+    // 세럼 / 앰플
+    if (issues.some(i => i.includes("모공") || i.includes("피지") || i.includes("블랙헤드"))) {
+      night.push({
+        name: "피지·모공 집중 세럼",
+        tags: "나이아신아마이드 · BHA · 징크",
+        desc: "T존 위주로만 소량 사용하고, 건조한 볼·입가에는 피해서 바르는 게 좋아요. 처음에는 주 2~3회만 사용해 반응을 확인해 보세요."
+      });
+    }
+
+    if (issues.some(i => i.includes("잔주름") || i.includes("탄력"))) {
+      night.push({
+        name: "탄력·주름 케어 세럼",
+        tags: "펩타이드 · 레티날/레티놀(저농도)",
+        desc: "눈가·팔자·이마 주름이 신경 쓸 때, 저녁에만 소량 사용해 보고 피부가 예민해지면 사용 간격을 넓혀 주세요."
+      });
+    }
+
+    if (issues.some(i => i.includes("건조") || i.includes("속당김"))) {
+      morning.push({
+        name: "수분 집중 앰플",
+        tags: "히알루론산 · NMF · 베타인",
+        desc: "메이크업 전에 밀리지 않는 수분 위주의 앰플을 선택하면, 마스크 속 답답함을 줄이는 데 도움이 될 수 있어요."
+      });
+      night.push({
+        name: "수분+장벽 앰플",
+        tags: "세라마이드 · 콜레스테롤 · 지방산",
+        desc: "수면 전에 충분히 도톰하게 발라 주면, 아침에 피부가 쉽게 땅기지 않도록 도와줘요."
+      });
+    }
+
+    // 크림
+    if (skinType === "건성" || issues.some(i => i.includes("건조"))) {
+      night.push({
+        name: "리치한 장벽 크림",
+        tags: "시어버터 · 스쿠알란 · 세라마이드",
+        desc: "코 옆, 입가, 볼 쪽이 잘 트는 편이라면, 해당 부위에 한 번 더 레이어링 해주는 것도 좋아요."
+      });
+    } else {
+      night.push({
+        name: "가벼운 크림 또는 젤 크림",
+        tags: "지복합 · 지성용",
+        desc: "번들거림이 심한 T존에는 얇게, 쉽게 건조해지는 U존에는 한 번 더 덧발라서 양 조절을 해 주세요."
+      });
+    }
+
+    // 선크림 (공통)
+    morning.push({
+      name: "저자극 자외선 차단제",
+      tags: "SPF 30~50 / PA+++ 이상",
+      desc: "백탁·끈적임·자극감이 적은 제품 위주로, 외출 15~20분 전에 넉넉한 양을 펴 바르고, 장시간 야외 활동 시 2~3시간 간격으로 덧발라 주세요."
+    });
+
+    return { morning, night, skinType, issues, riskLevel };
+  }
+
+  function renderProductList(list, containerId) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    list.forEach((item) => {
+      const div = document.createElement("div");
+      div.className = "product-item";
+
+      const name = document.createElement("div");
+      name.className = "product-name";
+      name.innerText = item.name;
+
+      const tags = document.createElement("div");
+      tags.className = "product-tags";
+      tags.innerText = item.tags;
+
+      const desc = document.createElement("div");
+      desc.className = "product-desc";
+      desc.innerText = item.desc;
+
+      div.appendChild(name);
+      div.appendChild(tags);
+      div.appendChild(desc);
+      container.appendChild(div);
+    });
+  }
+
+  function renderIssuesPills(issues) {
+    const pills = document.getElementById("issues-pills");
+    pills.innerHTML = "";
+    if (!issues || !issues.length) {
+      document.getElementById("issues-helper-text").innerText =
+        "특별히 강조된 고민 키워드가 크지 않습니다. 기본 수분·자외선 차단 위주로 관리해 주세요.";
+      return;
+    }
+
+    issues.forEach((iss) => {
+      const span = document.createElement("span");
+      span.className = "issue-pill";
+      span.innerText = iss;
+      pills.appendChild(span);
+    });
+  }
+
+  function goResult() {
+    window.location.href = "result.html";
+  }
+
+  function goHome() {
+    window.location.href = "index.html";
+  }
+
+  function goChat() {
+    const raw = localStorage.getItem("diagnosisHistory");
+    if (!raw) {
+      alert("먼저 AI 진단을 진행해주세요!");
+      return;
+    }
+    window.location.href = "chat.html";
+  }
+
+  function initProductsPage() {
+    const raw = localStorage.getItem("diagnosisHistory");
+    const emptyState = document.getElementById("empty-state");
+    const wrapper = document.getElementById("products-wrapper");
+
+    if (!raw) {
+      emptyState.style.display = "block";
+      wrapper.style.display = "none";
+      return;
+    }
+
+    let history;
+    try {
+      history = JSON.parse(raw);
+    } catch (e) {
+      console.error("diagnosisHistory JSON 파싱 오류:", e);
+      emptyState.style.display = "block";
+      wrapper.style.display = "none";
+      return;
+    }
+
+    if (!Array.isArray(history) || !history.length) {
+      emptyState.style.display = "block";
+      wrapper.style.display = "none";
+      return;
+    }
+
+    const latest = history[0];
+    setTodayLabel(latest.date);
+
+    // 헤더 배지 세팅
+    const score = typeof latest.score === "number" ? latest.score : "-";
+    const skinType = normalizeSkinType(latest.skinType || "복합성");
+    const riskInfo = mapRiskBadge(latest.riskLevel || "mid");
+
+    document.getElementById("badge-score").innerText = `점수: ${score}/100`;
+    document.getElementById("badge-skin").innerText = `피부타입: ${skinType}`;
+    const riskEl = document.getElementById("badge-risk");
+    riskEl.innerText = riskInfo.label;
+    riskEl.className = riskInfo.className;
+
+    const { morning, night, issues } = buildRecommendations({
+      skinType: latest.skinType,
+      issues: latest.issues,
+      riskLevel: latest.riskLevel
+    });
+
+    renderProductList(morning, "morning-list");
+    renderProductList(night, "night-list");
+    renderIssuesPills(issues);
+
+    emptyState.style.display = "none";
+    wrapper.style.display = "block";
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    initProductsPage();
+  });
+</script>
+
+</body>
+</html>
