@@ -1,0 +1,75 @@
+// AI 피부 상담 챗봇 API
+app.post("/api/chat", async (req, res) => {
+  try {
+    const { message, context } = req.body || {};
+
+    if (!message || typeof message !== "string") {
+      return res.status(400).json({ error: "message는 반드시 문자열로 보내야 합니다." });
+    }
+
+    // 기본 컨텍스트 정리 (결과 페이지에서 보낸 진단 요약)
+    const infoLines = [];
+    if (context) {
+      if (typeof context.score === "number") {
+        infoLines.push(`- 피부 점수: ${context.score}/100`);
+      }
+      if (context.skinType) {
+        infoLines.push(`- 피부 타입: ${context.skinType}`);
+      }
+      if (context.riskLevel) {
+        infoLines.push(`- 위험도: ${context.riskLevel}`);
+      }
+      if (Array.isArray(context.issues) && context.issues.length) {
+        infoLines.push(`- 고민 포인트: ${context.issues.join(", ")}`);
+      }
+      if (context.summary) {
+        infoLines.push(`- AI 요약: ${context.summary}`);
+      }
+    }
+
+    const userContextText =
+      infoLines.length > 0
+        ? "다음은 사용자의 기본 피부 정보입니다:\n" + infoLines.join("\n") + "\n\n"
+        : "사용자의 상세 피부 정보는 제한적입니다.\n\n";
+
+    const systemPrompt =
+      "너는 한국어로 대답하는 'AI 피부 코치'야. " +
+      "사용자의 피부 타입·고민·생활 습관을 고려해서, " +
+      "일상에서 실천 가능한 스킨케어 루틴과 제품 선택 기준을 친절하게 설명해 줘.\n\n" +
+      "- 단, 특정 질환에 대한 '진단'이나 '치료'를 단정적으로 말하지 말 것.\n" +
+      "- '피부과 전문의 진료가 필요해 보입니다'처럼 병원 방문이 필요한 상황에서는 반드시 안내할 것.\n" +
+      "- 답변은 너무 길게 말하지 말고, 3~6문장 정도로 핵심만 정리해서 말할 것.\n" +
+      "- 말투는 '조언해주는 친구 + 전문가' 사이 느낌으로, 반말이 아닌 존댓말로 부드럽게.\n";
+
+    const userPrompt =
+      userContextText +
+      "아래는 사용자의 질문입니다.\n" +
+      "질문:\n" +
+      message;
+
+    const aiRes = await openai.responses.create({
+      model: "gpt-4.1-mini",
+      input: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: userPrompt,
+        },
+      ],
+    });
+
+    const reply =
+      aiRes.output?.[0]?.content?.[0]?.text?.trim() ||
+      "지금은 정확한 답변을 생성하지 못했어요. 잠시 후 다시 시도해 주세요.";
+
+    return res.json({ reply });
+  } catch (err) {
+    console.error("CHAT API ERROR:", err);
+    return res
+      .status(500)
+      .json({ error: "AI 상담 중 서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요." });
+  }
+});
