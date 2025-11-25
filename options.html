@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI 피부 코치 - 고민 선택</title>
+  <style>
+    :root {
+      --primary: #c7b3ff;
+      --primary-strong: #8f7bff;
+      --bg-deep: #05040b;
+      --bg-top: #111322;
+      --glass: rgba(8, 10, 24, 0.92);
+      --text-main: #f9fafb;
+      --text-sub: #cbd5f5;
+      --text-muted: #9ca3c9;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(129, 140, 248, 0.32) 0, transparent 52%),
+        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.75) 0, transparent 58%),
+        linear-gradient(160deg, var(--bg-top), var(--bg-deep));
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 16px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .card {
+      position: relative;
+      background: var(--glass);
+      border-radius: 26px;
+      padding: 20px 16px 18px;
+      border: 1px solid rgba(148, 163, 255, 0.24);
+      box-shadow:
+        0 20px 45px rgba(0, 0, 0, 0.75),
+        0 0 0 1px rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: 24px;
+      border: 1px solid rgba(248, 250, 252, 0.02);
+      pointer-events: none;
+    }
+
+    .top-accent {
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      top: 10px;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(244, 229, 200, 0.75),
+        transparent
+      );
+      opacity: 0.9;
+    }
+
+    .header {
+      text-align: center;
+      margin-top: 14px;
+      margin-bottom: 14px;
+    }
+
+    .title {
+      font-size: 1.35rem;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .options-wrapper {
+      margin-top: 4px;
+      margin-bottom: 10px;
+    }
+
+    .options-label {
+      font-size: 0.86rem;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+      text-align: left;
+    }
+
+    .options-label strong {
+      color: #fefce8;
+      font-weight: 700;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .option-chip {
+      position: relative;
+      padding: 9px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 255, 0.55);
+      background: rgba(15, 23, 42, 0.88);
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      cursor: pointer;
+      transition: all 0.18s ease-out;
+      user-select: none;
+    }
+
+    .option-chip::before {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 255, 0.85);
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8);
+      flex-shrink: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(148, 163, 255, 0.6), transparent 60%);
+      opacity: 0.75;
+    }
+
+    .option-chip.selected {
+      background: radial-gradient(circle at top left, rgba(199, 179, 255, 0.25), transparent 55%),
+        linear-gradient(135deg, rgba(129, 140, 248, 0.22), rgba(15, 23, 42, 0.98));
+      border-color: rgba(248, 250, 252, 0.9);
+      color: #f9fafb;
+      box-shadow:
+        0 0 0 1px rgba(199, 179, 255, 0.65),
+        0 10px 20px rgba(15, 23, 42, 0.95);
+    }
+
+    .option-chip.selected::before {
+      border-color: #fefce8;
+      box-shadow:
+        0 0 0 1px rgba(24, 24, 27, 0.9),
+        0 0 0 4px rgba(250, 250, 210, 0.16);
+      background:
+        radial-gradient(circle at 30% 30%, #fefce8, transparent 60%);
+    }
+
+    .option-chip span {
+      display: inline-block;
+      line-height: 1.4;
+    }
+
+    .info-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .custom-box {
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+
+    .custom-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .custom-input {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 255, 0.45);
+      background: rgba(2, 6, 23, 0.98);
+      color: var(--text-main);
+      font-size: 0.78rem;
+      padding: 7px 10px;
+      outline: none;
+      resize: none;
+      min-height: 40px;
+      line-height: 1.5;
+    }
+
+    .custom-input::placeholder {
+      color: rgba(148, 163, 255, 0.55);
+    }
+
+    .btn {
+      width: 100%;
+      border-radius: 999px;
+      padding: 12px 0;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 650;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.22s ease-out;
+      margin-top: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.18),
+        transparent 45%,
+        rgba(148, 163, 255, 0.25)
+      );
+      opacity: 0;
+      transition: opacity 0.22s ease-out;
+      pointer-events: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
+      color: #f9fafb;
+      box-shadow:
+        0 14px 28px rgba(55, 48, 163, 0.75),
+        0 0 0 1px rgba(199, 179, 255, 0.55);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 255, 0.6);
+    }
+
+    .btn-icon {
+      font-size: 1.1rem;
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow:
+        0 8px 18px rgba(55, 48, 163, 0.7);
+    }
+
+    .btn:hover::before {
+      opacity: 1;
+    }
+
+    .btn[disabled] {
+      opacity: 0.7;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .warning-text {
+      font-size: 0.75rem;
+      color: #f97373;
+      margin-top: 4px;
+      min-height: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="card">
+      <div class="top-accent"></div>
+
+      <div class="header">
+        <div class="title">피부 고민을 알려주세요</div>
+        <div class="subtitle">
+          가장 신경 쓰이는 피부 고민을<br />
+          <strong>최대 3개까지</strong> 선택해 주세요.
+        </div>
+      </div>
+
+      <div class="options-wrapper">
+        <div class="options-label">
+          내 사진을 기준으로<br />
+          <strong>AI가 더 정확하게 답변할 수 있게</strong> 도와줘요.
+        </div>
+
+        <div class="options-grid" id="options-grid">
+          <div class="option-chip" data-value="여드름·뾰루지">
+            <span>여드름 · 뾰루지</span>
+          </div>
+          <div class="option-chip" data-value="편평사마귀·사마귀">
+            <span>편평사마귀 · 사마귀</span>
+          </div>
+          <div class="option-chip" data-value="모공·블랙헤드·피지">
+            <span>모공 · 블랙헤드 · 피지</span>
+          </div>
+          <div class="option-chip" data-value="붉은기·홍조·민감 피부">
+            <span>붉은기 · 홍조 · 민감 피부</span>
+          </div>
+          <div class="option-chip" data-value="잡티·기미·색소침착">
+            <span>잡티 · 기미 · 색소침착</span>
+          </div>
+          <div class="option-chip" data-value="건조함·각질·당김">
+            <span>건조함 · 각질 · 피부 당김</span>
+          </div>
+          <div class="option-chip" data-value="주름·탄력 저하">
+            <span>주름 · 탄력 저하</span>
+          </div>
+        </div>
+
+        <div class="info-text">
+          * 고민은 <strong>최대 3개까지</strong> 선택할 수 있어요.<br />
+          * 선택한 고민을 기준으로 루틴과 제품을 추천해 드립니다.
+        </div>
+
+        <div class="custom-box">
+          <div class="custom-label">기타로 신경 쓰이는 부분이 있다면 자유롭게 적어주세요. (선택)</div>
+          <textarea
+            id="custom-concern"
+            class="custom-input"
+            placeholder="예) 눈가 주름, 턱 주변 다크닝, 코 주변 각질 등"
+          ></textarea>
+        </div>
+
+        <div class="warning-text" id="warning-text"></div>
+      </div>
+
+      <button class="btn btn-primary" id="next-btn" onclick="submitConcerns()">
+        <span class="btn-icon">➡️</span>
+        <span id="next-btn-label">다음 단계로</span>
+      </button>
+
+      <button class="btn btn-secondary" onclick="goBack()">
+        <span class="btn-icon">↩</span>
+        <span>이전 단계로</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const maxSelect = 3;
+    const warningEl = document.getElementById("warning-text");
+    const optionChips = document.querySelectorAll(".option-chip");
+
+    // 페이지 진입 시, 이미지 데이터 유효성 체크
+    window.addEventListener("DOMContentLoaded", function () {
+      const imgData = sessionStorage.getItem("uploadedImage");
+      if (!imgData) {
+        alert("이미지 정보가 없습니다. 처음 화면부터 다시 진행해 주세요.");
+        window.location.href = "index.html";
+      }
+    });
+
+    // 옵션 선택 토글 + 최대 3개 제한
+    optionChips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const currentlySelected = document.querySelectorAll(".option-chip.selected").length;
+
+        if (chip.classList.contains("selected")) {
+          chip.classList.remove("selected");
+          warningEl.textContent = "";
+          return;
+        }
+
+        if (currentlySelected >= maxSelect) {
+          warningEl.textContent = "고민은 최대 3개까지만 선택할 수 있어요.";
+          return;
+        }
+
+        chip.classList.add("selected");
+        warningEl.textContent = "";
+      });
+    });
+
+    async function submitConcerns() {
+      const imgData = sessionStorage.getItem("uploadedImage");
+      if (!imgData) {
+        alert("이미지 정보가 없습니다. 처음 화면부터 다시 진행해 주세요.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      const selected = Array.from(document.querySelectorAll(".option-chip.selected")).map(
+        (chip) => chip.getAttribute("data-value")
+      );
+
+      const custom = document.getElementById("custom-concern").value.trim();
+      if (custom) {
+        selected.push("기타: " + custom);
+      }
+
+      if (selected.length === 0) {
+        warningEl.textContent = "최소 1개 이상의 피부 고민을 선택하거나, 직접 적어주세요.";
+        return;
+      }
+
+      const btn = document.getElementById("next-btn");
+      const label = document.getElementById("next-btn-label");
+      btn.disabled = true;
+      label.textContent = "AI 분석 요청 중...";
+
+      try {
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            skin_type: "정보 없음(이미지 업로드 기준)",
+            problem_area: "얼굴 전체",
+            concerns: selected,
+            notes:
+              "사용자가 얼굴 사진을 업로드하고 다음과 같은 피부 고민을 선택했습니다: " +
+              selected.join(", ") +
+              " / 이미지 데이터 앞부분: " +
+              imgData.slice(0, 200)
+          })
+        });
+
+        if (!res.ok) {
+          alert("AI 분석 서버에서 오류가 발생했습니다. (HTTP " + res.status + ")");
+          btn.disabled = false;
+          label.textContent = "다음 단계로";
+          return;
+        }
+
+        const data = await res.json();
+        sessionStorage.setItem("aiSkinResult", JSON.stringify(data));
+
+        // 결과 페이지로 이동
+        window.location.href = "result.html";
+      } catch (err) {
+        console.error("FETCH ERROR", err);
+        alert("서버 접속 오류가 발생했습니다.\n네트워크 상태를 확인한 뒤 다시 시도해 주세요.");
+        btn.disabled = false;
+        label.textContent = "다음 단계로";
+      }
+    }
+
+    function goBack() {
+      window.location.href = "confirm.html";
+    }
+  </script>
+</body>
+</html>
