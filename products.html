@@ -65,7 +65,6 @@
       flex: 1;
     }
 
-    /* ⭐ 공통 상단 헤더 */
     .top-bar {
       position: relative;
       z-index: 2;
@@ -300,7 +299,6 @@
   <div class="card">
     <div class="top-accent"></div>
 
-    <!-- ⭐ 상단 헤더: 결과로 돌아가기 + 제목 + STEP -->
     <div class="top-bar">
       <div class="top-bar-left">
         <button class="back-btn" onclick="goBackResult()">
@@ -350,7 +348,6 @@
       </div>
     </div>
 
-    <!-- 하단 버튼 -->
     <div class="btn-footer-wrap">
       <button class="btn-footer" onclick="goBackResult()">
         이전 결과로 돌아가기
@@ -363,7 +360,6 @@
 </div>
 
 <script>
-  // 배열 섞기(셔플) – 랜덤 순서로 뽑기 위함
   function shuffle(arr) {
     const a = arr.slice();
     for (let i = a.length - 1; i > 0; i--) {
@@ -373,14 +369,13 @@
     return a;
   }
 
-  // 로컬 스토리지에서 최근 진단 정보 읽어오기
   function loadLatestDiagnosis() {
     try {
       const raw = localStorage.getItem("diagnosisHistory");
       if (!raw) return null;
       const history = JSON.parse(raw);
       if (!Array.isArray(history) || history.length === 0) return null;
-      return history[0]; // 가장 최근 것
+      return history[0];
     } catch (_) {
       return null;
     }
@@ -409,11 +404,12 @@
     tagConcern.innerText = `주요 고민: ${text}`;
   }
 
+  // ✅ 여기 버그 수정!
   function pickRandomItem(category) {
     if (!category || !Array.isArray(category.items) || category.items.length === 0) {
       return null;
     }
-    const idx = Math.floor(Math.random() * (i + 1));
+    const idx = Math.floor(Math.random() * category.items.length);
     return category.items[idx];
   }
 
@@ -491,11 +487,11 @@
 
     let data;
     try {
-      // 🔹 GitHub Pages / Render 모두 안전하게: 절대경로(X) → 상대경로(O)
-      const res = await fetch("data/coupang-links.json");
+      // ✅ 서버의 /api/products 사용
+      const res = await fetch("/api/products");
       data = await res.json();
     } catch (e) {
-      console.error("coupang-links.json 로드 실패:", e);
+      console.error("제품 정보 로드 실패:", e);
       alert("제품 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
       return;
     }
@@ -508,7 +504,6 @@
     focusListEl.innerHTML = "";
     focusEmptyEl.style.display = "none";
 
-    // ▼ 기본 루틴 카테고리 정의
     const basicConfigs = [
       {
         key: "cleanser",
@@ -536,7 +531,6 @@
       }
     ];
 
-    // ▼ 집중 케어 카테고리 정의
     const focusConfigs = [
       {
         key: "acne",
@@ -570,14 +564,13 @@
       }
     ];
 
-    // -------- 기본 루틴: 최대 3개 랜덤 --------
     const basicAvailable = basicConfigs.filter((cfg) => {
       const cat = data[cfg.key];
       return cat && Array.isArray(cat.items) && cat.items.length > 0;
     });
 
     shuffle(basicAvailable)
-      .slice(0, 3) // 최대 3개
+      .slice(0, 3)
       .forEach((cfg) => {
         const cat = data[cfg.key];
         const item = pickRandomItem(cat);
@@ -585,13 +578,12 @@
         basicListEl.appendChild(card);
       });
 
-    // -------- 집중 케어: 최대 3개 랜덤 --------
     const focusAvailable = focusConfigs.filter((cfg) => {
       const cat = data[cfg.key];
       return cat && Array.isArray(cat.items) && cat.items.length > 0;
     });
 
-    const pickedFocus = shuffle(focusAvailable).slice(0, 3); // 최대 3개
+    const pickedFocus = shuffle(focusAvailable).slice(0, 3);
     if (pickedFocus.length === 0) {
       focusEmptyEl.style.display = "block";
     } else {
