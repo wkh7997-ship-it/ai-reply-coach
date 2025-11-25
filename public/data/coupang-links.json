@@ -11,81 +11,41 @@
 
   "toner": {
     "//": "토너 / 스킨",
-    "items": [
-      {
-        "image": "",
-        "url": ""
-      }
-    ]
+    "items": []
   },
 
   "ceramideCream": {
     "//": "세라마이드 장벽 크림",
-    "items": [
-      {
-        "image": "",
-        "url": ""
-      }
-    ]
+    "items": []
   },
 
   "sunscreen": {
     "//": "선크림 / 자외선 차단제",
-    "items": [
-      {
-        "image": "",
-        "url": ""
-      }
-    ]
+    "items": []
   },
 
   "acne": {
     "//": "여드름 / 트러블 스팟 제품",
-    "items": [
-      {
-        "image": "",
-        "url": ""
-      }
-    ]
+    "items": []
   },
 
   "pore": {
     "//": "모공 / 피지 / 블랙헤드 관리",
-    "items": [
-      {
-        "image": "",
-        "url": ""
-      }
-    ]
+    "items": []
   },
 
   "pigment": {
     "//": "색소침착 / 기미 / 잡티",
-    "items": [
-      {
-        "image": "",
-        "url": ""
-      }
-    ]
+    "items": []
   },
 
   "soothing": {
     "//": "진정 / 붉은기 / 민감성 케어",
-    "items": [
-      {
-        "image": "",
-        "url": ""
-      }
-    ]
+    "items": []
   },
 
   "repairCream": {
     "//": "장벽 재생 / 손상 피부 회복 크림",
-    "items": [
-      {
-        "image": "",
-        "url": ""
-      }
-    ]
+    "items": []
   }
 }
