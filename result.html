@@ -313,7 +313,6 @@
       border-top: 1px solid rgba(15,23,42,0.9);
     }
 
-    /* 기존 버튼 스타일 (혹시 다른 곳에서 쓸 수도 있으니 유지) */
     .btn {
       width: 100%;
       padding: 11px 0;
@@ -335,7 +334,6 @@
       box-shadow: none;
     }
 
-    /* ▶ 하단 버튼들을 위한 스타일 */
     .action-btn {
       width: 100%;
       padding: 13px 14px;
@@ -397,13 +395,11 @@
       결과를 불러오는 중입니다...
     </div>
 
-    <!-- 스크롤 안내 문구 -->
     <div class="scroll-hint" id="scroll-hint">
       ⬇ 아래로 내려서 루틴과 상세 분석을 확인해 보세요
     </div>
 
     <div class="card-inner-scroll">
-      <!-- 결과 -->
       <div id="result-wrapper" class="result-wrapper">
         <!-- 점수 & 요약 -->
         <div class="score-section">
@@ -425,6 +421,20 @@
               <span id="chip-skin-type" class="chip">피부타입</span>
               <span id="chip-risk" class="chip">위험도</span>
             </div>
+          </div>
+        </div>
+
+        <!-- ✅ 내가 선택한 고민 -->
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">내가 선택한 피부 고민</div>
+            <div class="section-tag">Your focus</div>
+          </div>
+          <div class="section-body">
+            <div id="user-concerns-empty">
+              이전 단계에서 선택한 고민을 기반으로 리포트를 만들었어요.
+            </div>
+            <div id="user-concerns" class="chip-row"></div>
           </div>
         </div>
 
@@ -468,21 +478,17 @@
       </div>
     </div>
 
-    <!-- 하단 버튼 3개만 유지 -->
     <div class="btn-wrap">
-      <!-- 1: 추천 제품 보러가기 -->
       <button class="action-btn" onclick="goProducts()">
         <span class="action-icon">🧴</span>
         <span>최근 진단 기반 추천 제품 보기</span>
       </button>
 
-      <!-- 2: AI 피부 상담 챗봇 -->
       <button class="action-btn" onclick="goChat()">
         <span class="action-icon">💬</span>
         <span>AI 피부 상담 챗봇으로 이동</span>
       </button>
 
-      <!-- 3: 첫 화면으로 돌아가기 -->
       <button class="action-btn" onclick="goHome()">
         <span class="action-icon">🏠</span>
         <span>첫 화면으로 돌아가기</span>
@@ -546,6 +552,40 @@
     const m = String(now.getMonth() + 1).padStart(2, "0");
     const d = String(now.getDate()).padStart(2, "0");
     el.innerText = `${y}.${m}.${d}`;
+  }
+
+  function renderUserConcerns() {
+    const raw = sessionStorage.getItem("userConcerns");
+    const wrap = document.getElementById("user-concerns");
+    const emptyEl = document.getElementById("user-concerns-empty");
+
+    if (!wrap || !emptyEl) return;
+
+    if (!raw) {
+      emptyEl.innerText =
+        "이전 단계에서 고민을 선택하지 않았어요. 다음 진단에서는 꼭 선택해 주세요.";
+      wrap.innerHTML = "";
+      return;
+    }
+
+    try {
+      const concerns = JSON.parse(raw);
+      if (!Array.isArray(concerns) || concerns.length === 0) {
+        emptyEl.innerText =
+          "이전 단계에서 고민을 선택하지 않았어요. 다음 진단에서는 꼭 선택해 주세요.";
+        wrap.innerHTML = "";
+        return;
+      }
+
+      emptyEl.innerText = "아래 고민을 중심으로 리포트를 구성했어요:";
+      wrap.innerHTML = concerns
+        .map((c) => `<span class="chip">${c}</span>`)
+        .join("");
+    } catch (e) {
+      console.error("userConcerns JSON 파싱 오류:", e);
+      emptyEl.innerText = "선택한 고민 정보를 불러오는 데 실패했어요.";
+      wrap.innerHTML = "";
+    }
   }
 
   function renderResult() {
@@ -624,6 +664,9 @@
     document.getElementById("summary-text").innerText = summary;
     document.getElementById("detail-text").innerText = detailAdvice;
 
+    // ✅ 선택한 고민 렌더링
+    renderUserConcerns();
+
     spinner.style.display = "none";
     statusText.style.display = "none";
     wrapper.style.display = "block";
@@ -633,6 +676,7 @@
   function goHome() {
     sessionStorage.removeItem("uploadedImage");
     sessionStorage.removeItem("aiSkinResult");
+    sessionStorage.removeItem("userConcerns"); // ✅ 함께 정리
     window.location.href = "index.html";
   }
 
