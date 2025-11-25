@@ -414,6 +414,9 @@
         return;
       }
 
+      // ✅ result.html에서 보여주기 위해 선택한 고민 저장
+      sessionStorage.setItem("userConcerns", JSON.stringify(selected));
+
       const btn = document.getElementById("next-btn");
       const label = document.getElementById("next-btn-label");
       btn.disabled = true;
