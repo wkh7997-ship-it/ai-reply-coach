@@ -53,7 +53,7 @@
       inset: 1px;
       border-radius: 22px;
       border: 1px solid rgba(148, 163, 255, 0.35);
-      pointer-events: none !important; /* ← 터치 차단 방지 */
+      pointer-events: none !important;
     }
 
     .top-accent {
@@ -111,7 +111,7 @@
       text-align: center;
       line-height: 1.45;
       color: var(--text-sub);
-      margin-bottom: 26px; /* PHOTO UPLOAD과 간격 확보 */
+      margin-bottom: 26px;
     }
 
     .section-box {
@@ -121,7 +121,7 @@
       border-radius: 20px;
       padding: 14px 14px 12px;
       border: 1px solid var(--border-soft);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .section-title {
@@ -159,7 +159,6 @@
       overflow: hidden;
     }
 
-    /* label 안 input 터치 가능하게 */
     input[type=file] {
       position: absolute;
       inset: 0;
@@ -184,35 +183,27 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: #9ca3ff;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .today-status {
-      text-align: center;
-      margin-bottom: 6px;
       font-size: 0.84rem;
       color: #cbd5ff;
+      margin-bottom: 8px;
     }
 
     .btn-mini {
       width: 100%;
       border-radius: 999px;
-      padding: 9px 10px;
-      margin-top: 6px;
+      padding: 10px 10px;
+      margin-top: 4px;
       background: rgba(15,23,42,0.9);
-      border: 1px solid rgba(148, 163, 255, 0.4);
+      border: 1px solid rgba(148, 163, 255, 0.6);
       color: #e5e7eb;
       font-size: 0.87rem;
       display: flex; align-items: center; justify-content: center;
       gap: 8px;
     }
-
-    .btn-mini-outline {
-      background: transparent;
-      border-style: dashed;
-      border-color: rgba(148,163,255,0.5);
-    }
-
   </style>
 </head>
 
@@ -250,13 +241,11 @@
         밝은 곳에서 고민 부위가 보이게 촬영하세요.
       </div>
 
-      <!-- 파일 선택 -->
       <label class="btn">
         📁 파일에서 선택하기
         <input type="file" accept="image/*" onchange="goNextPage(event)">
       </label>
 
-      <!-- 카메라 -->
       <label class="btn">
         📷 카메라로 촬영하기
         <input type="file" accept="image/*" capture="environment" onchange="goNextPage(event)">
@@ -265,15 +254,11 @@
 
     <!-- ▼ MY 피부 기록 -->
     <div class="menu-box">
-      <div id="today-status" class="today-status">📅 오늘 기록 없음</div>
       <div class="menu-title">MY 피부 기록</div>
+      <div id="today-status" class="today-status">📅 오늘 기록 없음</div>
 
       <button class="btn-mini" onclick="goToProducts()">
         🔁 최근 진단 결과 · 추천 제품 보기
-      </button>
-
-      <button class="btn-mini btn-mini-outline" onclick="goToChat()">
-        💬 AI 피부 상담 챗봇으로 이동
       </button>
     </div>
 
@@ -311,7 +296,7 @@
           text = "📅 오늘 기록 있음 → 바로 보기";
         }
       } catch (_) {
-        // JSON 파싱 실패 시 그냥 기본 문구 유지
+        // JSON 파싱 실패 시 기본 문구 유지
       }
     }
     document.getElementById("today-status").innerText = text;
@@ -321,12 +306,6 @@
     const raw = localStorage.getItem("diagnosisHistory");
     if (!raw) return alert("먼저 AI 진단을 진행해주세요!");
     window.location.href = "products.html";
-  }
-
-  function goToChat() {
-    const raw = localStorage.getItem("diagnosisHistory");
-    if (!raw) return alert("먼저 AI 진단을 진행해주세요!");
-    window.location.href = "chat.html";
   }
 
   updateTodayStatus();
