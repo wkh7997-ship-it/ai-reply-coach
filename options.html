@@ -89,7 +89,13 @@
     }
 
     .top-bar-left { min-width: 60px; justify-content: flex-start; }
-    .top-bar-center { flex: 1; justify-content: center; font-size: 0.9rem; font-weight: 600; }
+    .top-bar-center {
+      flex: 1;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
     .top-bar-right { min-width: 60px; justify-content: flex-end; }
 
     .back-btn {
@@ -169,11 +175,14 @@
     }
 
     .option-chip.selected {
-      background: radial-gradient(circle at top left, rgba(199,179,255,0.28), transparent 55%),
+      background:
+        radial-gradient(circle at top left, rgba(199,179,255,0.28), transparent 55%),
         linear-gradient(135deg, rgba(129,140,248,0.25), rgba(15,23,42,0.98));
       border-color: rgba(248,250,252,0.9);
       color: #fff;
-      box-shadow: 0 0 0 1px rgba(199,179,255,0.7), 0 10px 20px rgba(0,0,0,0.85);
+      box-shadow:
+        0 0 0 1px rgba(199,179,255,0.7),
+        0 10px 20px rgba(0,0,0,0.85);
     }
 
     .info-text {
@@ -226,6 +235,10 @@
       color: #e5e7eb;
     }
 
+    .btn-icon {
+      font-size: 1.1rem;
+    }
+
     .warning-text {
       height: 16px;
       font-size: 0.75rem;
@@ -240,10 +253,10 @@
   <div class="card">
     <div class="top-accent"></div>
 
-    <!-- ⭐ 상단 헤더 추가 -->
+    <!-- ⭐ 상단 헤더 -->
     <div class="top-bar">
       <div class="top-bar-left">
-        <button class="back-btn" onclick="goBack()">
+        <button class="back-btn" type="button" onclick="goBack()">
           ← 뒤로
         </button>
       </div>
@@ -263,7 +276,6 @@
       </div>
     </div>
 
-    <!-- 이하 기존 내용 그대로 유지 -->
     <div class="options-wrapper">
       <div class="options-label">
         내 사진을 기준으로 <br />
@@ -287,14 +299,26 @@
 
       <div class="custom-box">
         <div class="custom-label">기타로 신경 쓰이는 부분 (선택)</div>
-        <textarea id="custom-concern" class="custom-input" placeholder="예) 턱 다크닝, 코 각질 등"></textarea>
+        <textarea
+          id="custom-concern"
+          class="custom-input"
+          placeholder="예) 턱 다크닝, 코 각질 등"
+        ></textarea>
       </div>
 
       <div class="warning-text" id="warning-text"></div>
     </div>
 
-    <button class="btn btn-primary" onclick="submitConcerns()">➡️ 다음 단계로</button>
-    <button class="btn btn-secondary" onclick="goBack()">↩ 이전 단계로</button>
+    <!-- 버튼 -->
+    <button class="btn btn-primary" id="next-btn" type="button" onclick="submitConcerns()">
+      <span class="btn-icon">➡️</span>
+      <span id="next-btn-label">다음 단계로</span>
+    </button>
+
+    <button class="btn btn-secondary" type="button" onclick="goBack()">
+      <span class="btn-icon">↩</span>
+      <span>이전 단계로</span>
+    </button>
 
   </div>
 </div>
@@ -303,14 +327,16 @@
   const maxSelect = 3;
   const warningEl = document.getElementById("warning-text");
 
+  // 페이지 진입 시 이미지 유효성 체크
   window.addEventListener("DOMContentLoaded", () => {
     const imgData = sessionStorage.getItem("uploadedImage");
     if (!imgData) {
-      alert("이미지 정보가 없습니다. 처음부터 다시 진행해 주세요.");
+      alert("이미지 정보가 없습니다. 처음 화면부터 다시 진행해 주세요.");
       window.location.href = "index.html";
     }
   });
 
+  // 고민 선택 토글
   document.querySelectorAll(".option-chip").forEach((chip) => {
     chip.addEventListener("click", () => {
       const count = document.querySelectorAll(".option-chip.selected").length;
@@ -332,8 +358,9 @@
   });
 
   async function submitConcerns() {
-    const selected = Array.from(document.querySelectorAll(".option-chip.selected"))
-      .map(el => el.getAttribute("data-value"));
+    const selected = Array.from(
+      document.querySelectorAll(".option-chip.selected")
+    ).map((el) => el.getAttribute("data-value"));
 
     const custom = document.getElementById("custom-concern").value.trim();
     if (custom) selected.push("기타: " + custom);
@@ -343,35 +370,48 @@
       return;
     }
 
-    // 저장
+    // 선택한 고민 저장 (result/products에서 사용)
     sessionStorage.setItem("userConcerns", JSON.stringify(selected));
 
-    // AI 분석 요청
-    const imgData = sessionStorage.getItem("uploadedImage");
+    const imgData = sessionStorage.getItem("uploadedImage") || "";
+
+    const nextBtn = document.getElementById("next-btn");
+    const nextBtnLabel = document.getElementById("next-btn-label");
+
+    // 중복 클릭 방지
+    nextBtn.disabled = true;
+    nextBtnLabel.textContent = "AI 분석 요청 중...";
+
     try {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          skin_type: "정보 없음",
+          skin_type: "정보 없음(이미지 업로드 기준)",
           problem_area: "얼굴 전체",
           concerns: selected,
-          notes: "고민 선택: " + selected.join(", ")
+          notes:
+            "사용자가 선택한 피부 고민: " +
+            selected.join(", ") +
+            (imgData ? " / 이미지 데이터 앞부분: " + imgData.slice(0, 200) : "")
         })
       });
 
       if (!res.ok) {
-        alert("AI 분석 오류 발생!");
+        alert("AI 분석 서버에서 오류가 발생했습니다. (HTTP " + res.status + ")");
+        nextBtn.disabled = false;
+        nextBtnLabel.textContent = "다음 단계로";
         return;
       }
 
       const data = await res.json();
       sessionStorage.setItem("aiSkinResult", JSON.stringify(data));
       window.location.href = "result.html";
-
     } catch (err) {
       console.error(err);
-      alert("네트워크 오류가 발생했습니다.");
+      alert("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+      nextBtn.disabled = false;
+      nextBtnLabel.textContent = "다음 단계로";
     }
   }
 
