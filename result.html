@@ -40,7 +40,7 @@
     .card {
       background: var(--glass);
       border-radius: 26px;
-      padding: 18px 16px 14px;
+      padding: 14px 16px 14px;
       border: 1px solid var(--border-soft);
       box-shadow:
         0 22px 50px rgba(0,0,0,0.9),
@@ -68,8 +68,53 @@
       opacity: 0.95;
     }
 
+    /* ⭐ 공통 상단 바 */
+    .top-bar {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+
+    .top-bar-left,
+    .top-bar-center,
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .top-bar-left { min-width: 70px; justify-content: flex-start; }
+    .top-bar-center { flex: 1; justify-content: center; font-size: 0.9rem; font-weight: 600; }
+    .top-bar-right { min-width: 70px; justify-content: flex-end; }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      background: transparent;
+      border: none;
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      cursor: pointer;
+      padding: 4px 6px;
+    }
+
+    .step-pill {
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,255,0.7);
+      font-size: 0.72rem;
+      color: rgba(203,213,255,0.95);
+      background: rgba(10,16,40,0.95);
+      white-space: nowrap;
+    }
+
     .header-wrap {
-      margin-top: 12px;
+      margin-top: 4px;
       margin-bottom: 10px;
       display: flex;
       align-items: flex-end;
@@ -357,6 +402,22 @@
   <div class="card">
     <div class="top-accent"></div>
 
+    <!-- ⭐ 공통 상단 헤더 -->
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <button class="back-btn" onclick="goBack()">
+          ← 이전 단계
+        </button>
+      </div>
+      <div class="top-bar-center">
+        분석 결과 보기
+      </div>
+      <div class="top-bar-right">
+        <div class="step-pill">STEP 4 / 4</div>
+      </div>
+    </div>
+
+    <!-- 제목 + 날짜 -->
     <div class="header-wrap">
       <div>
         <div class="header-title">오늘의 피부 리포트</div>
@@ -638,7 +699,6 @@
     document.getElementById("summary-text").innerText = summary;
     document.getElementById("detail-text").innerText = detailAdvice;
 
-    // 선택한 고민 렌더링
     renderUserConcerns();
 
     spinner.style.display = "none";
@@ -661,6 +721,11 @@
       return;
     }
     window.location.href = "products.html";
+  }
+
+  function goBack() {
+    // 바로 이전 단계(고민 선택 페이지)로
+    window.location.href = "options.html";
   }
 
   window.addEventListener("DOMContentLoaded", () => {
