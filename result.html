@@ -477,15 +477,14 @@
           </div>
         </div>
 
-        <!-- 주요 고민 -->
+        <!-- 주요 고민 포인트 (문장만 표시) -->
         <div class="section">
           <div class="section-header">
             <div class="section-title">주요 고민 포인트</div>
             <div class="section-tag">Focus area</div>
           </div>
-          <div class="section-body">
-            <div id="issues-text">AI가 인식한 고민 포인트입니다.</div>
-            <div id="issues-list" class="issues-list"></div>
+          <div id="ai-focus-text" class="section-body">
+            AI가 인식한 주요 고민 포인트를 정리하고 있습니다.
           </div>
         </div>
 
@@ -718,6 +717,26 @@
     return extra;
   }
 
+  // 🔹 주요 고민 포인트 문장 생성 함수 (방법 B 핵심)
+  function buildFocusText(issues, userConcerns) {
+    const mainIssues = (issues && issues.length ? issues : []).slice(0, 2);
+    let focusPart;
+
+    if (mainIssues.length) {
+      focusPart = `이번 분석에서 특히 눈에 띄는 고민 포인트는 ${mainIssues.join(", ")} 입니다.`;
+    } else {
+      focusPart =
+        "이번 분석에서는 특정 한 부위가 두드러지게 나쁘다기보다는, 전반적인 수분·장벽 케어에 조금 더 신경 써주면 좋겠다는 결과가 나왔어요.";
+    }
+
+    let concernsPart = "";
+    if (userConcerns && userConcerns.length) {
+      concernsPart = ` 이전 단계에서 선택한 고민 "${userConcerns.join(", ")}"를 중심으로 루틴을 구성해 주시면 좋습니다.`;
+    }
+
+    return focusPart + concernsPart;
+  }
+
   function renderResult() {
     const spinner = document.getElementById("spinner");
     const statusText = document.getElementById("status-text");
@@ -777,24 +796,12 @@
     chipRisk.innerText = riskInfo.label;
     chipRisk.className = riskInfo.className;
 
-    const issuesTextEl = document.getElementById("issues-text");
-    const issuesListEl = document.getElementById("issues-list");
-    issuesListEl.innerHTML = "";
-
-    if (!issues.length) {
-      issuesTextEl.innerText = "뚜렷하게 강조되는 고민 포인트는 크지 않아 보여요.";
-    } else {
-      issuesTextEl.innerText = "아래 항목에서 특히 신경 써주면 좋아요:";
-      issues.forEach((iss) => {
-        const span = document.createElement("span");
-        span.className = "issue-pill";
-        span.innerText = iss;
-        issuesListEl.appendChild(span);
-      });
-    }
-
-    // 🔹 사용자가 고른 고민 정보 가져오기
+    // 🔹 사용자가 고른 고민 정보
     const userConcerns = getUserConcernsFromSession();
+
+    // 🔹 주요 고민 포인트 한 줄 문장
+    const focusEl = document.getElementById("ai-focus-text");
+    focusEl.innerText = buildFocusText(issues, userConcerns);
 
     // 🔹 한 줄 총평 & 관리 가이드 – 길고 풍부하게 생성
     const summaryText = buildSummaryText(
@@ -852,7 +859,5 @@
     renderResult();
   });
 </script>
-
-
 </body>
 </html>
