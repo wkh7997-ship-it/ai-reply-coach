@@ -1,377 +1,366 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI 피부 코치</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 피부 코치</title>
 
-  <!-- ⭐ PWA & 아이콘 연결 -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#11152b" />
+    <!-- ⚠️ WebView에서는 PWA/manifest/icon 링크 사용 X → 삭제 -->
 
-  <!-- 안드로이드/웹 아이콘 -->
-  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+    <style>
+        :root {
+          --primary: #9b8bff;
+          --primary-strong: #5c6bff;
+          --bg-deep: #050616;
+          --bg-top: #11152b;
+          --glass: rgba(9, 12, 30, 0.9);
+          --text-main: #f9fafb;
+          --text-sub: #cbd5f5;
+          --border-soft: rgba(148, 163, 255, 0.35);
+        }
 
-  <!-- iOS 홈화면 아이콘 -->
-  <link rel="apple-touch-icon" href="/icon-192.png" />
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  <style>
-    :root {
-      --primary: #9b8bff;
-      --primary-strong: #5c6bff;
-      --bg-deep: #050616;
-      --bg-top: #11152b;
-      --glass: rgba(9, 12, 30, 0.9);
-      --text-main: #f9fafb;
-      --text-sub: #cbd5f5;
-      --border-soft: rgba(148, 163, 255, 0.35);
-    }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
+          min-height: 100vh;
+          background:
+            radial-gradient(circle at top, rgba(88, 101, 242, 0.35) 0, transparent 55%),
+            radial-gradient(circle at bottom, rgba(6, 95, 180, 0.3) 0, transparent 60%),
+            linear-gradient(160deg, var(--bg-top), var(--bg-deep));
+          color: var(--text-main);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 18px 16px;
+        }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+        .shell { width: 100%; max-width: 440px; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top, rgba(88, 101, 242, 0.35) 0, transparent 55%),
-        radial-gradient(circle at bottom, rgba(6, 95, 180, 0.3) 0, transparent 60%),
-        linear-gradient(160deg, var(--bg-top), var(--bg-deep));
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 18px 16px;
-    }
+        .card {
+          background: var(--glass);
+          border-radius: 24px;
+          padding: 18px;
+          border: 1px solid rgba(15, 23, 42, 0.9);
+          box-shadow:
+            0 20px 45px rgba(0,0,0,0.85),
+            0 0 0 1px rgba(15,23,42,0.7);
+          position: relative;
+          overflow: hidden;
+          backdrop-filter: blur(16px);
+        }
 
-    .shell { width: 100%; max-width: 440px; }
+        .card::before {
+          content: "";
+          position: absolute;
+          inset: 1px;
+          border-radius: 22px;
+          border: 1px solid rgba(148,163,255,0.35);
+          pointer-events: none;
+        }
 
-    .card {
-      background: var(--glass);
-      border-radius: 24px;
-      padding: 18px;
-      border: 1px solid rgba(15, 23, 42, 0.9);
-      box-shadow:
-        0 20px 45px rgba(0,0,0,0.85),
-        0 0 0 1px rgba(15,23,42,0.7);
-      position: relative;
-      overflow: hidden;
-      backdrop-filter: blur(16px);
-    }
+        .top-accent {
+          position: absolute; left: 16%; right: 16%; top: 10px; height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(148,163,255,0.9), transparent);
+        }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 1px;
-      border-radius: 22px;
-      border: 1px solid rgba(148,163,255,0.35);
-      pointer-events: none;
-    }
+        .top-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: 8px;
+          margin-bottom: 4px;
+          position: relative;
+          z-index: 2;
+        }
 
-    .top-accent {
-      position: absolute; left: 16%; right: 16%; top: 10px; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(148,163,255,0.9), transparent);
-    }
+        .top-bar-left { min-width: 70px; }
+        .top-bar-center {
+          flex: 1; text-align: center;
+          font-size: .9rem; font-weight: 600;
+          color: #e5e7ff;
+        }
+        .top-bar-right { min-width: 70px; text-align: right; }
 
-    .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 8px;
-      margin-bottom: 4px;
-      position: relative;
-      z-index: 2;
-    }
+        .step-pill {
+          padding: 3px 9px;
+          border-radius: 999px;
+          border: 1px solid rgba(148,163,255,0.7);
+          background: rgba(10,16,40,0.95);
+          font-size: .72rem;
+          color: rgba(203,213,255,0.95);
+        }
 
-    .top-bar-left { min-width: 70px; }
-    .top-bar-center {
-      flex: 1; text-align: center;
-      font-size: .9rem; font-weight: 600;
-      color: #e5e7ff;
-    }
-    .top-bar-right { min-width: 70px; text-align: right; }
+        .logo-badge-wrap {
+          display: flex;
+          justify-content: center;
+          margin: 10px 0;
+        }
 
-    .step-pill {
-      padding: 3px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,255,0.7);
-      background: rgba(10,16,40,0.95);
-      font-size: .72rem;
-      color: rgba(203,213,255,0.95);
-    }
+        .logo-badge {
+          width: 70px;
+          height: 70px;
+          border-radius: 22px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background:
+            radial-gradient(circle at 25% 0%, rgba(255,255,255,0.7), transparent 55%),
+            radial-gradient(circle at 80% 100%, rgba(129,140,248,0.75), transparent 55%),
+            linear-gradient(135deg, #181b3a, #2f3564);
+          box-shadow:
+            0 16px 30px rgba(15,23,42,0.95),
+            0 0 0 1px rgba(148,163,255,0.5);
+        }
 
-    .logo-badge-wrap { 
-      display: flex; 
-      justify-content: center; 
-      margin: 10px 0; 
-    }
+        .logo-badge-inner {
+          width: 50px;
+          height: 50px;
+          border-radius: 18px;
+          background: radial-gradient(circle at 30% 0%, #ffffff, #c7d2ff);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow:
+            0 8px 18px rgba(59,130,246,0.6),
+            0 0 0 1px rgba(226,232,255,0.7);
+        }
 
-    .logo-badge {
-      width: 70px; 
-      height: 70px; 
-      border-radius: 22px;
-      display: flex; 
-      align-items: center; 
-      justify-content: center;
-      background:
-        radial-gradient(circle at 25% 0%, rgba(255,255,255,0.7), transparent 55%),
-        radial-gradient(circle at 80% 100%, rgba(129,140,248,0.75), transparent 55%),
-        linear-gradient(135deg, #181b3a, #2f3564);
-      box-shadow:
-        0 16px 30px rgba(15,23,42,0.95),
-        0 0 0 1px rgba(148,163,255,0.5);
-    }
+        h1 {
+          text-align: center;
+          font-size: 2rem;
+          font-weight: 800;
+          letter-spacing: .08em;
+          margin-bottom: 4px;
+          text-transform: uppercase;
+          background: linear-gradient(120deg,#fff,#e0e7ff);
+          -webkit-background-clip: text;
+          color: transparent;
+        }
 
-    .logo-badge-inner {
-      width: 50px; 
-      height: 50px;
-      border-radius: 18px;
-      background: radial-gradient(circle at 30% 0%, #ffffff, #c7d2ff);
-      display: flex; 
-      align-items: center; 
-      justify-content: center;
-      box-shadow:
-        0 8px 18px rgba(59,130,246,0.6),
-        0 0 0 1px rgba(226,232,255,0.7);
-    }
+        .subtitle {
+          text-align: center;
+          font-size: .8rem;
+          color: #a5b4fc;
+          margin-bottom: 16px;
+        }
 
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: .08em;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      background: linear-gradient(120deg,#fff,#e0e7ff);
-      -webkit-background-clip: text;
-      color: transparent;
-    }
+        .description {
+          text-align: center;
+          font-size: .98rem;
+          color: var(--text-sub);
+          margin-bottom: 26px;
+          line-height: 1.45;
+        }
 
-    .subtitle {
-      text-align: center;
-      font-size: .8rem;
-      letter-letter-spacing: .28em;
-      color: #a5b4fc;
-      margin-bottom: 16px;
-    }
+        .section-box {
+          background:
+            radial-gradient(circle at top left, rgba(148,163,255,0.22), transparent 55%),
+            rgba(15,23,42,0.96);
+          border-radius: 20px;
+          padding: 14px;
+          border: 1px solid var(--border-soft);
+          margin-bottom: 14px;
+        }
 
-    .description {
-      text-align: center;
-      font-size: .98rem;
-      color: var(--text-sub);
-      margin-bottom: 26px;
-      line-height: 1.45;
-    }
+        .section-title {
+          text-align: center;
+          font-size: 1rem;
+          color: #e5e7ff;
+          margin-bottom: 6px;
+        }
 
-    .section-box {
-      background:
-        radial-gradient(circle at top left, rgba(148,163,255,0.22), transparent 55%),
-        rgba(15,23,42,0.96);
-      border-radius: 20px;
-      padding: 14px;
-      border: 1px solid var(--border-soft);
-      margin-bottom: 14px;
-    }
+        .section-hint {
+          text-align: center;
+          font-size: .84rem;
+          color: var(--text-sub);
+          margin-bottom: 12px;
+        }
 
-    .section-title {
-      text-align: center;
-      font-size: 1rem;
-      letter-spacing: .12em;
-      color: #e5e7ff;
-      margin-bottom: 6px;
-    }
+        .btn {
+          width: 100%;
+          padding: 12px 0;
+          border-radius: 999px;
+          background: linear-gradient(135deg,var(--primary-strong),var(--primary));
+          color:#fff;
+          font-weight:650;
+          font-size:.95rem;
+          border:none;
+          margin-bottom:8px;
+          display:flex;
+          justify-content:center;
+          gap:8px;
+          cursor:pointer;
+          position:relative;
+          overflow:hidden;
+          box-shadow:0 12px 26px rgba(55,48,163,0.75);
+        }
 
-    .section-hint {
-      text-align: center;
-      font-size: .84rem;
-      color: var(--text-sub);
-      margin-bottom: 12px;
-    }
+        input[type=file] {
+          position:absolute;
+          inset:0;
+          opacity:0;
+          cursor:pointer;
+        }
 
-    .btn {
-      width: 100%;
-      padding: 12px 0;
-      border-radius: 999px;
-      background: linear-gradient(135deg,var(--primary-strong),var(--primary));
-      color:#fff;
-      font-weight:650;
-      font-size:.95rem;
-      border:none;
-      margin-bottom:8px;
-      display:flex;
-      justify-content:center;
-      gap:8px;
-      cursor:pointer;
-      position:relative;
-      overflow:hidden;
-      box-shadow:0 12px 26px rgba(55,48,163,0.75);
-    }
+        .menu-box {
+          margin-top: 16px;
+          padding: 14px;
+          border-radius: 20px;
+          background: rgba(15,23,42,0.86);
+          border: 1px solid var(--border-soft);
+          position: relative;
+          z-index: 2;
+        }
 
-    input[type=file] {
-      position:absolute;
-      inset:0;
-      opacity:0;
-      cursor:pointer;
-    }
+        .menu-title {
+          font-size:.82rem;
+          text-transform:uppercase;
+          color:#9ca3ff;
+          margin-bottom:4px;
+        }
 
-    .menu-box {
-      margin-top: 16px;
-      padding: 14px;
-      border-radius: 20px;
-      background: rgba(15,23,42,0.86);
-      border: 1px solid var(--border-soft);
-      position: relative;
-      z-index: 2;
-    }
-    .menu-title {
-      font-size:.82rem;
-      text-transform:uppercase;
-      letter-spacing:.08em;
-      color:#9ca3ff;
-      margin-bottom:4px;
-    }
-    .today-status {
-      font-size:.84rem;
-      color:#cbd5ff;
-      margin-bottom:8px;
-    }
-    .btn-mini {
-      width:100%;
-      padding:10px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,255,0.6);
-      background:rgba(15,23,42,0.9);
-      color:#e5e7eb;
-      font-size:.87rem;
-      display:flex;
-      justify-content:center;
-      gap:8px;
-      cursor:pointer;
-      position: relative;
-      z-index: 3;
-    }
-  </style>
+        .today-status {
+          font-size:.84rem;
+          color:#cbd5ff;
+          margin-bottom:8px;
+        }
+
+        .btn-mini {
+          width:100%;
+          padding:10px;
+          border-radius:999px;
+          border:1px solid rgba(148,163,255,0.6);
+          background:rgba(15,23,42,0.9);
+          color:#e5e7eb;
+          font-size:.87rem;
+          display:flex;
+          justify-content:center;
+          gap:8px;
+          cursor:pointer;
+        }
+    </style>
 </head>
 
 <body>
 <div class="shell">
-  <div class="card">
-    <div class="top-accent"></div>
+    <div class="card">
+        <div class="top-accent"></div>
 
-    <div class="top-bar">
-      <div class="top-bar-left"></div>
-      <div class="top-bar-center">AI 피부 코치</div>
-      <div class="top-bar-right">
-        <div class="step-pill">STEP 1 / 4</div>
-      </div>
-    </div>
-
-    <!-- 🌟 물방울 SVG → icon-192.png 로 대체 -->
-    <div class="logo-badge-wrap">
-      <div class="logo-badge">
-        <div class="logo-badge-inner">
-          <img src="/icon-192.png" alt="로고" style="width: 32px; height: 32px;" />
+        <div class="top-bar">
+            <div class="top-bar-left"></div>
+            <div class="top-bar-center">AI 피부 코치</div>
+            <div class="top-bar-right">
+                <div class="step-pill">STEP 1 / 4</div>
+            </div>
         </div>
-      </div>
+
+        <!-- ⚠️ WebView에서는 절대 /icon-192.png 쓰면 안 뜸 → 수정 완료 -->
+        <div class="logo-badge-wrap">
+            <div class="logo-badge">
+                <div class="logo-badge-inner">
+                    <img src="icon-192.png" alt="로고" style="width: 32px; height: 32px;" />
+                </div>
+            </div>
+        </div>
+
+        <h1>AI 피부 코치</h1>
+        <div class="subtitle">PHOTO • ANALYSIS • ROUTINE</div>
+
+        <div class="description">
+            얼굴이 보이는 사진 한 장만 올리면,<br />
+            AI가 피부 분석·루틴·추천 제품을<br />
+            안내해드립니다.
+        </div>
+
+        <div class="section-box">
+            <div class="section-title">PHOTO UPLOAD</div>
+            <div class="section-hint">
+                갤러리에서 선택하거나,<br>
+                밝은 곳에서 고민 부위가 보이게 촬영하세요.
+            </div>
+
+            <label class="btn">
+                📁 파일에서 선택하기
+                <input type="file" accept="image/*" onchange="goNextPage(event)">
+            </label>
+
+            <label class="btn">
+                📷 카메라로 촬영하기
+                <input type="file" accept="image/*" capture="environment" onchange="goNextPage(event)">
+            </label>
+        </div>
+
+        <div class="menu-box" id="menu-box">
+            <div class="menu-title">MY 피부 기록</div>
+            <div id="today-status" class="today-status">📅 오늘 기록 없음</div>
+
+            <button class="btn-mini" id="go-products-btn" type="button">
+                🔁 최근 진단 결과 · 추천 제품 보기
+            </button>
+        </div>
+
     </div>
-
-    <h1>AI 피부 코치</h1>
-    <div class="subtitle">PHOTO • ANALYSIS • ROUTINE</div>
-
-    <div class="description">
-      얼굴이 보이는 사진 한 장만 올리면,<br />
-      AI가 피부 분석·루틴·추천 제품을<br />
-      안내해드립니다.
-    </div>
-
-    <div class="section-box">
-      <div class="section-title">PHOTO UPLOAD</div>
-      <div class="section-hint">
-        갤러리에서 선택하거나,<br>
-        밝은 곳에서 고민 부위가 보이게 촬영하세요.
-      </div>
-
-      <label class="btn">
-        📁 파일에서 선택하기
-        <input type="file" accept="image/*" onchange="goNextPage(event)">
-      </label>
-
-      <label class="btn">
-        📷 카메라로 촬영하기
-        <input type="file" accept="image/*" capture="environment" onchange="goNextPage(event)">
-      </label>
-    </div>
-
-    <div class="menu-box" id="menu-box">
-      <div class="menu-title">MY 피부 기록</div>
-      <div id="today-status" class="today-status">📅 오늘 기록 없음</div>
-
-      <!-- ✅ id만 추가 -->
-      <button class="btn-mini" id="go-products-btn" type="button">
-        🔁 최근 진단 결과 · 추천 제품 보기
-      </button>
-    </div>
-  </div>
 </div>
 
 <script>
-  function goNextPage(event) {
-    const file = event.target && event.target.files && event.target.files[0];
-    if (!file) return;
+    function goNextPage(event) {
+      const file = event.target && event.target.files && event.target.files[0];
+      if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64 = e.target.result;
-      sessionStorage.setItem("uploadedImage", base64);
-      window.location.href = "confirm.html";
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function updateTodayStatus() {
-    const el = document.getElementById("today-status");
-    const raw = localStorage.getItem("diagnosisHistory");
-
-    if (!raw) {
-      el.innerText = "📅 아직 진단 기록이 없습니다";
-      return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target.result;
+        sessionStorage.setItem("uploadedImage", base64);
+        window.location.href = "confirm.html";
+      };
+      reader.readAsDataURL(file);
     }
 
-    try {
-      const history = JSON.parse(raw);
-      if (!Array.isArray(history) || history.length === 0) {
+    function updateTodayStatus() {
+      const el = document.getElementById("today-status");
+      const raw = localStorage.getItem("diagnosisHistory");
+
+      if (!raw) {
         el.innerText = "📅 아직 진단 기록이 없습니다";
         return;
       }
 
-      const latest = history[0];
-      el.innerText = `📅 마지막 진단: ${latest.date} · 바로 보기`;
-    } catch (e) {
-      el.innerText = "📅 기록을 불러오는 중 오류가 발생했습니다";
-      console.warn("diagnosisHistory 파싱 오류:", e);
-    }
-  }
+      try {
+        const history = JSON.parse(raw);
+        if (!Array.isArray(history) || history.length === 0) {
+          el.innerText = "📅 아직 진단 기록이 없습니다";
+          return;
+        }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    updateTodayStatus();
-
-    const btn = document.getElementById("go-products-btn");
-    const menuBox = document.getElementById("menu-box");
-
-    if (btn) {
-      btn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        window.location.href = "products.html";
-      });
+        const latest = history[0];
+        el.innerText = `📅 마지막 진단: ${latest.date} · 바로 보기`;
+      } catch (e) {
+        el.innerText = "📅 기록을 불러오는 중 오류가 발생했습니다";
+        console.warn("diagnosisHistory 파싱 오류:", e);
+      }
     }
 
-    // 🔥 혹시 버튼에 문제가 있어도, 메뉴 박스 전체를 눌러도 이동하게
-    if (menuBox) {
-      menuBox.addEventListener("click", function () {
-        window.location.href = "products.html";
-      });
-    }
-  });
+    document.addEventListener("DOMContentLoaded", function () {
+      updateTodayStatus();
+
+      const btn = document.getElementById("go-products-btn");
+      const menuBox = document.getElementById("menu-box");
+
+      if (btn) {
+        btn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          window.location.href = "products.html";
+        });
+      }
+
+      // 박스 전체 눌러도 products.html 이동
+      if (menuBox) {
+        menuBox.addEventListener("click", function () {
+          window.location.href = "products.html";
+        });
+      }
+    });
 </script>
 
 </body>
