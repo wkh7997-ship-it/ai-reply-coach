@@ -1,424 +1,288 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI 피부 코치 - 고민 선택</title>
-  <style>
-    :root {
-      --primary: #c7b3ff;
-      --primary-strong: #8f7bff;
-      --bg-deep: #05040b;
-      --bg-top: #111322;
-      --glass: rgba(8, 10, 24, 0.92);
-      --text-main: #f9fafb;
-      --text-sub: #cbd5f5;
-      --text-muted: #9ca3c9;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 피부 코치 - 고민 선택</title>
+    <style>
+        :root {
+          --primary: #c7b3ff;
+          --primary-strong: #8f7bff;
+          --bg-deep: #05040b;
+          --bg-top: #111322;
+          --glass: rgba(8, 10, 24, 0.92);
+          --text-main: #f9fafb;
+          --text-sub: #cbd5f5;
+          --text-muted: #9ca3c9;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top, rgba(129,140,248,0.32) 0, transparent 55%),
-        radial-gradient(circle at bottom, rgba(15,23,42,0.75) 0, transparent 62%),
-        linear-gradient(160deg, var(--bg-top), var(--bg-deep));
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 18px 16px;
-    }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
+          min-height: 100vh;
+          background:
+            radial-gradient(circle at top, rgba(129,140,248,0.32) 0, transparent 55%),
+            radial-gradient(circle at bottom, rgba(15,23,42,0.75) 0, transparent 62%),
+            linear-gradient(160deg, var(--bg-top), var(--bg-deep));
+          color: var(--text-main);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 18px 16px;
+        }
 
-    .shell { width: 100%; max-width: 440px; }
+        .shell { width: 100%; max-width: 440px; }
 
-    .card {
-      position: relative;
-      background: var(--glass);
-      border-radius: 26px;
-      padding: 16px 16px 18px;
-      border: 1px solid rgba(148,163,255,0.24);
-      box-shadow:
-        0 20px 45px rgba(0,0,0,0.75),
-        0 0 0 1px rgba(15,23,42,0.7);
-      backdrop-filter: blur(18px);
-      overflow: hidden;
-    }
+        .card {
+          position: relative;
+          background: var(--glass);
+          border-radius: 26px;
+          padding: 16px 16px 18px;
+          border: 1px solid rgba(148,163,255,0.24);
+          box-shadow: 0 20px 45px rgba(0,0,0,0.75),
+                      0 0 0 1px rgba(15,23,42,0.7);
+          backdrop-filter: blur(18px);
+          overflow: hidden;
+        }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 1px;
-      border-radius: 24px;
-      border: 1px solid rgba(248,250,252,0.02);
-      pointer-events: none;
-    }
+        .top-accent {
+          position: absolute;
+          left: 12%;
+          right: 12%;
+          top: 10px;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(244,229,200,0.75), transparent);
+          opacity: 0.9;
+        }
 
-    .top-accent {
-      position: absolute;
-      left: 12%;
-      right: 12%;
-      top: 10px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(244,229,200,0.75), transparent);
-      opacity: 0.9;
-    }
+        /* 상단 헤더 */
+        .top-bar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 12px;
+          margin-top: 6px;
+        }
 
-    /* ⭐ 상단 APP NAVIGATION BAR */
-    .top-bar {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 6px;
-      margin-bottom: 8px;
-    }
+        .back-btn {
+          background: transparent;
+          border: none;
+          color: var(--text-sub);
+          font-size: 0.82rem;
+          cursor: pointer;
+        }
 
-    .top-bar-left,
-    .top-bar-center,
-    .top-bar-right {
-      display: flex;
-      align-items: center;
-    }
+        .step-pill {
+          padding: 3px 9px;
+          border-radius: 999px;
+          border: 1px solid rgba(148,163,255,0.65);
+          font-size: 0.72rem;
+          color: var(--text-sub);
+          background: rgba(10,16,36,0.9);
+        }
 
-    .top-bar-left { min-width: 60px; justify-content: flex-start; }
-    .top-bar-center {
-      flex: 1;
-      justify-content: center;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-    .top-bar-right { min-width: 60px; justify-content: flex-end; }
+        .title {
+          font-size: 1.32rem;
+          font-weight: 750;
+          text-align: center;
+          margin-bottom: 4px;
+        }
 
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      background: transparent;
-      border: none;
-      font-size: 0.82rem;
-      color: var(--text-sub);
-      cursor: pointer;
-      padding: 4px 6px;
-    }
+        .subtitle {
+          font-size: 0.82rem;
+          color: var(--text-muted);
+          text-align: center;
+          margin-bottom: 14px;
+          line-height: 1.4;
+        }
 
-    .step-pill {
-      padding: 3px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,255,0.65);
-      font-size: 0.72rem;
-      color: var(--text-sub);
-      background: rgba(10,16,36,0.9);
-      white-space: nowrap;
-    }
+        /* 옵션 그리드 */
+        .options-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
+          margin-bottom: 12px;
+        }
 
-    .header {
-      text-align: center;
-      margin-top: 6px;
-      margin-bottom: 14px;
-    }
+        .option-chip {
+          padding: 10px 10px;
+          border-radius: 14px;
+          border: 1px solid rgba(148,163,255,0.55);
+          background: rgba(15,23,42,0.88);
+          color: var(--text-sub);
+          font-size: 0.78rem;
+          cursor: pointer;
+          transition: 0.18s;
+          user-select: none;
+        }
 
-    .title {
-      font-size: 1.32rem;
-      font-weight: 750;
-      margin-bottom: 4px;
-    }
+        .option-chip.selected {
+          background:
+            radial-gradient(circle at top left, rgba(199,179,255,0.28), transparent 55%),
+            linear-gradient(135deg, rgba(129,140,248,0.25), rgba(15,23,42,0.98));
+          border-color: rgba(248,250,252,0.9);
+          color: #fff;
+          box-shadow: 0 0 0 1px rgba(199,179,255,0.7),
+                      0 10px 20px rgba(0,0,0,0.85);
+        }
 
-    .subtitle {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
+        .custom-input {
+          width: 100%;
+          border-radius: 12px;
+          border: 1px solid rgba(148,163,255,0.45);
+          background: rgba(2,6,23,0.95);
+          color: #fff;
+          padding: 7px 10px;
+          font-size: 0.8rem;
+          min-height: 42px;
+          margin-top: 4px;
+        }
 
-    .options-wrapper {
-      margin-top: 4px;
-      margin-bottom: 10px;
-    }
+        .btn {
+          width: 100%;
+          padding: 12px 0;
+          border-radius: 999px;
+          border: none;
+          font-size: 0.95rem;
+          font-weight: 650;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          margin-top: 10px;
+        }
 
-    .options-label {
-      font-size: 0.86rem;
-      color: var(--text-sub);
-      margin-bottom: 8px;
-      text-align: left;
-    }
+        .btn-primary {
+          background: linear-gradient(135deg, var(--primary-strong), var(--primary));
+          color: #fff;
+        }
 
-    .options-label strong { color: #fefce8; }
+        .btn-secondary {
+          background: transparent;
+          border: 1px solid rgba(148,163,255,0.6);
+          color: var(--text-sub);
+        }
 
-    .options-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-
-    .option-chip {
-      padding: 9px 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(148,163,255,0.55);
-      background: rgba(15,23,42,0.88);
-      font-size: 0.78rem;
-      color: var(--text-sub);
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      cursor: pointer;
-      transition: 0.18s;
-      user-select: none;
-    }
-
-    .option-chip.selected {
-      background:
-        radial-gradient(circle at top left, rgba(199,179,255,0.28), transparent 55%),
-        linear-gradient(135deg, rgba(129,140,248,0.25), rgba(15,23,42,0.98));
-      border-color: rgba(248,250,252,0.9);
-      color: #fff;
-      box-shadow:
-        0 0 0 1px rgba(199,179,255,0.7),
-        0 10px 20px rgba(0,0,0,0.85);
-    }
-
-    .info-text {
-      margin-top: 8px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-
-    .custom-box { margin-top: 6px; }
-    .custom-label { font-size: 0.78rem; margin-bottom: 4px; color: var(--text-muted); }
-
-    .custom-input {
-      width: 100%;
-      border-radius: 12px;
-      border: 1px solid rgba(148,163,255,0.45);
-      background: rgba(2,6,23,0.95);
-      color: #fff;
-      padding: 7px 10px;
-      font-size: 0.8rem;
-      resize: none;
-      min-height: 42px;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 12px 0;
-      border-radius: 999px;
-      margin-top: 8px;
-      font-size: 0.95rem;
-      font-weight: 650;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
-      color: #fff;
-    }
-
-    .btn-secondary {
-      background: transparent;
-      border: 1px solid rgba(148,163,255,0.6);
-      color: #e5e7eb;
-    }
-
-    .btn-icon {
-      font-size: 1.1rem;
-    }
-
-    .warning-text {
-      height: 16px;
-      font-size: 0.75rem;
-      margin-top: 6px;
-      color: #ff8f8f;
-    }
-  </style>
+        .warning-text {
+          color: #ff8f8f;
+          font-size: 0.75rem;
+          margin-top: 6px;
+          height: 14px;
+          text-align: center;
+        }
+    </style>
 </head>
 
 <body>
 <div class="shell">
-  <div class="card">
-    <div class="top-accent"></div>
+    <div class="card">
+        <div class="top-accent"></div>
 
-    <!-- ⭐ 상단 헤더 -->
-    <div class="top-bar">
-      <div class="top-bar-left">
-        <button class="back-btn" type="button" onclick="goBack()">
-          ← 뒤로
-        </button>
-      </div>
-      <div class="top-bar-center">
-        고민 선택하기
-      </div>
-      <div class="top-bar-right">
-        <div class="step-pill">STEP 3 / 4</div>
-      </div>
+        <div class="top-bar">
+            <button class="back-btn" onclick="goBack()">← 뒤로</button>
+            <div></div>
+            <div class="step-pill">STEP 3 / 4</div>
+        </div>
+
+        <div class="title">피부 고민을 알려주세요</div>
+        <div class="subtitle">신경 쓰이는 고민을 <strong>최대 3개</strong> 선택해 주세요.</div>
+
+        <div class="options-grid" id="options-grid">
+            <div class="option-chip" data-value="여드름·뾰루지">여드름 · 뾰루지</div>
+            <div class="option-chip" data-value="편평사마귀·사마귀">편평사마귀 · 사마귀</div>
+            <div class="option-chip" data-value="모공·블랙헤드·피지">모공 · 블랙헤드 · 피지</div>
+            <div class="option-chip" data-value="붉은기·홍조·민감 피부">붉은기 · 홍조 · 민감 피부</div>
+            <div class="option-chip" data-value="잡티·기미·색소침착">잡티 · 기미 · 색소침착</div>
+            <div class="option-chip" data-value="건조함·각질·피부 당김">건조함 · 각질 · 피부 당김</div>
+            <div class="option-chip" data-value="주름·탄력 저하">주름 · 탄력 저하</div>
+        </div>
+
+        <textarea id="custom-concern" class="custom-input" placeholder="기타 고민 (선택)"></textarea>
+
+        <div class="warning-text" id="warning-text"></div>
+
+        <button class="btn btn-primary" id="next-btn" onclick="submitConcerns()">➡️ 다음 단계로</button>
+        <button class="btn btn-secondary" onclick="goBack()">↩ 이전 단계로</button>
     </div>
-
-    <div class="header">
-      <div class="title">피부 고민을 알려주세요</div>
-      <div class="subtitle">
-        가장 신경 쓰이는 피부 고민을<br />
-        <strong>최대 3개까지</strong> 선택해 주세요.
-      </div>
-    </div>
-
-    <div class="options-wrapper">
-      <div class="options-label">
-        내 사진을 기준으로 <br />
-        <strong>AI가 더 정확하게 답변</strong>할 수 있게 도와줘요.
-      </div>
-
-      <div class="options-grid" id="options-grid">
-        <div class="option-chip" data-value="여드름·뾰루지"><span>여드름 · 뾰루지</span></div>
-        <div class="option-chip" data-value="편평사마귀·사마귀"><span>편평사마귀 · 사마귀</span></div>
-        <div class="option-chip" data-value="모공·블랙헤드·피지"><span>모공 · 블랙헤드 · 피지</span></div>
-        <div class="option-chip" data-value="붉은기·홍조·민감 피부"><span>붉은기 · 홍조 · 민감 피부</span></div>
-        <div class="option-chip" data-value="잡티·기미·색소침착"><span>잡티 · 기미 · 색소침착</span></div>
-        <div class="option-chip" data-value="건조함·각질·당김"><span>건조함 · 각질 · 피부 당김</span></div>
-        <div class="option-chip" data-value="주름·탄력 저하"><span>주름 · 탄력 저하</span></div>
-      </div>
-
-      <div class="info-text">
-        * 고민은 최대 3개까지 선택할 수 있어요.<br />
-        * 선택한 고민을 기준으로 루틴과 제품을 추천해 드립니다.
-      </div>
-
-      <div class="custom-box">
-        <div class="custom-label">기타로 신경 쓰이는 부분 (선택)</div>
-        <textarea
-          id="custom-concern"
-          class="custom-input"
-          placeholder="예) 턱 다크닝, 코 각질 등"
-        ></textarea>
-      </div>
-
-      <div class="warning-text" id="warning-text"></div>
-    </div>
-
-    <!-- 버튼 -->
-    <button class="btn btn-primary" id="next-btn" type="button" onclick="submitConcerns()">
-      <span class="btn-icon">➡️</span>
-      <span id="next-btn-label">다음 단계로</span>
-    </button>
-
-    <button class="btn btn-secondary" type="button" onclick="goBack()">
-      <span class="btn-icon">↩</span>
-      <span>이전 단계로</span>
-    </button>
-
-  </div>
 </div>
 
 <script>
-  const maxSelect = 3;
-  const warningEl = document.getElementById("warning-text");
+    const warningEl = document.getElementById("warning-text");
 
-  // 페이지 진입 시 이미지 유효성 체크
-  window.addEventListener("DOMContentLoaded", () => {
-    const imgData = sessionStorage.getItem("uploadedImage");
-    if (!imgData) {
-      alert("이미지 정보가 없습니다. 처음 화면부터 다시 진행해 주세요.");
-      window.location.href = "index.html";
-    }
-  });
+    // 옵션 선택 처리
+    document.querySelectorAll(".option-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        const selectedCount = document.querySelectorAll(".option-chip.selected").length;
 
-  // 고민 선택 토글
-  document.querySelectorAll(".option-chip").forEach((chip) => {
-    chip.addEventListener("click", () => {
-      const count = document.querySelectorAll(".option-chip.selected").length;
+        if (chip.classList.contains("selected")) {
+          chip.classList.remove("selected");
+          warningEl.textContent = "";
+          return;
+        }
 
-      if (chip.classList.contains("selected")) {
-        chip.classList.remove("selected");
+        if (selectedCount >= 3) {
+          warningEl.textContent = "고민은 최대 3개까지 선택할 수 있어요.";
+          return;
+        }
+
+        chip.classList.add("selected");
         warningEl.textContent = "";
-        return;
-      }
-
-      if (count >= maxSelect) {
-        warningEl.textContent = "고민은 최대 3개까지만 선택할 수 있어요.";
-        return;
-      }
-
-      chip.classList.add("selected");
-      warningEl.textContent = "";
-    });
-  });
-
-  // ⭐ 실제 AI 서버(/api/analyze) 호출 버전
-  async function submitConcerns() {
-    const selected = Array.from(
-      document.querySelectorAll(".option-chip.selected")
-    ).map((el) => el.getAttribute("data-value"));
-
-    const custom = document.getElementById("custom-concern").value.trim();
-    if (custom) selected.push("기타: " + custom);
-
-    if (selected.length === 0) {
-      warningEl.textContent = "최소 1개의 고민을 선택하거나 적어주세요.";
-      return;
-    }
-
-    // 선택한 고민 저장 (result/products에서 사용)
-    sessionStorage.setItem("userConcerns", JSON.stringify(selected));
-
-    const imgData = sessionStorage.getItem("uploadedImage") || "";
-
-    const nextBtn = document.getElementById("next-btn");
-    const nextBtnLabel = document.getElementById("next-btn-label");
-
-    // 중복 클릭 방지
-    nextBtn.disabled = true;
-    nextBtnLabel.textContent = "AI 분석 요청 중...";
-
-    try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          skin_type: "정보 없음(이미지 업로드 기준)",
-          problem_area: "얼굴 전체",
-          concerns: selected,
-          notes:
-            "사용자가 선택한 피부 고민: " +
-            selected.join(", ") +
-            (imgData ? " / 이미지 데이터 앞부분: " + imgData.slice(0, 200) : "")
-        })
       });
+    });
 
-      if (!res.ok) {
-        alert("AI 분석 서버에서 오류가 발생했습니다. (HTTP " + res.status + ")");
-        nextBtn.disabled = false;
-        nextBtnLabel.textContent = "다음 단계로";
+    function goBack() {
+      window.location.href = "confirm.html";
+    }
+
+    // AI 분석 서버 호출
+    async function submitConcerns() {
+      const selected = Array.from(document.querySelectorAll(".option-chip.selected"))
+        .map(el => el.getAttribute("data-value"));
+
+      const custom = document.getElementById("custom-concern").value.trim();
+      if (custom) selected.push("기타: " + custom);
+
+      if (selected.length === 0) {
+        warningEl.textContent = "최소 1개의 고민을 선택해 주세요.";
         return;
       }
 
-      const data = await res.json();
-      sessionStorage.setItem("aiSkinResult", JSON.stringify(data));
-      window.location.href = "result.html";
-    } catch (err) {
-      console.error(err);
-      alert("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
-      nextBtn.disabled = false;
-      nextBtnLabel.textContent = "다음 단계로";
-    }
-  }
+      sessionStorage.setItem("userConcerns", JSON.stringify(selected));
 
-  function goBack() {
-    window.location.href = "confirm.html";
-  }
+      const nextBtn = document.getElementById("next-btn");
+      nextBtn.disabled = true;
+      nextBtn.textContent = "AI 분석 중...";
+
+      try {
+        const res = await fetch("https://ai-reply-coach-3.onrender.com/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            skin_type: "unknown",
+            problem_area: "얼굴 전체",
+            concerns: selected
+          })
+        });
+
+        if (!res.ok) {
+          alert("AI 분석 서버 오류: " + res.status);
+          nextBtn.disabled = false;
+          nextBtn.textContent = "다음 단계로";
+          return;
+        }
+
+        const data = await res.json();
+        sessionStorage.setItem("aiSkinResult", JSON.stringify(data));
+        window.location.href = "result.html";
+
+      } catch (err) {
+        alert("네트워크 오류가 발생했습니다.");
+        nextBtn.disabled = false;
+        nextBtn.textContent = "다음 단계로";
+      }
+    }
 </script>
 
 </body>
