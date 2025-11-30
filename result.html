@@ -1,874 +1,851 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI 피부 코치 - 분석 결과</title>
-  <style>
-    :root {
-      --primary: #9b8bff;
-      --primary-strong: #5c6bff;
-      --bg-deep: #050616;
-      --bg-top: #11152b;
-      --glass: rgba(10, 14, 32, 0.96);
-      --text-main: #f9fafb;
-      --text-sub: #cbd5f5;
-      --border-soft: rgba(148, 163, 255, 0.35);
-      --risk-low: #22c55e;
-      --risk-mid: #eab308;
-      --risk-high: #ef4444;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 피부 코치 - 분석 결과</title>
+    <style>
+        :root {
+          --primary: #9b8bff;
+          --primary-strong: #5c6bff;
+          --bg-deep: #050616;
+          --bg-top: #11152b;
+          --glass: rgba(10, 14, 32, 0.96);
+          --text-main: #f9fafb;
+          --text-sub: #cbd5f5;
+          --border-soft: rgba(148, 163, 255, 0.35);
+          --risk-low: #22c55e;
+          --risk-mid: #eab308;
+          --risk-high: #ef4444;
+        }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-      font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top, rgba(88,101,242,0.32) 0, transparent 55%),
-        radial-gradient(circle at bottom, rgba(59,130,246,0.26) 0, transparent 62%),
-        linear-gradient(160deg, var(--bg-top), var(--bg-deep));
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px 14px;
-    }
+        body {
+          font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+          min-height: 100vh;
+          background:
+            radial-gradient(circle at top, rgba(88,101,242,0.32) 0, transparent 55%),
+            radial-gradient(circle at bottom, rgba(59,130,246,0.26) 0, transparent 62%),
+            linear-gradient(160deg, var(--bg-top), var(--bg-deep));
+          color: var(--text-main);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 16px 14px;
+        }
 
-    .shell { width: 100%; max-width: 440px; }
+        .shell { width: 100%; max-width: 440px; }
 
-    .card {
-      background: var(--glass);
-      border-radius: 26px;
-      padding: 14px 16px 14px;
-      border: 1px solid var(--border-soft);
-      box-shadow:
-        0 22px 50px rgba(0,0,0,0.9),
-        0 0 0 1px rgba(15,23,42,0.7);
-      backdrop-filter: blur(18px);
-      position: relative;
-      overflow: hidden;
-      max-height: calc(100vh - 32px);
-      display: flex;
-      flex-direction: column;
-    }
+        .card {
+          background: var(--glass);
+          border-radius: 26px;
+          padding: 14px 16px 14px;
+          border: 1px solid var(--border-soft);
+          box-shadow:
+            0 22px 50px rgba(0,0,0,0.9),
+            0 0 0 1px rgba(15,23,42,0.7);
+          backdrop-filter: blur(18px);
+          position: relative;
+          overflow: hidden;
+          max-height: calc(100vh - 32px);
+          display: flex;
+          flex-direction: column;
+        }
 
-    .card-inner-scroll {
-      overflow-y: auto;
-      padding-right: 2px;
-      margin-right: -4px;
-      flex: 1;
-    }
+        .card-inner-scroll {
+          overflow-y: auto;
+          padding-right: 2px;
+          margin-right: -4px;
+          flex: 1;
+        }
 
-    .top-accent {
-      position: absolute;
-      left: 14%; right: 14%; top: 10px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(148,163,255,0.9), transparent);
-      opacity: 0.95;
-    }
+        .top-accent {
+          position: absolute;
+          left: 14%; right: 14%; top: 10px;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(148,163,255,0.9), transparent);
+          opacity: 0.95;
+        }
 
-    /* ⭐ 공통 상단 바 */
-    .top-bar {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 6px;
-      margin-bottom: 6px;
-    }
+        /* ⭐ 공통 상단 바 */
+        .top-bar {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-top: 6px;
+          margin-bottom: 6px;
+        }
 
-    .top-bar-left,
-    .top-bar-center,
-    .top-bar-right {
-      display: flex;
-      align-items: center;
-    }
+        .top-bar-left,
+        .top-bar-center,
+        .top-bar-right {
+          display: flex;
+          align-items: center;
+        }
 
-    .top-bar-left { min-width: 70px; justify-content: flex-start; }
-    .top-bar-center { flex: 1; justify-content: center; font-size: 0.9rem; font-weight: 600; }
-    .top-bar-right { min-width: 70px; justify-content: flex-end; }
+        .top-bar-left { min-width: 70px; justify-content: flex-start; }
+        .top-bar-center { flex: 1; justify-content: center; font-size: 0.9rem; font-weight: 600; }
+        .top-bar-right { min-width: 70px; justify-content: flex-end; }
 
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      background: transparent;
-      border: none;
-      font-size: 0.82rem;
-      color: var(--text-sub);
-      cursor: pointer;
-      padding: 4px 6px;
-    }
+        .back-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          background: transparent;
+          border: none;
+          font-size: 0.82rem;
+          color: var(--text-sub);
+          cursor: pointer;
+          padding: 4px 6px;
+        }
 
-    .step-pill {
-      padding: 3px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,255,0.7);
-      font-size: 0.72rem;
-      color: rgba(203,213,255,0.95);
-      background: rgba(10,16,40,0.95);
-      white-space: nowrap;
-    }
+        .step-pill {
+          padding: 3px 9px;
+          border-radius: 999px;
+          border: 1px solid rgba(148,163,255,0.7);
+          font-size: 0.72rem;
+          color: rgba(203,213,255,0.95);
+          background: rgba(10,16,40,0.95);
+          white-space: nowrap;
+        }
 
-    .header-wrap {
-      margin-top: 4px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 10px;
-    }
+        .header-wrap {
+          margin-top: 4px;
+          margin-bottom: 10px;
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 10px;
+        }
 
-    .header-title {
-      font-size: 1.4rem;
-      font-weight: 750;
-      line-height: 1.1;
-    }
+        .header-title {
+          font-size: 1.4rem;
+          font-weight: 750;
+          line-height: 1.1;
+        }
 
-    .header-sub {
-      font-size: 0.82rem;
-      color: var(--text-sub);
-      margin-top: 4px;
-      line-height: 1.4;
-    }
+        .header-sub {
+          font-size: 0.82rem;
+          color: var(--text-sub);
+          margin-top: 4px;
+          line-height: 1.4;
+        }
 
-    .header-date {
-      font-size: 0.72rem;
-      color: rgba(203,213,255,0.9);
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,255,0.6);
-      background: rgba(15,23,42,0.9);
-      white-space: nowrap;
-    }
+        .header-date {
+          font-size: 0.72rem;
+          color: rgba(203,213,255,0.9);
+          padding: 4px 8px;
+          border-radius: 999px;
+          border: 1px solid rgba(148,163,255,0.6);
+          background: rgba(15,23,42,0.9);
+          white-space: nowrap;
+        }
 
-    /* 로딩 스피너 */
-    .spinner {
-      width: 42px;
-      height: 42px;
-      border: 4px solid rgba(255,255,255,0.16);
-      border-top-color: #a78bfa;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 18px auto 12px;
-    }
+        /* 로딩 스피너 */
+        .spinner {
+          width: 42px;
+          height: 42px;
+          border: 4px solid rgba(255,255,255,0.16);
+          border-top-color: #a78bfa;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+          margin: 18px auto 12px;
+        }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
 
-    .loading-text {
-      text-align: center;
-      font-size: 0.93rem;
-      color: var(--text-sub);
-      margin-bottom: 6px;
-      line-height: 1.5;
-    }
+        .loading-text {
+          text-align: center;
+          font-size: 0.93rem;
+          color: var(--text-sub);
+          margin-bottom: 6px;
+          line-height: 1.5;
+        }
 
-    .scroll-hint {
-      display: none;
-      text-align: center;
-      font-size: 0.78rem;
-      color: rgba(203,213,255,0.85);
-      margin-bottom: 6px;
-    }
+        .scroll-hint {
+          display: none;
+          text-align: center;
+          font-size: 0.78rem;
+          color: rgba(203,213,255,0.85);
+          margin-bottom: 6px;
+        }
 
-    .result-wrapper {
-      margin-top: 4px;
-      display: none;
-    }
+        .result-wrapper {
+          margin-top: 4px;
+          display: none;
+        }
 
-    .score-section {
-      background:
-        radial-gradient(circle at top left, rgba(148,163,255,0.25), transparent 55%),
-        rgba(12,18,42,0.98);
-      border-radius: 22px;
-      padding: 14px 14px 12px;
-      border: 1px solid rgba(148,163,255,0.55);
-      margin-bottom: 12px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
+        .score-section {
+          background:
+            radial-gradient(circle at top left, rgba(148,163,255,0.25), transparent 55%),
+            rgba(12,18,42,0.98);
+          border-radius: 22px;
+          padding: 14px 14px 12px;
+          border: 1px solid rgba(148,163,255,0.55);
+          margin-bottom: 12px;
+          display: flex;
+          gap: 12px;
+          align-items: center;
+        }
 
-    .score-circle {
-      width: 82px;
-      height: 82px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 0%, #ffffff, #c7d2ff);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      box-shadow:
-        0 12px 26px rgba(15,23,42,0.9),
-        0 0 0 1px rgba(226,232,255,0.65);
-      overflow: hidden;
-    }
+        .score-circle {
+          width: 82px;
+          height: 82px;
+          border-radius: 999px;
+          background: radial-gradient(circle at 30% 0%, #ffffff, #c7d2ff);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          box-shadow:
+            0 12px 26px rgba(15,23,42,0.9),
+            0 0 0 1px rgba(226,232,255,0.65);
+          overflow: hidden;
+        }
 
-    .score-circle-inner {
-      width: 80%;
-      height: 80%;
-      border-radius: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background:
-        radial-gradient(circle at top, rgba(79,70,229,0.16), transparent 60%);
-    }
+        .score-circle-inner {
+          width: 80%;
+          height: 80%;
+          border-radius: inherit;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background:
+            radial-gradient(circle at top, rgba(79,70,229,0.16), transparent 60%);
+        }
 
-    .score-number-wrap {
-      text-align: center;
-      line-height: 1.1;
-    }
+        .score-number-wrap {
+          text-align: center;
+          line-height: 1.1;
+        }
 
-    .score-value {
-      font-size: 1.7rem;
-      font-weight: 800;
-      color: #111827;
-    }
+        .score-value {
+          font-size: 1.7rem;
+          font-weight: 800;
+          color: #111827;
+        }
 
-    .score-unit {
-      font-size: 0.78rem;
-      color: #6b7280;
-      margin-top: 1px;
-    }
+        .score-unit {
+          font-size: 0.78rem;
+          color: #6b7280;
+          margin-top: 1px;
+        }
 
-    .score-text-block { flex: 1; }
+        .score-text-block { flex: 1; }
 
-    .score-label {
-      font-size: 0.72rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: #a5b4ff;
-      margin-bottom: 4px;
-    }
+        .score-label {
+          font-size: 0.72rem;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: #a5b4ff;
+          margin-bottom: 4px;
+        }
 
-    .score-main {
-      font-size: 1rem;
-      font-weight: 680;
-      margin-bottom: 3px;
-    }
+        .score-main {
+          font-size: 1rem;
+          font-weight: 680;
+          margin-bottom: 3px;
+        }
 
-    .score-desc {
-      font-size: 0.83rem;
-      color: var(--text-sub);
-      line-height: 1.5;
-    }
+        .score-desc {
+          font-size: 0.83rem;
+          color: var(--text-sub);
+          line-height: 1.5;
+        }
 
-    .chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 7px;
-    }
+        .chip-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-top: 7px;
+        }
 
-    .chip {
-      font-size: 0.75rem;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,255,0.6);
-      color: #e5e7eb;
-      background: rgba(15,23,42,0.9);
-    }
+        .chip {
+          font-size: 0.75rem;
+          padding: 3px 8px;
+          border-radius: 999px;
+          border: 1px solid rgba(148,163,255,0.6);
+          color: #e5e7eb;
+          background: rgba(15,23,42,0.9);
+        }
 
-    .chip-risk-low {
-      border-color: var(--risk-low);
-      color: #bbf7d0;
-      background: rgba(22,163,74,0.18);
-    }
+        .chip-risk-low {
+          border-color: var(--risk-low);
+          color: #bbf7d0;
+          background: rgba(22,163,74,0.18);
+        }
 
-    .chip-risk-mid {
-      border-color: var(--risk-mid);
-      color: #fef9c3;
-      background: rgba(202,138,4,0.18);
-    }
+        .chip-risk-mid {
+          border-color: var(--risk-mid);
+          color: #fef9c3;
+          background: rgba(202,138,4,0.18);
+        }
 
-    .chip-risk-high {
-      border-color: var(--risk-high);
-      color: #fee2e2;
-      background: rgba(239,68,68,0.2);
-    }
+        .chip-risk-high {
+          border-color: var(--risk-high);
+          color: #fee2e2;
+          background: rgba(239,68,68,0.2);
+        }
 
-    .section {
-      background: rgba(11,17,38,0.96);
-      border-radius: 18px;
-      padding: 11px 13px 9px;
-      border: 1px solid rgba(148,163,255,0.3);
-      margin-bottom: 10px;
-    }
+        .section {
+          background: rgba(11,17,38,0.96);
+          border-radius: 18px;
+          padding: 11px 13px 9px;
+          border: 1px solid rgba(148,163,255,0.3);
+          margin-bottom: 10px;
+        }
 
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 4px;
-    }
+        .section-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 4px;
+        }
 
-    .section-title {
-      font-size: 0.82rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #9ca3ff;
-    }
+        .section-title {
+          font-size: 0.82rem;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: #9ca3ff;
+        }
 
-    .section-tag {
-      font-size: 0.72rem;
-      color: rgba(209,213,255,0.9);
-    }
+        .section-tag {
+          font-size: 0.72rem;
+          color: rgba(209,213,255,0.9);
+        }
 
-    .section-body {
-      font-size: 0.88rem;
-      color: var(--text-sub);
-      line-height: 1.7;
-      margin-top: 3px;
-    }
+        .section-body {
+          font-size: 0.88rem;
+          color: var(--text-sub);
+          line-height: 1.7;
+          margin-top: 3px;
+        }
 
-    .issues-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
+        .footer-note {
+          font-size: 0.74rem;
+          color: rgba(148,163,255,0.9);
+          text-align: center;
+          margin-top: 4px;
+          margin-bottom: 2px;
+        }
 
-    .issue-pill {
-      font-size: 0.8rem;
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: rgba(30,64,175,0.85);
-      border: 1px solid rgba(191,219,254,0.7);
-      color: #e0f2fe;
-    }
+        .btn-wrap {
+          margin-top: 8px;
+          padding-top: 6px;
+          border-top: 1px solid rgba(15,23,42,0.9);
+        }
 
-    .footer-note {
-      font-size: 0.74rem;
-      color: rgba(148,163,255,0.9);
-      text-align: center;
-      margin-top: 4px;
-      margin-bottom: 2px;
-    }
+        .action-btn {
+          width: 100%;
+          padding: 13px 14px;
+          margin-top: 9px;
+          border-radius: 18px;
+          border: 1px solid rgba(148,163,255,0.45);
+          background:
+            radial-gradient(circle at top left, rgba(148,163,255,0.18), transparent 60%),
+            rgba(12,16,40,0.95);
+          color: #e5e7ff;
+          font-size: 0.95rem;
+          font-weight: 620;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 12px;
+          cursor: pointer;
+          box-shadow:
+            0 6px 18px rgba(0,0,0,0.45),
+            0 0 0 1px rgba(15,23,42,0.8);
+          transition: all 0.18s ease-out;
+        }
 
-    .btn-wrap {
-      margin-top: 8px;
-      padding-top: 6px;
-      border-top: 1px solid rgba(15,23,42,0.9);
-    }
+        .action-btn:hover {
+          background:
+            radial-gradient(circle at top left, rgba(191,219,254,0.22), transparent 60%),
+            rgba(16,22,54,0.98);
+          transform: translateY(-2px);
+          box-shadow:
+            0 10px 26px rgba(0,0,0,0.55),
+            0 0 0 1px rgba(129,140,248,0.9);
+        }
 
-    .action-btn {
-      width: 100%;
-      padding: 13px 14px;
-      margin-top: 9px;
-      border-radius: 18px;
-      border: 1px solid rgba(148,163,255,0.45);
-      background:
-        radial-gradient(circle at top left, rgba(148,163,255,0.18), transparent 60%),
-        rgba(12,16,40,0.95);
-      color: #e5e7ff;
-      font-size: 0.95rem;
-      font-weight: 620;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 12px;
-      cursor: pointer;
-      box-shadow:
-        0 6px 18px rgba(0,0,0,0.45),
-        0 0 0 1px rgba(15,23,42,0.8);
-      transition: all 0.18s ease-out;
-    }
+        .action-icon {
+          font-size: 1.25rem;
+          opacity: 0.92;
+        }
 
-    .action-btn:hover {
-      background:
-        radial-gradient(circle at top left, rgba(191,219,254,0.22), transparent 60%),
-        rgba(16,22,54,0.98);
-      transform: translateY(-2px);
-      box-shadow:
-        0 10px 26px rgba(0,0,0,0.55),
-        0 0 0 1px rgba(129,140,248,0.9);
-    }
+        .action-primary {
+          background: linear-gradient(135deg, #8f7bff 0%, #6b5cff 100%);
+          border-color: rgba(255,255,255,0.15);
+          color: #f5f3ff;
+          box-shadow:
+            0 6px 18px rgba(142,116,255,0.45),
+            0 0 0 1px rgba(120,94,255,0.6);
+        }
 
-    .action-icon {
-      font-size: 1.25rem;
-      opacity: 0.92;
-    }
+        .action-primary:hover {
+          background: linear-gradient(135deg, #a597ff 0%, #7c6cff 100%);
+          transform: translateY(-2px);
+          box-shadow:
+            0 10px 26px rgba(140,120,255,0.55),
+            0 0 0 1px rgba(150,130,255,0.9);
+        }
 
-    /* ⭐ 추천 제품 보기 버튼만 보라색 강조 (전용 클래스) */
-    .action-primary {
-      background: linear-gradient(135deg, #8f7bff 0%, #6b5cff 100%);
-      border-color: rgba(255,255,255,0.15);
-      color: #f5f3ff;
-      box-shadow:
-        0 6px 18px rgba(142,116,255,0.45),
-        0 0 0 1px rgba(120,94,255,0.6);
-    }
+        .issues-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-top: 6px;
+        }
 
-    .action-primary:hover {
-      background: linear-gradient(135deg, #a597ff 0%, #7c6cff 100%);
-      transform: translateY(-2px);
-      box-shadow:
-        0 10px 26px rgba(140,120,255,0.55),
-        0 0 0 1px rgba(150,130,255,0.9);
-    }
-  </style>
+        .issue-pill {
+          font-size: 0.8rem;
+          padding: 4px 9px;
+          border-radius: 999px;
+          background: rgba(30,64,175,0.85);
+          border: 1px solid rgba(191,219,254,0.7);
+          color: #e0f2fe;
+        }
+    </style>
 </head>
 
 <body>
 <div class="shell">
-  <div class="card">
-    <div class="top-accent"></div>
+    <div class="card">
+        <div class="top-accent"></div>
 
-    <!-- ⭐ 공통 상단 헤더 -->
-    <div class="top-bar">
-      <div class="top-bar-left">
-        <button class="back-btn" onclick="goBack()">
-          ← 이전 단계
-        </button>
-      </div>
-      <div class="top-bar-center">
-        분석 결과 보기
-      </div>
-      <div class="top-bar-right">
-        <div class="step-pill">STEP 4 / 4</div>
-      </div>
-    </div>
-
-    <!-- 제목 + 날짜 -->
-    <div class="header-wrap">
-      <div>
-        <div class="header-title">오늘의 피부 리포트</div>
-        <div class="header-sub" id="header-sub">
-          방금 업로드한 사진을 기반으로<br />
-          AI가 피부 상태를 정리했어요.
-        </div>
-      </div>
-      <div class="header-date" id="header-date">-</div>
-    </div>
-
-    <div id="spinner" class="spinner"></div>
-    <div class="loading-text" id="status-text">
-      결과를 불러오는 중입니다...
-    </div>
-
-    <div class="scroll-hint" id="scroll-hint">
-      ⬇ 아래로 내려서 루틴과 상세 분석을 확인해 보세요
-    </div>
-
-    <div class="card-inner-scroll">
-      <div id="result-wrapper" class="result-wrapper">
-        <!-- 점수 & 요약 -->
-        <div class="score-section">
-          <div class="score-circle">
-            <div class="score-circle-inner">
-              <div class="score-number-wrap">
-                <div id="score-value" class="score-value">-</div>
-                <div class="score-unit">/ 100</div>
-              </div>
+        <!-- ⭐ 공통 상단 헤더 -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <button class="back-btn" onclick="goBack()">
+                    ← 이전 단계
+                </button>
             </div>
-          </div>
-          <div class="score-text-block">
-            <div class="score-label">SKIN HEALTH SCORE</div>
-            <div id="score-main" class="score-main">피부 점수</div>
-            <div id="score-desc" class="score-desc">
-              AI가 분석한 전반적인 피부 상태 요약입니다.
+            <div class="top-bar-center">
+                분석 결과 보기
             </div>
-            <div class="chip-row">
-              <span id="chip-skin-type" class="chip">피부타입</span>
-              <span id="chip-risk" class="chip">위험도</span>
+            <div class="top-bar-right">
+                <div class="step-pill">STEP 4 / 4</div>
             </div>
-          </div>
         </div>
 
-        <!-- 내가 선택한 고민 -->
-        <div class="section">
-          <div class="section-header">
-            <div class="section-title">내가 선택한 피부 고민</div>
-            <div class="section-tag">Your focus</div>
-          </div>
-          <div class="section-body">
-            <div id="user-concerns-empty">
-              이전 단계에서 선택한 고민을 기반으로 리포트를 만들었어요.
+        <!-- 제목 + 날짜 -->
+        <div class="header-wrap">
+            <div>
+                <div class="header-title">오늘의 피부 리포트</div>
+                <div class="header-sub" id="header-sub">
+                    방금 업로드한 사진을 기반으로<br />
+                    AI가 피부 상태를 정리했어요.
+                </div>
             </div>
-            <div id="user-concerns" class="chip-row"></div>
-          </div>
+            <div class="header-date" id="header-date">-</div>
         </div>
 
-        <!-- 주요 고민 포인트 (문장만 표시) -->
-        <div class="section">
-          <div class="section-header">
-            <div class="section-title">주요 고민 포인트</div>
-            <div class="section-tag">Focus area</div>
-          </div>
-          <div id="ai-focus-text" class="section-body">
-            AI가 인식한 주요 고민 포인트를 정리하고 있습니다.
-          </div>
+        <div id="spinner" class="spinner"></div>
+        <div class="loading-text" id="status-text">
+            결과를 불러오는 중입니다...
         </div>
 
-        <!-- 한 줄 요약 -->
-        <div class="section">
-          <div class="section-header">
-            <div class="section-title">AI 한 줄 총평</div>
-            <div class="section-tag">Summary</div>
-          </div>
-          <div id="summary-text" class="section-body">
-            -
-          </div>
+        <div class="scroll-hint" id="scroll-hint">
+            ⬇ 아래로 내려서 루틴과 상세 분석을 확인해 보세요
         </div>
 
-        <!-- 관리 가이드 -->
-        <div class="section">
-          <div class="section-header">
-            <div class="section-title">일상 관리 가이드</div>
-            <div class="section-tag">Daily routine</div>
-          </div>
-          <div id="detail-text" class="section-body">
-            -
-          </div>
+        <div class="card-inner-scroll">
+            <div id="result-wrapper" class="result-wrapper">
+                <!-- 점수 & 요약 -->
+                <div class="score-section">
+                    <div class="score-circle">
+                        <div class="score-circle-inner">
+                            <div class="score-number-wrap">
+                                <div id="score-value" class="score-value">-</div>
+                                <div class="score-unit">/ 100</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="score-text-block">
+                        <div class="score-label">SKIN HEALTH SCORE</div>
+                        <div id="score-main" class="score-main">피부 점수</div>
+                        <div id="score-desc" class="score-desc">
+                            AI가 분석한 전반적인 피부 상태 요약입니다.
+                        </div>
+                        <div class="chip-row">
+                            <span id="chip-skin-type" class="chip">피부타입</span>
+                            <span id="chip-risk" class="chip">위험도</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 내가 선택한 고민 -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">내가 선택한 피부 고민</div>
+                        <div class="section-tag">Your focus</div>
+                    </div>
+                    <div class="section-body">
+                        <div id="user-concerns-empty">
+                            이전 단계에서 선택한 고민을 기반으로 리포트를 만들었어요.
+                        </div>
+                        <div id="user-concerns" class="chip-row"></div>
+                    </div>
+                </div>
+
+                <!-- 주요 고민 포인트 (AI 관점만) -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">주요 고민 포인트</div>
+                        <div class="section-tag">Focus area</div>
+                    </div>
+                    <div id="ai-focus-text" class="section-body">
+                        AI가 인식한 주요 고민 포인트를 정리하고 있습니다.
+                    </div>
+                </div>
+
+                <!-- 한 줄 총평 -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">AI 한 줄 총평</div>
+                        <div class="section-tag">Summary</div>
+                    </div>
+                    <div id="summary-text" class="section-body">
+                        -
+                    </div>
+                </div>
+
+                <!-- 관리 가이드 -->
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">일상 관리 가이드</div>
+                        <div class="section-tag">Daily routine</div>
+                    </div>
+                    <div id="detail-text" class="section-body">
+                        -
+                    </div>
+                </div>
+
+                <div class="footer-note">
+                    * 이 리포트는 AI 분석을 기반으로 한 참고용 가이드입니다.
+                </div>
+            </div>
         </div>
 
-        <div class="footer-note">
-          * 이 리포트는 AI 분석을 기반으로 한 참고용 가이드입니다.
+        <!-- 하단 버튼: 제품 / 홈 -->
+        <div class="btn-wrap">
+            <button class="action-btn action-primary" onclick="goProducts()">
+                <span class="action-icon">🧴</span>
+                <span>최근 진단 기반 추천 제품 보기</span>
+            </button>
+
+            <button class="action-btn" onclick="goHome()">
+                <span class="action-icon">🏠</span>
+                <span>첫 화면으로 돌아가기</span>
+            </button>
         </div>
-      </div>
     </div>
-
-    <!-- 하단 버튼: 제품 / 홈 -->
-    <div class="btn-wrap">
-      <button class="action-btn action-primary" onclick="goProducts()">
-        <span class="action-icon">🧴</span>
-        <span>최근 진단 기반 추천 제품 보기</span>
-      </button>
-
-      <button class="action-btn" onclick="goHome()">
-        <span class="action-icon">🏠</span>
-        <span>첫 화면으로 돌아가기</span>
-      </button>
-    </div>
-  </div>
 </div>
 
 <script>
-  function mapRisk(riskLevel) {
-    if (riskLevel === "low") {
-      return { label: "위험도 낮음", className: "chip chip-risk-low" };
-    }
-    if (riskLevel === "high") {
-      return { label: "위험도 높음", className: "chip chip-risk-high" };
-    }
-    return { label: "위험도 보통", className: "chip chip-risk-mid" };
-  }
-
-  function getScoreText(score) {
-    let grade, desc;
-    if (score >= 85) {
-      grade = "A 등급";
-      desc =
-        "전반적으로 매우 건강한 피부 컨디션이에요. 현재 루틴을 유지하면서 보습과 자외선 차단만 꾸준히 챙겨주면 지금 상태를 오래 유지하는 데 도움이 됩니다.";
-    } else if (score >= 70) {
-      grade = "B 등급";
-      desc =
-        "대체로 괜찮은 피부지만, 특정 부위(모공·피지·잔주름·붉은기 등)에 부담이 조금씩 쌓이고 있어요. 루틴을 한두 단계만 정리해줘도 눈에 띄게 개선될 여지가 보여요.";
-    } else if (score >= 50) {
-      grade = "C 등급";
-      desc =
-        "피부 진정·보습, 수분 관리에 조금 더 신경 써줄 필요가 있어요. 지나치게 많은 제품을 쓰기보다, 기본 루틴을 단순하게 정리하고 자극을 줄이는 게 우선입니다.";
-    } else {
-      grade = "D 등급";
-      desc =
-        "자극적인 세안, 건조한 환경, 수면 부족 등이 피부에 많이 누적된 상태일 수 있어요. 지금부터라도 순한 루틴으로 리셋해 주면, 서서히 피부 장벽이 회복되는 흐름을 기대할 수 있습니다.";
-    }
-    return { grade, desc };
-  }
-
-  function saveHistory(result) {
-    try {
-      const today = new Date().toISOString().slice(0, 10);
-      const raw = localStorage.getItem("diagnosisHistory");
-      const history = raw ? JSON.parse(raw) : [];
-      const entry = {
-        date: today,
-        score: result.score,
-        skinType: result.skinType,
-        riskLevel: result.riskLevel,
-        summary: result.summary
-      };
-      const next = [entry, ...history].slice(0, 30);
-      localStorage.setItem("diagnosisHistory", JSON.stringify(next));
-    } catch (e) {
-      console.warn("diagnosisHistory 저장 실패:", e);
-    }
-  }
-
-  function setTodayLabel() {
-    const el = document.getElementById("header-date");
-    const now = new Date();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, "0");
-    const d = String(now.getDate()).padStart(2, "0");
-    el.innerText = `${y}.${m}.${d}`;
-  }
-
-  function getUserConcernsFromSession() {
-    const raw = sessionStorage.getItem("userConcerns");
-    if (!raw) return [];
-    try {
-      const arr = JSON.parse(raw);
-      return Array.isArray(arr) ? arr : [];
-    } catch {
-      return [];
-    }
-  }
-
-  function renderUserConcerns() {
-    const raw = sessionStorage.getItem("userConcerns");
-    const wrap = document.getElementById("user-concerns");
-    const emptyEl = document.getElementById("user-concerns-empty");
-
-    if (!wrap || !emptyEl) return;
-
-    if (!raw) {
-      emptyEl.innerText =
-        "이전 단계에서 고민을 선택하지 않았어요. 다음 진단에서는 꼭 선택해 주세요.";
-      wrap.innerHTML = "";
-      return;
+    function mapRisk(riskLevel) {
+      if (riskLevel === "low") {
+        return { label: "위험도 낮음", className: "chip chip-risk-low" };
+      }
+      if (riskLevel === "high") {
+        return { label: "위험도 높음", className: "chip chip-risk-high" };
+      }
+      return { label: "위험도 보통", className: "chip chip-risk-mid" };
     }
 
-    try {
-      const concerns = JSON.parse(raw);
-      if (!Array.isArray(concerns) || concerns.length === 0) {
+    function getScoreText(score) {
+      let grade, desc;
+      if (score >= 85) {
+        grade = "A 등급";
+        desc =
+          "전반적으로 매우 건강한 피부 컨디션이에요. 현재 루틴을 유지하면서 보습과 자외선 차단만 꾸준히 챙겨주면 지금 상태를 오래 유지하는 데 도움이 됩니다.";
+      } else if (score >= 70) {
+        grade = "B 등급";
+        desc =
+          "대체로 괜찮은 피부지만, 특정 부위(모공·피지·잔주름·붉은기 등)에 부담이 조금씩 쌓이고 있어요. 루틴을 한두 단계만 정리해줘도 눈에 띄게 개선될 여지가 보여요.";
+      } else if (score >= 50) {
+        grade = "C 등급";
+        desc =
+          "피부 진정·보습, 수분 관리에 조금 더 신경 써줄 필요가 있어요. 지나치게 많은 제품을 쓰기보다, 기본 루틴을 단순하게 정리하고 자극을 줄이는 게 우선입니다.";
+      } else {
+        grade = "D 등급";
+        desc =
+          "자극적인 세안, 건조한 환경, 수면 부족 등이 피부에 많이 누적된 상태일 수 있어요. 지금부터라도 순한 루틴으로 리셋해 주면, 서서히 피부 장벽이 회복되는 흐름을 기대할 수 있습니다.";
+      }
+      return { grade, desc };
+    }
+
+    function saveHistory(result) {
+      try {
+        const today = new Date().toISOString().slice(0, 10);
+        const raw = localStorage.getItem("diagnosisHistory");
+        const history = raw ? JSON.parse(raw) : [];
+        const entry = {
+          date: today,
+          score: result.score,
+          skinType: result.skinType,
+          riskLevel: result.riskLevel,
+          summary: result.summary
+        };
+        const next = [entry, ...history].slice(0, 30);
+        localStorage.setItem("diagnosisHistory", JSON.stringify(next));
+      } catch (e) {
+        console.warn("diagnosisHistory 저장 실패:", e);
+      }
+    }
+
+    function setTodayLabel() {
+      const el = document.getElementById("header-date");
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      el.innerText = `${y}.${m}.${d}`;
+    }
+
+    function getUserConcernsFromSession() {
+      const raw = sessionStorage.getItem("userConcerns");
+      if (!raw) return [];
+      try {
+        const arr = JSON.parse(raw);
+        return Array.isArray(arr) ? arr : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function renderUserConcerns() {
+      const raw = sessionStorage.getItem("userConcerns");
+      const wrap = document.getElementById("user-concerns");
+      const emptyEl = document.getElementById("user-concerns-empty");
+
+      if (!wrap || !emptyEl) return;
+
+      if (!raw) {
         emptyEl.innerText =
           "이전 단계에서 고민을 선택하지 않았어요. 다음 진단에서는 꼭 선택해 주세요.";
         wrap.innerHTML = "";
         return;
       }
 
-      emptyEl.innerText = "아래 고민을 중심으로 리포트를 구성했어요:";
-      wrap.innerHTML = concerns
-        .map((c) => `<span class="chip">${c}</span>`)
-        .join("");
-    } catch (e) {
-      console.error("userConcerns JSON 파싱 오류:", e);
-      emptyEl.innerText = "선택한 고민 정보를 불러오는 데 실패했어요.";
-      wrap.innerHTML = "";
-    }
-  }
+      try {
+        const concerns = JSON.parse(raw);
+        if (!Array.isArray(concerns) || concerns.length === 0) {
+          emptyEl.innerText =
+            "이전 단계에서 고민을 선택하지 않았어요. 다음 진단에서는 꼭 선택해 주세요.";
+          wrap.innerHTML = "";
+          return;
+        }
 
-  // 🔹 한 줄 총평 – 사용자 고민 반복 제거 + 신뢰도 강화
-  function buildSummaryText(score, skinType, riskLevel, issues, userConcerns, aiSummary) {
-    const issueText = issues && issues.length
-      ? issues.join(", ")
-      : "특정 부위의 심한 악화 없이 전반적인 컨디션 중심";
-
-    let riskSentence = "";
-    if (riskLevel === "low") {
-      riskSentence =
-        "피부 장벽 손상이나 염증 발생 위험은 낮은 편으로, 현재 루틴을 큰 무리 없이 유지해도 괜찮은 상태예요.";
-    } else if (riskLevel === "high") {
-      riskSentence =
-        "자극·민감 반응이 생길 가능성이 높은 흐름이 보여, 각질 제거제나 고농도 기능성 제품은 천천히 도입하는 편이 안전합니다.";
-    } else {
-      riskSentence =
-        "피부 자극 위험은 보통 수준이며, 기본적인 보습·자외선 관리만 안정되면 피부결 회복을 기대할 수 있는 상태예요.";
+        emptyEl.innerText = "아래 고민을 중심으로 리포트를 구성했어요:";
+        wrap.innerHTML = concerns
+          .map((c) => `<span class="chip">${c}</span>`)
+          .join("");
+      } catch (e) {
+        console.error("userConcerns JSON 파싱 오류:", e);
+        emptyEl.innerText = "선택한 고민 정보를 불러오는 데 실패했어요.";
+        wrap.innerHTML = "";
+      }
     }
 
-    const base =
-      aiSummary && aiSummary.length > 10 ? aiSummary.trim() + "\n\n" : "";
+    // 🔹 주요 고민 포인트 – 사용자가 선택한 고민은 칩에서만 보여주고,
+    // 여기서는 AI가 잡은 핵심 포인트만 말하기
+    function buildFocusText(issues) {
+      const mainIssues = (issues && issues.length ? issues : []).slice(0, 2);
 
-    const core =
-      `AI 분석 결과, 현재 ${skinType} 특성을 가진 피부는 ${score}점 수준으로 평가되며, ` +
-      `"${issueText}" 부위의 개선 여지가 특히 두드러지게 관찰되었어요. ` +
-      `${riskSentence} ` +
-      "이 평가는 이미지와 입력 정보를 기반으로 한 추정치로, 실제 진료 결과와는 차이가 있을 수 있습니다.";
+      if (mainIssues.length) {
+        return `이번 분석에서 특히 눈에 띄는 고민 포인트는 ${mainIssues.join(", ")} 입니다. 각 부위가 과도하게 악화되기보다는, 지금부터 어떻게 관리하느냐에 따라 앞으로의 피부 흐름이 달라질 수 있는 상태예요.`;
+      }
 
-    return base + core;
-  }
-
-  // 🔹 관리 가이드를 길게 만들어 주는 함수
-  function buildDetailAdvice(score, skinType, riskLevel, issues, userConcerns, aiDetail) {
-    const concernsText = userConcerns.length
-      ? userConcerns.join(", ")
-      : null;
-
-    const issueHint = issues && issues.length
-      ? `이번 분석에서 눈에 띄는 고민 포인트는 ${issues.join(", ")} 입니다.`
-      : "이번 분석에서는 특정 부위의 심한 악화보다는, 전반적인 수분·자극 밸런스를 먼저 잡아주는 것이 중요하다는 결과가 나왔어요.";
-
-    let baseFromAI =
-      aiDetail && aiDetail.length > 10 ? aiDetail.trim() : "";
-
-    const part1 =
-      `${issueHint} ` +
-      (concernsText
-        ? `사용자가 직접 선택한 고민인 "${concernsText}"를 기준으로 루틴을 구성하는 것이 좋습니다. `
-        : "사용자가 별도의 고민을 선택하지 않았기 때문에, 기본적인 장벽 케어 위주로 루틴을 제안드릴게요. ");
-
-    const part2 =
-      "1) 세안은 하루 2회 이내의 부드러운 약산성 클렌저를 사용하고, " +
-      "피부를 쓸어내리는 강한 문지름보다는 손바닥 거품으로 톡톡 눌러 씻어내듯 사용해 주세요. " +
-      "2) 세안 후에는 3분 안에 토너 또는 에센스 타입의 수분제를 발라 피부에 수분막을 만들어 주는 것이 좋습니다. " +
-      "3) 낮 시간에는 SPF 50+ 선크림을 '기초 마지막 단계'가 아니라 '피부 보호막'이라고 생각하고 충분한 양을 도포해 주세요. ";
-
-    const part3 =
-      "밤 시간에는 각질 제거나 미백·트러블 케어 제품을 과하게 여러 개 겹쳐 쓰기보다는, " +
-      "한 번에 1~2가지 기능성 제품만 사용하면서 피부 반응을 천천히 확인하는 것이 안전합니다. " +
-      "피부가 쉽게 붉어지거나 따가운 민감 타입이라면, 레티놀·산(AHA/BHA) 성분은 저농도부터 간격을 넉넉히 두고 시작하는 것을 권장드립니다. ";
-
-    const part4 =
-      "마지막으로, 주 1~2회 정도는 '아무것도 바르지 않는 날'을 정해 피부가 스스로 회복할 시간을 주는 것도 도움이 됩니다. " +
-      "화장품만으로 해결되지 않는 지속적인 가려움, 화끈거림, 또는 빠르게 악화되는 여드름·붉은기 등이 있다면, " +
-      "가까운 피부과에서 실제 피부 상태를 한 번 체크 받아보는 것도 좋습니다.";
-
-    const extra = `${part1}\n\n${part2}\n\n${part3}\n\n${part4}`;
-
-    if (baseFromAI) {
-      return `${baseFromAI}\n\n${extra}`;
-    }
-    return extra;
-  }
-
-  // 🔹 주요 고민 포인트 문장 생성 함수
-  function buildFocusText(issues, userConcerns) {
-    const mainIssues = (issues && issues.length ? issues : []).slice(0, 2);
-    let focusPart;
-
-    if (mainIssues.length) {
-      focusPart = `이번 분석에서 특히 눈에 띄는 고민 포인트는 ${mainIssues.join(", ")} 입니다.`;
-    } else {
-      focusPart =
-        "이번 분석에서는 특정 한 부위가 두드러지게 나쁘다기보다는, 전반적인 수분·장벽 케어에 조금 더 신경 써주면 좋겠다는 결과가 나왔어요.";
+      return "이번 분석에서는 특정 한 부위가 유난히 나쁘다기보다는, 전반적인 수분·장벽 케어에 조금 더 신경 써주면 좋은 상태로 확인되었어요.";
     }
 
-    let concernsPart = "";
-    if (userConcerns && userConcerns.length) {
-      concernsPart = ` 이전 단계에서 선택한 고민 "${userConcerns.join(", ")}"를 중심으로 루틴을 구성해 주시면 좋습니다.`;
+    // 🔹 한 줄 총평 – 사용자가 고른 고민을 반복하지 않고, 점수 + 위험도 중심으로 설명
+    function buildSummaryText(score, skinType, riskLevel, issues, aiSummary) {
+      const issueText = issues && issues.length
+        ? issues.join(", ")
+        : "특정 부위의 심한 악화 없이 전반적인 컨디션 중심";
+
+      let riskSentence = "";
+      if (riskLevel === "low") {
+        riskSentence =
+          "피부 장벽 손상이나 염증 발생 위험은 비교적 낮은 편으로, 지금 루틴을 큰 무리 없이 유지하면서 보습과 자외선 차단만 꾸준히 챙겨주면 좋아요.";
+      } else if (riskLevel === "high") {
+        riskSentence =
+          "자극·민감 반응이 생길 가능성이 높은 흐름이 보여, 각질 제거제나 고농도 기능성 제품은 천천히, 하나씩만 시도해 보는 편이 안전합니다.";
+      } else {
+        riskSentence =
+          "피부 자극 위험은 보통 수준이며, 기본적인 보습·자외선 차단만 안정되면 피부결 회복을 충분히 기대해 볼 수 있는 상태예요.";
+      }
+
+      const base =
+        aiSummary && aiSummary.length > 10 ? aiSummary.trim() + "\n\n" : "";
+
+      const core =
+        `AI 분석 기준, 현재 ${skinType} 특성을 가진 피부는 ${score}점 정도로 평가되며, ` +
+        `"${issueText}" 부위의 개선 여지가 특히 눈에 띄게 관찰되었어요. ` +
+        `${riskSentence} ` +
+        "이 평가는 사진과 입력 정보를 기반으로 한 추정치이므로, 실제 진료 결과와는 차이가 있을 수 있습니다.";
+
+      return base + core;
     }
 
-    return focusPart + concernsPart;
-  }
+    // 🔹 관리 가이드 – 고민 텍스트 반복 없이, 루틴 위주로 길게 설명
+    function buildDetailAdvice(score, skinType, riskLevel, issues, aiDetail) {
+      const issueHint = issues && issues.length
+        ? `이번 분석에서 눈에 띄는 고민 포인트는 ${issues.join(", ")} 입니다.`
+        : "이번 분석에서는 특정 한 부위만 악화되었다기보다, 전반적인 수분·장벽 균형을 먼저 잡아주는 것이 중요하다는 결과가 나왔어요.";
 
-  function renderResult() {
-    const spinner = document.getElementById("spinner");
-    const statusText = document.getElementById("status-text");
-    const wrapper = document.getElementById("result-wrapper");
-    const scrollHint = document.getElementById("scroll-hint");
+      let baseFromAI = aiDetail && aiDetail.length > 10 ? aiDetail.trim() : "";
 
-    let raw = sessionStorage.getItem("aiSkinResult");
+      const part1 =
+        `${issueHint} 스킨케어 제품을 여러 개 겹쳐 쓰기보다는, 지금은 피부가 편안함을 느끼는 '기본 루틴'을 먼저 단단히 잡아주는 것이 좋습니다.`;
 
-    if (!raw) {
+      const part2 =
+        "1) 세안은 하루 2회 이내의 부드러운 약산성 클렌저를 사용하고, 강하게 문지르기보다는 손에 낸 거품을 피부 위에 올려두었다가 미지근한 물로 충분히 헹궈 주세요. " +
+        "2) 세안 후 3분 안에 토너·에센스·로션 중 편한 제형으로 수분막을 만들어 주고, 건조함이 느껴지는 부위에는 크림을 한 번 더 덧발라 줍니다. " +
+        "3) 낮에는 SPF 50+ 자외선 차단제를 충분한 양으로 사용해 주되, 피부가 예민하다면 '민감성용' 또는 '논코메도제닉' 표시가 있는 제품을 우선적으로 고려해 주세요. ";
+
+      const part3 =
+        "밤에는 각질 제거제(AHA/BHA)나 레티놀 등의 기능성 제품을 한 번에 여러 가지 쓰기보다는, 한 가지씩 천천히 도입해 피부 반응을 확인하는 것이 안전합니다. " +
+        "피부가 자주 붉어지거나 따가운 편이라면, 기능성 제품 사용 간격을 3~4일 이상 넉넉하게 두고, 자극이 느껴지는 날에는 과감히 쉬어가는 것도 좋습니다. ";
+
+      const part4 =
+        "주 1~2회 정도는 '최소 루틴'으로만 가볍게 관리하면서 피부가 스스로 회복할 시간을 주는 것도 도움이 됩니다. " +
+        "가려움·화끈거림·빠르게 번지는 붉은기처럼 일상생활에 불편을 줄 정도의 증상이 나타난다면, 가까운 피부과에서 실제 피부 상태를 한 번 점검받아 보는 것을 권장드려요.";
+
+      const extra = `${part1}\n\n${part2}\n\n${part3}\n\n${part4}`;
+
+      if (baseFromAI) {
+        return `${baseFromAI}\n\n${extra}`;
+      }
+      return extra;
+    }
+
+    function renderResult() {
+      const spinner = document.getElementById("spinner");
+      const statusText = document.getElementById("status-text");
+      const wrapper = document.getElementById("result-wrapper");
+      const scrollHint = document.getElementById("scroll-hint");
+
+      let raw = sessionStorage.getItem("aiSkinResult");
+
+      if (!raw) {
+        spinner.style.display = "none";
+        statusText.innerText =
+          "분석 결과를 찾지 못했어요.\n처음 화면에서 다시 진단을 진행해 주세요.";
+        scrollHint.style.display = "none";
+        return;
+      }
+
+      let result;
+      try {
+        result = JSON.parse(raw);
+      } catch (e) {
+        console.error("aiSkinResult JSON 파싱 오류:", e);
+        spinner.style.display = "none";
+        statusText.innerText =
+          "결과를 불러오는 중 오류가 발생했습니다.\n다시 진단을 진행해 주세요.";
+        scrollHint.style.display = "none";
+        return;
+      }
+
+      const score =
+        typeof result.score === "number"
+          ? Math.min(Math.max(result.score, 0), 100)
+          : 70;
+      const skinType = result.skinType || "복합성";
+      const riskLevel = result.riskLevel || "mid";
+      const issues = Array.isArray(result.issues) ? result.issues : [];
+      const summary =
+        result.summary || "전반적으로 무난한 피부 상태입니다.";
+      const detailAdvice =
+        result.detailAdvice ||
+        "세안 후 기본 보습과 자외선 차단만 꾸준히 유지해 줘도 현재보다 피부 컨디션이 한층 더 안정될 거예요.";
+
+      // 로컬 히스토리 저장
+      saveHistory({ score, skinType, riskLevel, summary });
+
+      const scoreInfo = getScoreText(score);
+      const riskInfo = mapRisk(riskLevel);
+
+      document.getElementById("score-value").innerText = score;
+      document.getElementById("score-main").innerText = `${scoreInfo.grade} · ${skinType} 피부`;
+      document.getElementById("score-desc").innerText = scoreInfo.desc;
+
+      const chipSkin = document.getElementById("chip-skin-type");
+      chipSkin.innerText = `피부 타입: ${skinType}`;
+      chipSkin.className = "chip";
+
+      const chipRisk = document.getElementById("chip-risk");
+      chipRisk.innerText = riskInfo.label;
+      chipRisk.className = riskInfo.className;
+
+      // 🔹 사용자가 고른 고민 정보
+      const userConcerns = getUserConcernsFromSession();
+
+      // 🔹 주요 고민 포인트 – 이제는 AI 관점만
+      const focusEl = document.getElementById("ai-focus-text");
+      focusEl.innerText = buildFocusText(issues);
+
+      // 🔹 한 줄 총평 & 관리 가이드
+      const summaryText = buildSummaryText(
+        score,
+        skinType,
+        riskLevel,
+        issues,
+        summary
+      );
+      const detailText = buildDetailAdvice(
+        score,
+        skinType,
+        riskLevel,
+        issues,
+        detailAdvice
+      );
+
+      document.getElementById("summary-text").innerText = summaryText;
+      document.getElementById("detail-text").innerText = detailText;
+
+      // 🔹 내가 선택한 고민 뱃지 렌더링
+      renderUserConcerns();
+
       spinner.style.display = "none";
-      statusText.innerText =
-        "분석 결과를 찾지 못했어요.\n처음 화면에서 다시 진단을 진행해 주세요.";
-      scrollHint.style.display = "none";
-      return;
+      statusText.style.display = "none";
+      wrapper.style.display = "block";
+      scrollHint.style.display = "block";
     }
 
-    let result;
-    try {
-      result = JSON.parse(raw);
-    } catch (e) {
-      console.error("aiSkinResult JSON 파싱 오류:", e);
-      spinner.style.display = "none";
-      statusText.innerText =
-        "결과를 불러오는 중 오류가 발생했습니다.\n다시 진단을 진행해 주세요.";
-      scrollHint.style.display = "none";
-      return;
+    function goHome() {
+      sessionStorage.removeItem("uploadedImage");
+      sessionStorage.removeItem("aiSkinResult");
+      sessionStorage.removeItem("userConcerns");
+      window.location.href = "index.html";
     }
 
-    const score =
-      typeof result.score === "number"
-        ? Math.min(Math.max(result.score, 0), 100)
-        : 70;
-    const skinType = result.skinType || "복합성";
-    const riskLevel = result.riskLevel || "mid";
-    const issues = Array.isArray(result.issues) ? result.issues : [];
-    const summary =
-      result.summary || "전반적으로 무난한 피부 상태입니다.";
-    const detailAdvice =
-      result.detailAdvice ||
-      "세안 후 기본 보습과 자외선 차단만 꾸준히 유지해 줘도 현재보다 피부 컨디션이 한층 더 안정될 거예요.";
-
-    // 로컬 히스토리 저장
-    saveHistory({ score, skinType, riskLevel, summary });
-
-    const scoreInfo = getScoreText(score);
-    const riskInfo = mapRisk(riskLevel);
-
-    document.getElementById("score-value").innerText = score;
-    document.getElementById("score-main").innerText = `${scoreInfo.grade} · ${skinType} 피부`;
-    document.getElementById("score-desc").innerText = scoreInfo.desc;
-
-    const chipSkin = document.getElementById("chip-skin-type");
-    chipSkin.innerText = `피부 타입: ${skinType}`;
-    chipSkin.className = "chip";
-
-    const chipRisk = document.getElementById("chip-risk");
-    chipRisk.innerText = riskInfo.label;
-    chipRisk.className = riskInfo.className;
-
-    // 🔹 사용자가 고른 고민 정보
-    const userConcerns = getUserConcernsFromSession();
-
-    // 🔹 주요 고민 포인트 한 줄 문장
-    const focusEl = document.getElementById("ai-focus-text");
-    focusEl.innerText = buildFocusText(issues, userConcerns);
-
-    // 🔹 한 줄 총평 & 관리 가이드 – 길고 풍부하게 생성
-    const summaryText = buildSummaryText(
-      score,
-      skinType,
-      riskLevel,
-      issues,
-      userConcerns,
-      summary
-    );
-    const detailText = buildDetailAdvice(
-      score,
-      skinType,
-      riskLevel,
-      issues,
-      userConcerns,
-      detailAdvice
-    );
-
-    document.getElementById("summary-text").innerText = summaryText;
-    document.getElementById("detail-text").innerText = detailText;
-
-    // 🔹 내가 선택한 고민 뱃지 렌더링
-    renderUserConcerns();
-
-    spinner.style.display = "none";
-    statusText.style.display = "none";
-    wrapper.style.display = "block";
-    scrollHint.style.display = "block";
-  }
-
-  function goHome() {
-    sessionStorage.removeItem("uploadedImage");
-    sessionStorage.removeItem("aiSkinResult");
-    sessionStorage.removeItem("userConcerns");
-    window.location.href = "index.html";
-  }
-
-  function goProducts() {
-    const raw = localStorage.getItem("diagnosisHistory");
-    if (!raw) {
-      alert("먼저 AI 진단을 진행해주세요!");
-      return;
+    function goProducts() {
+      const raw = localStorage.getItem("diagnosisHistory");
+      if (!raw) {
+        alert("먼저 AI 진단을 진행해주세요!");
+        return;
+      }
+      window.location.href = "products.html";
     }
-    window.location.href = "products.html";
-  }
 
-  function goBack() {
-    // 바로 이전 단계(고민 선택 페이지)로
-    window.location.href = "options.html";
-  }
+    function goBack() {
+      window.location.href = "options.html";
+    }
 
-  window.addEventListener("DOMContentLoaded", () => {
-    setTodayLabel();
-    renderResult();
-  });
+    window.addEventListener("DOMContentLoaded", () => {
+      setTodayLabel();
+      renderResult();
+    });
 </script>
 </body>
 </html>
