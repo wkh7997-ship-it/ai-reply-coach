@@ -1,335 +1,217 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI 피부 코치 - 사진 확인</title>
-  <style>
-    :root {
-      --primary: #c7b3ff;
-      --primary-strong: #8f7bff;
-      --bg-deep: #05040b;
-      --bg-top: #111322;
-      --glass: rgba(8, 10, 24, 0.92);
-      --text-main: #f9fafb;
-      --text-sub: #cbd5f5;
-      --text-muted: #9ca3c9;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 피부 코치 - 사진 확인</title>
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    <style>
+        :root {
+          --primary: #9b8bff;
+          --primary-strong: #6b5bff;
+          --bg-deep: #050616;
+          --bg-top: #11152b;
+          --glass: rgba(9, 12, 30, 0.92);
+          --text-main: #f9fafb;
+          --text-sub: #cbd5f5;
+          --text-muted: #9ca3c9;
+          --border-soft: rgba(148, 163, 255, 0.35);
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top, rgba(129, 140, 248, 0.32) 0, transparent 52%),
-        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.75) 0, transparent 58%),
-        linear-gradient(160deg, var(--bg-top), var(--bg-deep));
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 18px 16px;
-    }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    .shell {
-      width: 100%;
-      max-width: 440px;
-    }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, "Pretendard", system-ui, sans-serif;
+          min-height: 100vh;
+          background:
+            radial-gradient(circle at top, rgba(88, 101, 242, 0.35) 0, transparent 55%),
+            radial-gradient(circle at bottom, rgba(6, 95, 180, 0.3) 0, transparent 60%),
+            linear-gradient(160deg, var(--bg-top), var(--bg-deep));
+          color: var(--text-main);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 18px 16px;
+        }
 
-    .card {
-      position: relative;
-      background: var(--glass);
-      border-radius: 26px;
-      padding: 16px 16px 18px;
-      border: 1px solid rgba(148, 163, 255, 0.24);
-      box-shadow:
-        0 20px 45px rgba(0, 0, 0, 0.75),
-        0 0 0 1px rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(18px);
-      overflow: hidden;
-    }
+        .shell { width: 100%; max-width: 440px; }
 
-    .card::before {
-      content: "";
-      position: absolute;
-      inset: 1px;
-      border-radius: 24px;
-      border: 1px solid rgba(248, 250, 252, 0.02);
-      pointer-events: none;
-    }
+        .card {
+          background: var(--glass);
+          border-radius: 26px;
+          padding: 18px;
+          border: 1px solid rgba(148,163,255,0.28);
+          box-shadow:
+            0 20px 45px rgba(0,0,0,0.85),
+            0 0 0 1px rgba(15,23,42,0.7);
+          position: relative;
+          overflow: hidden;
+          backdrop-filter: blur(16px);
+        }
 
-    .top-accent {
-      position: absolute;
-      left: 12%;
-      right: 12%;
-      top: 10px;
-      height: 1px;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(244, 229, 200, 0.75),
-        transparent
-      );
-      opacity: 0.9;
-    }
+        .card::before {
+          content: "";
+          position: absolute;
+          inset: 1px;
+          border-radius: 24px;
+          border: 1px solid rgba(255,255,255,0.04);
+          pointer-events: none;
+        }
 
-    /* 🔹 상단 앱 헤더 */
-    .top-bar {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 6px;
-      margin-bottom: 6px;
-    }
+        .top-accent {
+          position: absolute; left: 14%; right: 14%; top: 12px; height: 1px;
+          background: linear-gradient(90deg,transparent,rgba(148,163,255,0.8),transparent);
+        }
 
-    .top-bar-left,
-    .top-bar-center,
-    .top-bar-right {
-      display: flex;
-      align-items: center;
-    }
+        .top-bar {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 6px;
+        }
 
-    .top-bar-left {
-      min-width: 60px;
-      justify-content: flex-start;
-    }
+        .back-btn {
+          background: transparent;
+          border: none;
+          color: var(--text-sub);
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.85rem;
+          cursor: pointer;
+        }
 
-    .top-bar-center {
-      flex: 1;
-      justify-content: center;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-main);
-    }
+        .step-pill {
+          padding: 4px 10px;
+          border-radius: 999px;
+          border: 1px solid rgba(148,163,255,0.65);
+          background: rgba(10,16,36,0.9);
+          font-size: 0.72rem;
+          color: var(--text-sub);
+        }
 
-    .top-bar-right {
-      min-width: 60px;
-      justify-content: flex-end;
-    }
+        .title {
+          text-align: center;
+          font-size: 1.45rem;
+          font-weight: 750;
+          margin: 10px 0 4px;
+          letter-spacing: .02em;
+        }
 
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      font-size: 0.82rem;
-      color: var(--text-sub);
-      background: transparent;
-      border: none;
-      padding: 4px 4px;
-      cursor: pointer;
-    }
+        .subtitle {
+          text-align: center;
+          font-size: 0.84rem;
+          color: var(--text-muted);
+          margin-bottom: 18px;
+          line-height: 1.45;
+        }
 
-    .back-btn span.icon {
-      font-size: 1rem;
-    }
+        .preview-wrapper {
+          background:
+            radial-gradient(circle at top left, rgba(148,163,255,0.22),transparent 55%),
+            rgba(15,23,42,0.96);
+          border: 1px solid rgba(148,163,255,0.45);
+          border-radius: 20px;
+          padding: 8px;
+          margin-bottom: 18px;
+        }
 
-    .step-pill {
-      padding: 3px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 255, 0.65);
-      font-size: 0.72rem;
-      color: var(--text-sub);
-      background: rgba(10, 16, 36, 0.9);
-      white-space: nowrap;
-    }
+        .preview-inner {
+          width: 100%;
+          border-radius: 18px;
+          overflow: hidden;
+          min-height: 160px;
+          background: #020617;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
 
-    .header {
-      text-align: center;
-      margin-top: 8px;
-      margin-bottom: 12px;
-    }
+        #preview-img {
+          width: 100%;
+          max-height: 260px;
+          object-fit: cover;
+        }
 
-    .title {
-      font-size: 1.4rem;
-      font-weight: 750;
-      letter-spacing: 0.04em;
-      margin-bottom: 4px;
-    }
+        .info-text {
+          text-align: center;
+          font-size: 0.92rem;
+          color: var(--text-sub);
+          margin-bottom: 12px;
+          line-height: 1.5;
+        }
 
-    .subtitle {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
+        .highlight {
+          color: #fff3c4;
+          font-weight: 600;
+        }
 
-    .preview-wrapper {
-      margin-top: 14px;
-      margin-bottom: 12px;
-      border-radius: 20px;
-      background:
-        radial-gradient(circle at top left, rgba(148, 163, 255, 0.18), transparent 55%),
-        rgba(10, 16, 36, 0.96);
-      border: 1px solid rgba(148, 163, 255, 0.45);
-      padding: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        .btn {
+          width: 100%;
+          padding: 14px 0;
+          border-radius: 999px;
+          border: none;
+          font-size: 0.95rem;
+          font-weight: 650;
+          cursor: pointer;
+          margin-top: 10px;
+          display: flex;
+          justify-content: center;
+          gap: 6px;
+          position: relative;
+          overflow: hidden;
+        }
 
-    .preview-inner {
-      width: 100%;
-      border-radius: 16px;
-      overflow: hidden;
-      background: #020617;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 160px;
-    }
+        .btn-primary {
+          background: linear-gradient(135deg,var(--primary-strong),var(--primary));
+          color: #fff;
+          box-shadow: 0 14px 28px rgba(55,48,163,0.65);
+        }
 
-    .preview-inner img {
-      width: 100%;
-      max-height: 260px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .info-text {
-      font-size: 0.88rem;
-      text-align: center;
-      color: var(--text-sub);
-      line-height: 1.5;
-      margin-bottom: 8px;
-    }
-
-    .highlight {
-      color: #fefce8;
-      font-weight: 600;
-    }
-
-    .btn {
-      width: 100%;
-      border-radius: 999px;
-      padding: 12px 0;
-      border: none;
-      font-size: 0.95rem;
-      font-weight: 650;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.22s ease-out;
-      margin-top: 6px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.18),
-        transparent 45%,
-        rgba(148, 163, 255, 0.25)
-      );
-      opacity: 0;
-      transition: opacity 0.22s ease-out;
-      pointer-events: none;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary-strong), var(--primary));
-      color: #f9fafb;
-      box-shadow:
-        0 14px 28px rgba(55, 48, 163, 0.75),
-        0 0 0 1px rgba(199, 179, 255, 0.55);
-    }
-
-    .btn-secondary {
-      background: transparent;
-      color: #e5e7eb;
-      border: 1px solid rgba(148, 163, 255, 0.6);
-    }
-
-    .btn-icon {
-      font-size: 1.1rem;
-    }
-
-    .btn:active {
-      transform: translateY(1px) scale(0.99);
-      box-shadow:
-        0 8px 18px rgba(55, 48, 163, 0.7);
-    }
-
-    .btn:hover::before {
-      opacity: 1;
-    }
-
-    .btn[disabled] {
-      opacity: 0.7;
-      cursor: default;
-      box-shadow: none;
-    }
-  </style>
+        .btn-secondary {
+          background: transparent;
+          color: var(--text-main);
+          border: 1px solid rgba(148,163,255,0.55);
+        }
+    </style>
 </head>
+
 <body>
-  <div class="shell">
+<div class="shell">
     <div class="card">
-      <div class="top-accent"></div>
+        <div class="top-accent"></div>
 
-      <!-- 🔹 상단 헤더 (앱 느낌) -->
-      <div class="top-bar">
-        <div class="top-bar-left">
-          <button class="back-btn" type="button" onclick="goBack()">
-            <span class="icon">←</span>
-            <span>뒤로</span>
-          </button>
+        <div class="top-bar">
+            <button class="back-btn" onclick="goBack()">← 뒤로</button>
+            <div></div>
+            <div class="step-pill">STEP 2 / 4</div>
         </div>
-        <div class="top-bar-center">
-          사진 확인하기
-        </div>
-        <div class="top-bar-right">
-          <div class="step-pill">STEP 2 / 4</div>
-        </div>
-      </div>
 
-      <div class="header">
         <div class="title">이 사진으로 진행할까요?</div>
         <div class="subtitle">
-          얼굴과 고민 부위가 잘 보이는지<br />
-          한 번만 확인해 주세요.
+            얼굴과 고민 부위가 잘 보이는지<br>
+            한 번 확인해주세요.
         </div>
-      </div>
 
-      <div class="preview-wrapper">
-        <div class="preview-inner">
-          <!-- 업로드한 사진이 들어갈 자리 -->
-          <img id="preview-img" alt="업로드한 피부 사진 미리보기" />
+        <div class="preview-wrapper">
+            <div class="preview-inner">
+                <img id="preview-img" />
+            </div>
         </div>
-      </div>
 
-      <div class="info-text">
-        이 사진이 괜찮다면 <span class="highlight">다음 단계로</span> 넘어가서<br />
-        나의 피부 고민을 선택해 주세요.
-      </div>
+        <div class="info-text">
+            이 사진이 괜찮다면<br>
+            <span class="highlight">다음 단계</span>로 이동하세요.
+        </div>
 
-      <!-- ✅ 고민 선택 페이지로 이동 -->
-      <button class="btn btn-primary" id="next-btn" onclick="goToOptions()">
-        <span class="btn-icon">➡️</span>
-        <span>다음 단계로</span>
-      </button>
-
-      <button class="btn btn-secondary" type="button" onclick="goBack()">
-        <span class="btn-icon">↩</span>
-        <span>첫 화면으로 돌아가기</span>
-      </button>
+        <button class="btn btn-primary" onclick="goToOptions()">다음 단계로 ➡️</button>
+        <button class="btn btn-secondary" onclick="goBack()">첫 화면으로 돌아가기</button>
     </div>
-  </div>
+</div>
 
-  <script>
-    // 페이지 로드 시 업로드한 이미지 미리보기
+<script>
     window.addEventListener("DOMContentLoaded", function () {
       const imgData = sessionStorage.getItem("uploadedImage");
       const imgEl = document.getElementById("preview-img");
@@ -343,7 +225,6 @@
       imgEl.src = imgData;
     });
 
-    // ✅ 다음 단계(고민 선택 페이지)로 이동
     function goToOptions() {
       const imgData = sessionStorage.getItem("uploadedImage");
       if (!imgData) {
@@ -357,7 +238,7 @@
     function goBack() {
       window.location.href = "index.html";
     }
-  </script>
+</script>
 
 </body>
 </html>
