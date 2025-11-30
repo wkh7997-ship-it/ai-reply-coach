@@ -1,91 +1,101 @@
-{
-  "cleanser": {
-    "//": "클렌저 / 세안제",
-    "items": [
-      {
-        "image": "https://t3a.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/e3ea/b7523e28e0f33ed95f7c100ffc22385422a5b276a34055fc730396ddbbed.jpg",
-        "url": "https://link.coupang.com/a/c7Akny"
-      }
-    ]
+[
+  {
+    "id": "cleanser1",
+    "name": "저자극 약산성 클렌저",
+    "summary": "민감·복합성 피부에도 부담을 줄인 데일리 세안제.",
+    "type": "cleanser",
+    "skinType": ["복합성", "지성", "민감성"],
+    "concerns": ["모공·블랙헤드·피지", "건조함·각질·피부 당김"],
+    "tags": ["클렌저", "세안제", "약산성"],
+    "image": "https://t3a.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/e3ea/b7523e28e0f33ed95f7c100ffc22385422a5b276a34055fc730396ddbbed.jpg",
+    "url": "https://link.coupang.com/a/c7Akny"
   },
-
-  "repairCream": {
-    "//": "장벽 재생 크림 / 세라마이드·판테놀 계열",
-    "items": [
-      {
-        "image": "https://thumbnail12.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/7ca5/0a89c40fed18713d75701afeaecb702613c01c2ebd1634b81c4e0f648836.jpg",
-        "url": "https://link.coupang.com/a/c7Akny"
-      }
-    ]
+  {
+    "id": "repair1",
+    "name": "장벽 재생 진정 크림",
+    "summary": "세라마이드·판테놀 계열로 약해진 피부 장벽을 집중적으로 케어.",
+    "type": "repairCream",
+    "skinType": ["건성", "복합성", "민감성"],
+    "concerns": ["건조함·각질·피부 당김", "붉은기·홍조·민감 피부"],
+    "tags": ["장벽케어", "진정크림", "세라마이드"],
+    "image": "https://thumbnail12.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/7ca5/0a89c40fed18713d75701afeaecb702613c01c2ebd1634b81c4e0f648836.jpg",
+    "url": "https://link.coupang.com/a/c7Akny"
   },
-
-  "toner": {
-    "//": "토너 / 세안 후 첫 보습 단계",
-    "items": [
-      {
-        "image": "https://t1c.coupangcdn.com/thumbnails/remote/212x212ex/image/1025_amir_coupang_oct_80k/e930/84a2ed6f1ea4932b7fad5de45c7c8659c691b6abe91404af47d5bab00e51.jpg",
-        "url": "https://link.coupang.com/a/c7Dfd7"
-      }
-    ]
+  {
+    "id": "toner1",
+    "name": "수분 진정 토너",
+    "summary": "세안 후 즉시 수분을 채워주는 데일리 진정 토너.",
+    "type": "toner",
+    "skinType": ["건성", "복합성", "민감성"],
+    "concerns": ["건조함·각질·피부 당김", "붉은기·홍조·민감 피부"],
+    "tags": ["토너", "수분", "진정"],
+    "image": "https://t1c.coupangcdn.com/thumbnails/remote/212x212ex/image/1025_amir_coupang_oct_80k/e930/84a2ed6f1ea4932b7fad5de45c7c8659c691b6abe91404af47d5bab00e51.jpg",
+    "url": "https://link.coupang.com/a/c7Dfd7"
   },
-
-  "ceramideCream": {
-    "//": "장벽 크림 / 세라마이드 보습 크림",
-    "items": [
-      {
-        "image": "https://thumbnail5.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/8237/462059db955f205e290a0c7a394eb5ba9c132dfbdd7fa18b8d4ccd5f0e26.jpg",
-        "url": "https://link.coupang.com/a/c7DgtI"
-      }
-    ]
+  {
+    "id": "ceramide1",
+    "name": "고보습 세라마이드 크림",
+    "summary": "푸석한 피부에 풍부한 보습을 주는 세라마이드 장벽 크림.",
+    "type": "ceramideCream",
+    "skinType": ["건성", "복합성"],
+    "concerns": ["건조함·각질·피부 당김", "주름·탄력 저하"],
+    "tags": ["크림", "세라마이드", "장벽보습"],
+    "image": "https://thumbnail5.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/8237/462059db955f205e290a0c7a394eb5ba9c132dfbdd7fa18b8d4ccd5f0e26.jpg",
+    "url": "https://link.coupang.com/a/c7DgtI"
   },
-
-  "sunscreen": {
-    "//": "선크림 / 자외선 차단 SPF50+",
-    "items": [
-      {
-        "image": "https://thumbnail15.coupangcdn.com/thumbnails/remote/212x212ex/image/retail/images/108955565456806-dc5fb4c4-c779-456c-bd8a-55366a4f7019.jpg",
-        "url": "https://link.coupang.com/a/c7Dhpa"
-      }
-    ]
+  {
+    "id": "sun1",
+    "name": "데일리 SPF50 선크림",
+    "summary": "백탁감이 적고 가볍게 발리는 자외선 차단제.",
+    "type": "sunscreen",
+    "skinType": ["지성", "복합성", "건성"],
+    "concerns": ["잡티·기미·색소침착", "주름·탄력 저하"],
+    "tags": ["선크림", "SPF50+", "자외선차단"],
+    "image": "https://thumbnail15.coupangcdn.com/thumbnails/remote/212x212ex/image/retail/images/108955565456806-dc5fb4c4-c779-456c-bd8a-55366a4f7019.jpg",
+    "url": "https://link.coupang.com/a/c7Dhpa"
   },
-
-  "acne": {
-    "//": "여드름·트러블 케어",
-    "items": [
-      {
-        "image": "https://thumbnail12.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/7ca5/0a89c40fed18713d75701afeaecb702613c01c2ebd1634b81c4e0f648836.jpg",
-        "url": "https://link.coupang.com/a/c7DieA"
-      }
-    ]
+  {
+    "id": "acne1",
+    "name": "여드름·트러블 진정 크림",
+    "summary": "예민해진 여드름·트러블 부위를 집중 진정해 주는 크림.",
+    "type": "acne",
+    "skinType": ["지성", "복합성", "민감성"],
+    "concerns": ["여드름·뾰루지", "붉은기·홍조·민감 피부"],
+    "tags": ["트러블케어", "진정", "여드름"],
+    "image": "https://thumbnail12.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/7ca5/0a89c40fed18713d75701afeaecb702613c01c2ebd1634b81c4e0f648836.jpg",
+    "url": "https://link.coupang.com/a/c7DieA"
   },
-
-  "pore": {
-    "//": "모공·피지 케어",
-    "items": [
-      {
-        "image": "https://t2a.coupangcdn.com/thumbnails/remote/212x212ex/image/retail/images/965354375839447-e7928826-4496-4819-a397-042ff8521f6e.jpg",
-        "url": "https://link.coupang.com/a/c7DjgC"
-      }
-    ]
+  {
+    "id": "pore1",
+    "name": "모공 피지 케어 세럼",
+    "summary": "과잉 피지와 늘어진 모공 케어에 도움을 주는 세럼.",
+    "type": "pore",
+    "skinType": ["지성", "복합성"],
+    "concerns": ["모공·블랙헤드·피지"],
+    "tags": ["세럼", "모공케어", "피지조절"],
+    "image": "https://t2a.coupangcdn.com/thumbnails/remote/212x212ex/image/retail/images/965354375839447-e7928826-4496-4819-a397-042ff8521f6e.jpg",
+    "url": "https://link.coupang.com/a/c7DjgC"
   },
-
-  "pigment": {
-    "//": "색소·기미·잡티 케어",
-    "items": [
-      {
-        "image": "https://t5a.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/be48/e39059c983eda0bd6db2e450188bd1eb86f94193c47ab8f25b8112043fe4.jpg",
-        "url": "https://link.coupang.com/a/c7DjYH"
-      }
-    ]
+  {
+    "id": "pigment1",
+    "name": "잡티·기미 집중 케어 세럼",
+    "summary": "칙칙한 피부 톤과 잡티 케어에 도움을 주는 브라이트닝 세럼.",
+    "type": "pigment",
+    "skinType": ["복합성", "건성"],
+    "concerns": ["잡티·기미·색소침착"],
+    "tags": ["세럼", "브라이트닝", "톤업"],
+    "image": "https://t5a.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/be48/e39059c983eda0bd6db2e450188bd1eb86f94193c47ab8f25b8112043fe4.jpg",
+    "url": "https://link.coupang.com/a/c7DjYH"
   },
-
-  "soothing": {
-    "//": "진정·민감 케어",
-    "items": [
-      {
-        "image": "https://t2a.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/9e90/f31b91abdb5a33939dd58cba10a37aa132b4028cab996ee7aa606fe14352.jpg",
-        "url": "https://link.coupang.com/a/c7DkI7"
-      }
-    ]
+  {
+    "id": "soothing1",
+    "name": "민감 피부 진정 앰플",
+    "summary": "열감·붉은기 올라온 피부를 빠르게 진정시키는 앰플.",
+    "type": "soothing",
+    "skinType": ["민감성", "복합성", "건성"],
+    "concerns": ["붉은기·홍조·민감 피부", "건조함·각질·피부 당김"],
+    "tags": ["앰플", "진정", "민감케어"],
+    "image": "https://t2a.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/9e90/f31b91abdb5a33939dd58cba10a37aa132b4028cab996ee7aa606fe14352.jpg",
+    "url": "https://link.coupang.com/a/c7DkI7"
   }
-}
+]
