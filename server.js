@@ -1,4 +1,6 @@
 // server.js
+// Render용 Node + Express 서버 (OpenAI + 제품 JSON API)
+
 import express from "express";
 import cors from "cors";
 import path from "path";
@@ -7,33 +9,49 @@ import "dotenv/config"; // .env에서 OPENAI_API_KEY 불러오기
 
 const app = express();
 
-// CORS + JSON 파서
-app.use(cors());
-app.use(express.json({ limit: "20mb" })); // 이미지 Base64도 받을 수 있게
+// ─────────────────────────────────────
+// 공통 설정
+// ─────────────────────────────────────
 
-// 정적 파일 경로 설정 (index.html, 기타 html/css/js, data 폴더 등)
+// CORS 허용 (file://, 앱 WebView 등에서 호출 가능)
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+
+// JSON 파서 (사진 base64 같은 것도 받으려면 여유있게)
+app.use(express.json({ limit: "20mb" }));
+
+// 정적 파일 서빙 (index.html, result.html, options.html 등)
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname)));
 
-// ------------------------
+// ─────────────────────────────────────
 // 1) AI 분석 API (OpenAI 호출)
-// ------------------------
+//    POST /api/analyze
+// ─────────────────────────────────────
 app.post("/api/analyze", async (req, res) => {
   try {
     const { skin_type, problem_area, concerns, notes } = req.body;
 
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
     if (!OPENAI_API_KEY) {
-      return res.status(500).json({ error: "OPENAI_API_KEY 누락됨" });
+      return res
+        .status(500)
+        .json({ error: "OPENAI_API_KEY 누락됨 (서버 환경 변수 확인 필요)" });
     }
 
-    // OpenAI Chat Completions 호출에 사용할 프롬프트
+    const concernsText = Array.isArray(concerns)
+      ? concerns.join(", ")
+      : concerns || "";
+
     const prompt = `
 사용자 피부 분석:
-- 피부 타입: ${skin_type}
-- 고민 부위: ${problem_area}
-- 선택한 고민: ${Array.isArray(concerns) ? concerns.join(", ") : concerns}
-- 추가 메모: ${notes}
+- 피부 타입: ${skin_type || "미입력"}
+- 고민 부위: ${problem_area || "미입력"}
+- 선택한 고민: ${concernsText || "없음"}
+- 추가 메모: ${notes || "없음"}
 
 아래 JSON 형식으로만, 설명 없이 순수 JSON만 반환해줘:
 
@@ -45,9 +63,9 @@ app.post("/api/analyze", async (req, res) => {
  "summary": "한 줄 요약",
  "detailAdvice": "상세 관리 팁"
 }
-`;
+    `.trim();
 
-    // ✅ Node 18의 전역 fetch 사용 (node-fetch import 안 씀)
+    // Node 18 이상: 글로벌 fetch 사용 가능
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -110,10 +128,11 @@ app.post("/api/analyze", async (req, res) => {
   }
 });
 
-// ------------------------
-// 2) coupang-links.json 읽기 API
-// ------------------------
-//  -> /api/products 에서 전체 JSON 반환
+// ─────────────────────────────────────
+// 2) 제품 JSON API
+//    GET /api/products
+//    ./data/coupang-links.json 읽어서 반환
+// ─────────────────────────────────────
 app.get("/api/products", (req, res) => {
   try {
     const filePath = path.join(__dirname, "data", "coupang-links.json");
@@ -126,21 +145,23 @@ app.get("/api/products", (req, res) => {
     res.json(JSON.parse(json));
   } catch (err) {
     console.error("제품 JSON 로드 오류:", err);
-    res.status(500).json({ error: "제품 JSON 로드 오류", detail: err.message });
+    res
+      .status(500)
+      .json({ error: "제품 JSON 로드 오류", detail: err.message });
   }
 });
 
-// ------------------------
-// 3) SPA / 정적 HTML 서빙
-// ------------------------
-//  -> /api/* 가 아닌 나머지 경로는 모두 index.html 반환
+// ─────────────────────────────────────
+// 3) SPA용 라우팅 처리
+//    /api/* 가 아닌 나머지는 index.html 반환
+// ─────────────────────────────────────
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// ------------------------
+// ─────────────────────────────────────
 // 4) 서버 실행
-// ------------------------
+// ─────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🔥 서버 실행중: http://localhost:${PORT}`);
